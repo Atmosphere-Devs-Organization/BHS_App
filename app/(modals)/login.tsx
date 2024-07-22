@@ -1,3 +1,9 @@
+import { FIREBASE_AUTH } from "@/FirebaseConfig";
+import { router } from "expo-router";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import React from "react";
 import {
   StyleSheet,
@@ -13,17 +19,46 @@ import {
 } from "react-native";
 
 const App = () => {
-  const [user, onChangeUser] = React.useState("");
+  const [email, onChangeEmail] = React.useState("");
   const [pass, onChangePass] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+  const auth = FIREBASE_AUTH;
 
-  function checkLogin(user: string, pass: string): boolean {
-    //Temporary
-    console.log(
-      "Sign In!\nUser signed in with -\nUser: " + user + "\nPass: " + pass
-    );
+  const signIn = async () => {
+    setLoading(true);
 
-    return true;
-  }
+    try {
+      const response = await signInWithEmailAndPassword(auth, email, pass);
+
+      router.back();
+    } catch (error: any) {
+      if (
+        error instanceof Error &&
+        error.message === "Firebase: Error (auth/invalid-credential)."
+      ) {
+        alert("Sign in failed: You need to create an account.");
+      } else {
+        alert("Please enter a valid email and password.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signUp = async () => {
+    setLoading(true);
+
+    try {
+      const response = await createUserWithEmailAndPassword(auth, email, pass);
+
+      signIn();
+    } catch (error) {
+      console.log(error);
+      alert("Please enter a valid email and password.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -45,12 +80,13 @@ const App = () => {
         >
           <TextInput
             style={styles.user_input}
-            onChangeText={onChangeUser}
-            value={user}
-            placeholder="s123456"
+            onChangeText={onChangeEmail}
+            value={email}
+            placeholder="name####@stu.cfisd.net"
             placeholderTextColor={"#B3B3B3"}
-            autoComplete="username"
+            autoComplete="email"
             textContentType="oneTimeCode"
+            autoCapitalize="none"
           />
           <TextInput
             style={styles.password_input}
@@ -60,21 +96,22 @@ const App = () => {
             placeholderTextColor={"#B3B3B3"}
             autoComplete="current-password"
             textContentType="oneTimeCode"
+            autoCapitalize="none"
+            secureTextEntry={true}
           />
           <Pressable
-            onPressIn={() => {
-              if (checkLogin(user, pass)) {
-                console.log("Good Login");
-              }
-            }}
+            onPressIn={signIn}
             style={({ pressed }) => [
               {
                 backgroundColor: pressed ? "#808080" : "#1A5570",
               },
-              styles.wrapperCustom,
+              styles.signInButton,
             ]}
           >
-            <Text style={styles.signup_text}>Sign In</Text>
+            <Text style={styles.signin_text}>Sign In</Text>
+          </Pressable>
+          <Pressable style={styles.createAccountButton} onPressIn={signUp}>
+            <Text style={styles.signup_text}>Create an Account</Text>
           </Pressable>
         </ImageBackground>
       </TouchableWithoutFeedback>
@@ -94,7 +131,7 @@ const styles = StyleSheet.create({
     height: 40,
     marginLeft: 60,
     marginRight: 60,
-    marginTop: 307.5,
+    marginTop: 347.5,
     padding: 10,
     color: "#B3B3B3",
   },
@@ -106,17 +143,28 @@ const styles = StyleSheet.create({
     padding: 10,
     color: "#B3B3B3",
   },
-  signup_text: {
+  signin_text: {
     fontSize: 16,
     color: "white",
     textAlign: "center",
     fontWeight: "bold",
   },
-  wrapperCustom: {
+  signInButton: {
     borderRadius: 8,
     padding: 10,
     marginHorizontal: 60,
     transform: [{ translateY: 23.5 }],
+  },
+  signup_text: {
+    fontSize: 16,
+    color: "orange",
+    textAlign: "center",
+    fontWeight: "normal",
+  },
+  createAccountButton: {
+    padding: 10,
+    marginHorizontal: 60,
+    transform: [{ translateY: 53.5 }],
   },
 });
 
