@@ -2,23 +2,16 @@ import React from "react";
 import { Tabs } from "expo-router";
 import Colors from "@/constants/Colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import CustomTabBar from "@/components/CustomTabBar";
 
 const Layout = () => {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors.tabActiveTint,
-        tabBarLabelStyle: { fontFamily: "SpaceMono" },
-      }}
-    >
+    <Tabs tabBar={(props) => <CustomTabBar {...props} />}>
       <Tabs.Screen
         name="index"
         options={{
           tabBarLabel: "Home",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-sharp" size={size} color={color} />
-          ),
-          headerTitle: "Home",
+          headerShown: false,
         }}
       />
 
@@ -26,9 +19,6 @@ const Layout = () => {
         name="calendar"
         options={{
           tabBarLabel: "Calendar",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar-clear-sharp" size={size} color={color} />
-          ),
           headerTitle: "Calendar",
         }}
       />
@@ -36,9 +26,6 @@ const Layout = () => {
         name="clubs"
         options={{
           tabBarLabel: "Clubs",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people-sharp" size={size} color={color} />
-          ),
           headerTitle: "Clubs",
         }}
       />
@@ -46,9 +33,6 @@ const Layout = () => {
         name="map"
         options={{
           tabBarLabel: "Map",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="map-sharp" size={size} color={color} />
-          ),
           headerTitle: "Map",
         }}
       />

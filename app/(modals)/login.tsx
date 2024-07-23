@@ -16,7 +16,10 @@ import {
   StatusBar,
   TextInput,
   Pressable,
+  TouchableOpacity,
 } from "react-native";
+import Colors from "@/constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
 
 const App = () => {
   const [email, onChangeEmail] = React.useState("");
@@ -32,6 +35,7 @@ const App = () => {
 
       router.back();
     } catch (error: any) {
+      console.log(error);
       if (
         error instanceof Error &&
         error.message === "Firebase: Error (auth/invalid-credential)."
@@ -52,9 +56,20 @@ const App = () => {
       const response = await createUserWithEmailAndPassword(auth, email, pass);
 
       signIn();
-    } catch (error) {
-      console.log(error);
-      alert("Please enter a valid email and password.");
+    } catch (error: any) {
+      console.log(error.message);
+      if (
+        error.message ===
+        "Firebase: Password should be at least 6 characters (auth/weak-password)."
+      ) {
+        alert("Password must be at least than 6 characters");
+      } else if (
+        error.message === "Firebase: Error (auth/email-already-in-use)."
+      ) {
+        alert("That email is already in use");
+      } else {
+        alert("Please enter a valid email and password.");
+      }
     } finally {
       setLoading(false);
     }
@@ -78,12 +93,15 @@ const App = () => {
           resizeMode="cover"
           style={styles.login_BG_Image}
         >
+          <TouchableOpacity onPress={router.back} style={styles.close_button}>
+            <Ionicons name="close-sharp" size={24} color="black" />
+          </TouchableOpacity>
           <TextInput
             style={styles.user_input}
             onChangeText={onChangeEmail}
             value={email}
-            placeholder="name####@stu.cfisd.net"
-            placeholderTextColor={"#B3B3B3"}
+            placeholder="jsmi####@stu.cfisd.net"
+            placeholderTextColor={Colors.signInPlaceholderText}
             autoComplete="email"
             textContentType="oneTimeCode"
             autoCapitalize="none"
@@ -93,7 +111,7 @@ const App = () => {
             onChangeText={onChangePass}
             value={pass}
             placeholder="Password"
-            placeholderTextColor={"#B3B3B3"}
+            placeholderTextColor={Colors.signInPlaceholderText}
             autoComplete="current-password"
             textContentType="oneTimeCode"
             autoCapitalize="none"
@@ -103,7 +121,9 @@ const App = () => {
             onPressIn={signIn}
             style={({ pressed }) => [
               {
-                backgroundColor: pressed ? "#808080" : "#1A5570",
+                backgroundColor: pressed
+                  ? Colors.signInButtonPressed
+                  : Colors.signInButtonNormal,
               },
               styles.signInButton,
             ]}
@@ -120,6 +140,9 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
+  close_button: {
+    transform: [{ translateY: -80 }, { translateX: 10 }],
+  },
   container: {
     flex: 1,
   },
@@ -131,9 +154,9 @@ const styles = StyleSheet.create({
     height: 40,
     marginLeft: 60,
     marginRight: 60,
-    marginTop: 347.5,
+    marginTop: 327.5,
     padding: 10,
-    color: "#B3B3B3",
+    color: Colors.loginInputText,
   },
   password_input: {
     height: 40,
@@ -141,11 +164,11 @@ const styles = StyleSheet.create({
     marginRight: 60,
     marginTop: 53.5,
     padding: 10,
-    color: "#B3B3B3",
+    color: Colors.loginInputText,
   },
   signin_text: {
     fontSize: 16,
-    color: "white",
+    color: Colors.signInButtonText,
     textAlign: "center",
     fontWeight: "bold",
   },
@@ -153,11 +176,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     marginHorizontal: 60,
-    transform: [{ translateY: 23.5 }],
+    transform: [{ translateY: 23.0 }],
   },
   signup_text: {
     fontSize: 16,
-    color: "orange",
+    color: Colors.createAccountText,
     textAlign: "center",
     fontWeight: "normal",
   },

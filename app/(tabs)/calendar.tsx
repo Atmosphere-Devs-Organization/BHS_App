@@ -1,12 +1,34 @@
 import { View, Text } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { FIREBASE_AUTH } from "@/FirebaseConfig";
+import { User, onAuthStateChanged } from "firebase/auth";
 
-const Calander = () => {
+const Calandar = () => {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    onAuthStateChanged(FIREBASE_AUTH, (user) => {
+      setUser(user);
+    });
+  }, []);
+
+  return <View>{user ? <NormalCalendar /> : <LoggedOutCalendar />}</View>;
+};
+
+const LoggedOutCalendar = () => {
   return (
     <View>
-      <Text>Calander</Text>
+      <Text>You need to be sign in to access the calendar</Text>
     </View>
   );
 };
 
-export default Calander;
+const NormalCalendar = () => {
+  return (
+    <View>
+      <Text>Calendar</Text>
+    </View>
+  );
+};
+
+export default Calandar;

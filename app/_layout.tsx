@@ -2,13 +2,10 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import "react-native-reanimated";
 
-import { useColorScheme } from "react-native";
 import React from "react";
-import { onAuthStateChanged, User } from "firebase/auth";
-import { FIREBASE_AUTH } from "@/FirebaseConfig";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -46,49 +43,18 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
-function loginLayout() {
-  return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(modals)/login" options={{ headerShown: false }} />
-    </Stack>
-  );
-}
-
-function tabsLayout() {
-  return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    </Stack>
-  );
-}
-
 function RootLayoutNav() {
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    onAuthStateChanged(FIREBASE_AUTH, (user) => {
-      console.log(user ? "Logged in user" : "Null user");
-      setUser(user);
-    });
-  }, []);
-
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="(modals)/login" options={{ headerShown: false }} />
-    </Stack>
-  );
-}
-
-function LoginLayoutNav() {
-  const colorScheme = useColorScheme();
-
-  return (
-    <Stack
-      screenOptions={{ headerShown: false }}
-      initialRouteName="(modals)/login"
-    >
-      <Stack.Screen name="(modals)/login" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="(modals)/login"
+        options={{
+          headerShown: false,
+          presentation: "modal",
+          animation: "slide_from_bottom",
+        }}
+      />
     </Stack>
   );
 }
