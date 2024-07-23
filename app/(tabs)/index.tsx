@@ -1,5 +1,4 @@
 import {
-  View,
   Text,
   Button,
   ImageBackground,
@@ -26,6 +25,12 @@ const Home = () => {
       resizeMode="cover"
       style={styles.home_BG_Image}
     >
+      <StatusBar
+        animated={true}
+        barStyle={"dark-content"}
+        showHideTransition={"fade"}
+        hidden={false}
+      />
       <Text>
         Home: {user ? "You are all logged in! as: " + user.email : "Null user"}
       </Text>

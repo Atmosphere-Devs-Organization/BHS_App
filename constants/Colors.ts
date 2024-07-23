@@ -4,6 +4,7 @@ export default {
   tabInactiveTint: "#c2c2c2",
 
   tabBarBG: "#ffffff00",
+  animatedIconBG: "#00114d39",
 
   //Login
   signInPlaceholderText: "#B3B3B3",

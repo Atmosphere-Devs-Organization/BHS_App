@@ -6,4 +6,9 @@ export default {
   gapBetweenIconAndLabel: 7,
   bottomOfTabBar: 5,
   horizontalMargin: 20,
+
+  selectedIconScale: 1.35,
+  selectedIconShift: 6,
+
+  animatedIconScaleDuration: 400,
 };

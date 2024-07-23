@@ -1,7 +1,5 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import Colors from "@/constants/Colors";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import CustomTabBar from "@/components/CustomTabBar";
 
 const Layout = () => {
