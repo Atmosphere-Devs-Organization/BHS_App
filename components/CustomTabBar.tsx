@@ -24,8 +24,41 @@ export default function CustomTabBar({
   descriptors,
   navigation,
 }: BottomTabBarProps) {
+  const [dimensions, setDimensions] = useState({ height: 20, width: 100 });
+
+  const buttonWidth = dimensions.width / state.routes.length;
+
+  const onTabbarLayout = (e: LayoutChangeEvent) => {
+    setDimensions({
+      height: e.nativeEvent.layout.height,
+      width: e.nativeEvent.layout.width,
+    });
+  };
+
+  const tabPositionX = useSharedValue(0);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: tabPositionX.value }],
+    };
+  });
+
   return (
-    <SafeAreaView style={styles.tab_bar}>
+    <SafeAreaView onLayout={onTabbarLayout} style={styles.tab_bar}>
+      <Animated.View
+        style={[
+          animatedStyle,
+          {
+            position: "absolute",
+            backgroundColor: Colors.animatedIconBG,
+            borderRadius: Numbers.animatedIconBGBorderRadius,
+            marginHorizontal: Numbers.animatedIconBGMarginHorizontal,
+            height: dimensions.height - Numbers.animatedIconBGHeightOffset,
+            width: buttonWidth - Numbers.animatedIconBGWidthOffset,
+            top: Numbers.animatedIconBGTop,
+          },
+        ]}
+      ></Animated.View>
       {state.routes.map((route: any, index: any) => {
         const { options } = descriptors[route.key];
         const label =
@@ -38,6 +71,9 @@ export default function CustomTabBar({
         const isFocused = state.index === index;
 
         const onPress = () => {
+          tabPositionX.value = withSpring(buttonWidth * index, {
+            duration: Numbers.animatedIconBGDuration,
+          });
           const event = navigation.emit({
             type: "tabPress",
             target: route.key,
