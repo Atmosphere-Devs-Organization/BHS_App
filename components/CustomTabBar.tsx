@@ -44,18 +44,18 @@ export default function CustomTabBar({
   });
 
   return (
-    <SafeAreaView onLayout={onTabbarLayout} style={styles.tab_bar}>
+    <View onLayout={onTabbarLayout} style={styles.tab_bar}>
       <Animated.View
         style={[
           animatedStyle,
           {
             position: "absolute",
             backgroundColor: Colors.animatedIconBG,
-            borderRadius: Numbers.animatedIconBGBorderRadius,
-            marginHorizontal: Numbers.animatedIconBGMarginHorizontal,
-            height: dimensions.height - Numbers.animatedIconBGHeightOffset,
-            width: buttonWidth - Numbers.animatedIconBGWidthOffset,
-            top: Numbers.animatedIconBGTop,
+            borderRadius: 30,
+            marginHorizontal: 12,
+            aspectRatio: 10 / 10,
+            width: "18%",
+            bottom: -8,
           },
         ]}
       ></Animated.View>
@@ -104,14 +104,15 @@ export default function CustomTabBar({
           />
         );
       })}
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   tab_bar: {
     position: "absolute",
-    bottom: Numbers.bottomOfTabBar, //Bottom of the tab bar
+    bottom: "0%", //Bottom of the tab bar
+    marginBottom: "4%",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",

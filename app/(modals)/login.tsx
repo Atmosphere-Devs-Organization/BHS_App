@@ -123,7 +123,7 @@ const App = () => {
             backgroundColor={Colors.signInButtonNormal}
             backgroundDarker={Colors.signInButtonDark}
             height={60}
-            width={270}
+            width={290}
             raiseLevel={10}
             onPressOut={() => signIn()}
           >
@@ -140,7 +140,7 @@ const App = () => {
 
 const styles = StyleSheet.create({
   close_button: {
-    transform: [{ translateY: -55 }, { translateX: 10 }],
+    transform: [{ translateY: -5 }, { translateX: 10 }],
   },
   container: {
     flex: 1,
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     height: 40,
     marginLeft: 60,
     marginRight: 60,
-    marginTop: 361,
+    marginTop: "102%",
     padding: 10,
     color: Colors.loginInputText,
   },
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     height: 40,
     marginLeft: 60,
     marginRight: 60,
-    marginTop: 53.5,
+    marginTop: "14%",
     padding: 10,
     color: Colors.loginInputText,
   },
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   createAccountButton: {
     padding: 10,
     marginHorizontal: 60,
-    transform: [{ translateY: 23.5 }],
+    marginTop: "10%",
   },
 });
 

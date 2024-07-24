@@ -32,4 +32,25 @@ export default {
   infoText: "#000000",
 
   nameEditButton: "#10171e",
+
+  //Clubs
+  headerBGColor: "#66360000",
+
+  title: "#abcddf",
+  cTitleBorderColor: "#3e3e3e",
+
+  normalCatIcon: "#242424",
+  activeCatIcon: "#000000",
+
+  nameText: "#abcddf",
+  descText: "#596b75",
+  imageBorderColor: "#ffffff",
+  textBorderColor: "#000000",
+
+  clubName: "#596b75",
+  clubDesc: "#000000",
+
+  divider: "#000000",
+
+  clubBG: "#ffffff0a",
 };

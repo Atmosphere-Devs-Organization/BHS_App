@@ -46,15 +46,6 @@ const Home = () => {
           color={Colors.profileButton}
         />
       </TouchableOpacity>
-      <Text>
-        Home: {user ? "You are all logged in! as: " + user.email : "Null user"}
-      </Text>
-      <Button
-        title={user ? "Logout" : "Login"}
-        onPress={() =>
-          user ? FIREBASE_AUTH.signOut() : router.push("(modals)/login")
-        }
-      />
     </ImageBackground>
   );
 };
