@@ -20,6 +20,7 @@ import {
 } from "react-native";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
+import AwesomeButton from "react-native-really-awesome-button";
 
 const App = () => {
   const [email, onChangeEmail] = React.useState("");
@@ -117,19 +118,17 @@ const App = () => {
             autoCapitalize="none"
             secureTextEntry={true}
           />
-          <Pressable
-            onPressIn={signIn}
-            style={({ pressed }) => [
-              {
-                backgroundColor: pressed
-                  ? Colors.signInButtonPressed
-                  : Colors.signInButtonNormal,
-              },
-              styles.signInButton,
-            ]}
+          <AwesomeButton
+            style={styles.signInButton}
+            backgroundColor={Colors.signInButtonNormal}
+            backgroundDarker={Colors.signInButtonDark}
+            height={60}
+            width={270}
+            raiseLevel={10}
+            onPressOut={() => signIn()}
           >
             <Text style={styles.signin_text}>Sign In</Text>
-          </Pressable>
+          </AwesomeButton>
           <Pressable style={styles.createAccountButton} onPressIn={signUp}>
             <Text style={styles.signup_text}>Create an Account</Text>
           </Pressable>
@@ -141,7 +140,7 @@ const App = () => {
 
 const styles = StyleSheet.create({
   close_button: {
-    transform: [{ translateY: -80 }, { translateX: 10 }],
+    transform: [{ translateY: -55 }, { translateX: 10 }],
   },
   container: {
     flex: 1,
@@ -154,7 +153,7 @@ const styles = StyleSheet.create({
     height: 40,
     marginLeft: 60,
     marginRight: 60,
-    marginTop: 327.5,
+    marginTop: 361,
     padding: 10,
     color: Colors.loginInputText,
   },
@@ -173,10 +172,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   signInButton: {
-    borderRadius: 8,
-    padding: 10,
-    marginHorizontal: 60,
-    transform: [{ translateY: 23.0 }],
+    marginVertical: 10,
+    alignSelf: "center",
   },
   signup_text: {
     fontSize: 16,
@@ -187,7 +184,7 @@ const styles = StyleSheet.create({
   createAccountButton: {
     padding: 10,
     marginHorizontal: 60,
-    transform: [{ translateY: 53.5 }],
+    transform: [{ translateY: 23.5 }],
   },
 });
 

@@ -18,7 +18,7 @@ const Calandar = () => {
 const LoggedOutCalendar = () => {
   return (
     <View>
-      <Text>You need to be sign in to access the calendar</Text>
+      <Text>You need to be signed in to access the calendar</Text>
     </View>
   );
 };
