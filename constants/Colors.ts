@@ -11,8 +11,25 @@ export default {
   loginInputText: "#B3B3B3",
 
   signInButtonNormal: "#2F86AD",
-  signInButtonPressed: "#B3B3B3",
+  signInButtonDark: "#19465b",
 
   signInButtonText: "#ffffff",
   createAccountText: "#ffa500",
+
+  //Home
+  profileButton: "#B3B3B3",
+
+  //Profile
+  backButton: "#5d6f78",
+  profileTitle: "#abcddf",
+
+  needSignIn: "#070b1b",
+
+  loginIcon: "#8b9ba2",
+  loginText: "#8b9ba2",
+  loginButtonBG: "#182350",
+  loginButtonDarkerBG: "#0a0e1f",
+  infoText: "#000000",
+
+  nameEditButton: "#10171e",
 };
