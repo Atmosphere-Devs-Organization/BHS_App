@@ -20,42 +20,45 @@ interface Props {
 const Empty = <></>;
 
 const ClubList = ({ clubs, category }: Props) => {
-  const [loading, setLoading] = useState(false);
   const listRef = useRef<FlatList>(null);
 
-  const renderRow: ListRenderItem<Club> = ({ item }) =>
-    item.categories.includes(category) ? (
-      <Link
-        href={"/clubPage/" + item.id}
-        asChild
-        style={{
-          borderWidth: 1,
-          borderRadius: 30,
-          margin: 5,
-          backgroundColor: Colors.clubBG,
-        }}
-      >
-        <TouchableOpacity>
-          <View style={styles.club}>
-            <Image source={{ uri: item.imageURL }} style={styles.image} />
-            <View style={styles.bottomText}>
-              <Text style={styles.nameText}>{item.name}</Text>
-              <Text style={styles.descText}>{item.shortDescription}</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-      </Link>
-    ) : (
-      Empty
-    );
+  const [filteredClubs, setFilteredClubs] = useState<Club[]>(clubs);
 
+  useEffect(() => {
+    setFilteredClubs(
+      clubs.filter((club) => club.categories.includes(category))
+    );
+  }, [category]);
+
+  const renderRow: ListRenderItem<Club> = ({ item }) => (
+    <Link
+      href={"/clubPage/" + item.id}
+      asChild
+      style={{
+        borderWidth: 1,
+        borderRadius: 30,
+        margin: 5,
+        backgroundColor: Colors.clubBG,
+      }}
+    >
+      <TouchableOpacity>
+        <View style={styles.club}>
+          <Image source={{ uri: item.imageURL }} style={styles.image} />
+          <View style={styles.bottomText}>
+            <Text style={styles.nameText}>{item.name}</Text>
+            <Text style={styles.descText}>{item.shortDescription}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    </Link>
+  );
   return (
     <View>
-      <FlatList
-        data={loading ? [] : clubs}
-        ref={listRef}
-        renderItem={renderRow}
-      ></FlatList>
+      {clubs ? (
+        <FlatList data={filteredClubs} ref={listRef} renderItem={renderRow} />
+      ) : (
+        <Text>Loading</Text>
+      )}
     </View>
   );
 };

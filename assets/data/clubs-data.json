@@ -1,20 +1,299 @@
 [
   {
-    "name": "Test Club",
+    "name": "American Sign Language Association",
     "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
     "id": "1",
     "shortDescription": "Club that does stuff - Arty, Sciency",
     "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
-    "sponsorEmail": "mrteacher@gmail.com",
+    "sponsorEmail": "Brandy.Kethley@cfisd.net",
     "categories": ["All", "Art", "Science"]
   },
   {
-    "name": "Test Club 2",
+    "name": "Artificial Intelligence Club",
     "imageURL": "https://cdn.mos.cms.futurecdn.net/jovvt4LJvEUhhCwHvqSegb.jpg",
     "id": "2",
     "shortDescription": "Another club that does stuff - Social-Studs, Athletes",
     "longDescription": "Another club that does stuff, and tests, and 2s, and other stuff idk",
-    "sponsorEmail": "mssponsor@gmail.com",
+    "sponsorEmail": "Leonas.Grumulaitis@cfisd.net",
     "categories": ["All", "Social-Studies", "Athletics"]
+  },
+  {
+    "name": "Aware Bears",
+    "imageURL": "https://cdn.mos.cms.futurecdn.net/jovvt4LJvEUhhCwHvqSegb.jpg",
+    "id": "3",
+    "shortDescription": "Another club that does stuff - Social-Studs, Athletes",
+    "longDescription": "Another club that does stuff, and tests, and 2s, and other stuff idk",
+    "sponsorEmail": "kimberly.zabadal@cfisd.net",
+    "categories": ["All", "Social-Studies", "Athletics"]
+  },
+  {
+    "name": "Bears care about veterans (BCAV)",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "4",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "amanda.postrigan@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Biomed for youth",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "5",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "eileen.newland@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Book Club",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "6",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "misty.miller@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Brothers in Christ",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "7",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "Teri.Hudson@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Claw Crew",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "8",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "Elizabeth.Martin@cfisd..net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Computer Science Club",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "9",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "rayvan.watson@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Creative Writing club",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "10",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "stacy.blum@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "CUBS",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "11",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "jon.pillow@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Divine by Design",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "12",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "melissa.robinsonmoore@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Fellowship of Cristian Athletes",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "13",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "lloyd.spottedwolf@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Future Doctors of America (FDA)",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "14",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "lagina.nosavanh@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Future Farmers of America (FFA)",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "15",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "elizabeth.stumpner@cfisd.net, shelbey.scardino@cfisd.net, kyle.wood@cfisd.net, olivia.white@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Girls in Grace",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "16",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "alexis.walsh@cfisd.net, cassidy.kline@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Girls Who Code",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "17",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "Alejandro.garcia@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Green Garden Club",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "18",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "laura.morris@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "HOSA",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "19",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "cathlene.webb@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Key Club",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "20",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "lagina.nosavanh@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Music Club",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "21",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "jason.bannahan@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Model UN",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "22",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "kimberly.zabadal@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "National Honor Society",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "23",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "laura.braun@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Ping Pong Club",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "24",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "leanna.davis@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Rho Kappa (National Social Studies Honor Society)",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "25",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "katelyn.dillon@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Science Olympiad",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "26",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "Deborah.Turner@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Spanish National Honor Society",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "27",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "paula.landry@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Sports Anaylsis and Reporting club",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "28",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "luis.lopez@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Student Council",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "29",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "colleen.noble@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Students Protecting Animals Assoc. (SPAA)",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "30",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "Jennifer.Zelle@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "SWENext",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "31",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "prescellia.valenzuela@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Technology Student Association (TSA)",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "32",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "devin.murphy@cfisd.net, jesus.Puente@cfisd.net, helene.kenny@cfisd.net",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Young Investors Society",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "33",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "kelli.hawkins@cfisd.net",
+    "categories": ["All", "Art", "Science"]
   }
 ]

@@ -1,10 +1,7 @@
 import {
-  Text,
-  Button,
   ImageBackground,
   StatusBar,
   StyleSheet,
-  Pressable,
   TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
@@ -20,7 +17,9 @@ const Home = () => {
 
   useEffect(() => {
     onAuthStateChanged(FIREBASE_AUTH, (user) => {
-      setUser(user);
+      if (!user) {
+        router.push("(modals)/login");
+      }
     });
   }, []);
 
