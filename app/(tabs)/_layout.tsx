@@ -33,6 +33,7 @@ const Layout = () => {
         options={{
           tabBarLabel: "Map",
           headerTitle: "Map",
+          headerShown: false,
         }}
       />
     </Tabs>
