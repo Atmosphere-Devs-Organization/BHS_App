@@ -6,7 +6,7 @@ import ClubList from "@/components/ClubList";
 import clubData from "@/assets/data/clubs-data.json";
 
 const Clubs = () => {
-  const [category, setCategory] = useState("all");
+  const [category, setCategory] = useState("All");
   const items = useMemo(() => clubData as any, []);
 
   const onCategoryChanged = (category: string) => {

@@ -18,32 +18,28 @@ const clubCategories = [
     icon: "all-inclusive",
   },
   {
-    name: "Science",
+    name: "STEM",
     icon: "science",
-  },
-  {
-    name: "Social-Studies",
-    icon: "people-alt",
-  },
-  {
-    name: "Art",
-    icon: "draw",
   },
   {
     name: "Volunteering",
     icon: "volunteer-activism",
   },
   {
-    name: "Language",
+    name: "Creativity",
+    icon: "draw",
+  },
+  {
+    name: "Honor",
+    icon: "grade",
+  },
+  {
+    name: "Language/Culture",
     icon: "language",
   },
   {
-    name: "Culture",
-    icon: "language",
-  },
-  {
-    name: "Athletics",
-    icon: "sports-football",
+    name: "CTE",
+    icon: "settings",
   },
 ];
 

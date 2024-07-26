@@ -39,16 +39,16 @@ export default {
   title: "#abcddf",
   cTitleBorderColor: "#3e3e3e",
 
-  normalCatIcon: "#242424",
-  activeCatIcon: "#000000",
+  normalCatIcon: "#7d7d7d",
+  activeCatIcon: "#ffffff",
 
   nameText: "#abcddf",
   descText: "#596b75",
   imageBorderColor: "#ffffff",
   textBorderColor: "#000000",
 
-  clubName: "#596b75",
-  clubDesc: "#000000",
+  clubName: "#7a8f9b",
+  clubDesc: "#ffffff",
 
   divider: "#000000",
 

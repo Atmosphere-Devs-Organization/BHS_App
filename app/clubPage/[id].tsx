@@ -6,6 +6,8 @@ import {
   ImageBackground,
   TouchableOpacity,
   StatusBar,
+  Pressable,
+  Linking,
 } from "react-native";
 import React from "react";
 import { router, useLocalSearchParams } from "expo-router";
@@ -36,7 +38,7 @@ const Page = () => {
 
       <Image source={{ uri: currentClub?.imageURL }} style={styles.image} />
       <TouchableOpacity onPress={router.back} style={styles.close_button}>
-        <Ionicons name="close-sharp" size={24} color="black" />
+        <Ionicons name="close-sharp" size={24} color="white" />
       </TouchableOpacity>
       <View
         style={{
@@ -51,9 +53,17 @@ const Page = () => {
         <View style={styles.divider} />
         <Text style={styles.description}>{currentClub?.longDescription}</Text>
         <View style={styles.divider} />
-        <Text style={styles.sponsorEmail}>
-          Sponsor: {currentClub?.sponsorEmail}
-        </Text>
+        <Pressable
+          onPress={() => {
+            currentClub?.sponsorEmail.indexOf(",") === -1
+              ? Linking.openURL("mailto:" + currentClub?.sponsorEmail)
+              : null;
+          }}
+        >
+          <Text style={styles.sponsorEmail}>
+            Sponsor: {currentClub?.sponsorEmail}
+          </Text>
+        </Pressable>
       </View>
     </ImageBackground>
   );
