@@ -1,0 +1,135 @@
+import {
+  View,
+  Text,
+  Button,
+  ImageBackground,
+  StatusBar,
+  StyleSheet,
+  ScrollView,
+  TextInput,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import { Link, router } from "expo-router";
+import { FIREBASE_AUTH } from "@/FirebaseConfig";
+import { onAuthStateChanged, User } from "firebase/auth";
+import Colors from "@/constants/Colors";
+
+const Map = () => {
+  const sections = [
+    { number: '0', description: 'A zero as the second number means you are in the business hall. This is on the second floor, passed the doors that lead to the courtyard' },
+    { number: '1', description: 'A one as the second number means you are in a science classroom. These are directly to the left or right of the atrium' },
+    { number: '2', description: 'A two as the second number means you are still in the academic tower, but on the left side(closer to Mason Road) ' },
+    { number: '4', description: 'A three as the second number means you are still in the academic tower, but on the right side(closer to the highway)' },
+    { number: '5', description: 'A five as the second number means you are in the CTE hallway. You can access this by going through the cafeteria' },
+    { number: '#', description: 'Any other number means you are in the main hall. Type in your room number below to see the map' },
+  ];
+  
+  const [user, setUser] = useState<User | null>(null);
+  const [text1, setText1] = useState('');
+  const [text2, setText2] = useState('');
+
+  const handleInputChange1 = (input: React.SetStateAction<string>) => {
+    setText1(input);
+  }
+
+  const handleInputChange2 = (input: React.SetStateAction<string>) => {
+    setText2(input);
+  }
+
+  const handleSubmit = () => {
+    alert(`You entered: ${text1} and ${text2}`);
+  }
+
+  useEffect(() => {
+    onAuthStateChanged(FIREBASE_AUTH, (user) => {
+      setUser(user);
+    });
+  }, []);
+
+  return (
+    <ImageBackground
+      source={require("@/assets/images/HomeScreenBG.png")}
+      resizeMode="cover"
+      style={styles.home_BG_Image}
+    >
+      <ScrollView>
+
+        <View style={styles.container}>
+          <Text style={styles.title}>School Map</Text>        
+          <Text style={styles.title}>Find Your Room!</Text>
+
+          <TextInput
+          style={{ marginTop: '10%', height: 40, borderColor: 'gray', borderWidth: 1 }}
+          onChangeText={handleInputChange1}
+          value={text1}
+        />
+        <TextInput
+          style={{ marginTop: '10%', height: 40, borderColor: 'gray', borderWidth: 1 }}
+          onChangeText={handleInputChange2}
+          value={text2}
+        />
+        <Button
+          title="Submit"
+          onPress={handleSubmit}
+        />
+
+
+          <Text style={styles.subtitle}>How to find your room with the number</Text>
+          {sections.map((section, index) => (
+            <View key={index} style={styles.table_head}>
+              <View style={{width: '10%'}}>
+                <Text style={styles.number}>{section.number}</Text>
+              </View>              
+              <View style={{width: '85%'}}> 
+                <Text style={styles.description}>{section.description}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </ImageBackground>
+  );
+};
+
+const styles = StyleSheet.create({
+  home_BG_Image: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  table_head: {
+    flexDirection: 'row',
+    borderColor: 'red',
+    padding: 10
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    justifyContent: 'flex-start', 
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+    marginTop: 30, 
+  },
+  subtitle: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  number: {
+    color: "white",
+    fontSize: 30,
+    fontWeight: 'bold',
+    marginRight: '5%',
+  },
+  description: {
+    color: "white",
+    fontSize: 16,
+  },
+});
+
+export default Map;
