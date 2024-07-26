@@ -60,7 +60,7 @@ const Map = () => {
   const getImageSource = (digit: number | null) => {
     switch (digit) {
       case 1:
-        return { uri: "https://www.dropbox.com/scl/fi/7asaufifl3uvncjx994xv/floor1A.png?rlkey=ml7kethfabhsn5afhpoorekif&st=wi3732cw&dl=0" };
+        return { uri: "https://i.ibb.co/6s18YCw/floor1A.png" };
       case 2:
         return require("@/assets/images/floor2.png");
       case 3:
@@ -121,9 +121,11 @@ const Map = () => {
         )}
         {image2 !== null && (
           <Image
+
             source={getImageSource(image2)}
             style={styles.image}
             resizeMode="contain"
+            onError={(error) => console.log("Image load error:", error)}
           />
         )}
       </ScrollView>
