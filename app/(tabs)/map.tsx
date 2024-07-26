@@ -31,13 +31,13 @@ const Map = () => {
 
   const handleSubmit = () => {
     const regex = /^\d{4}$/; // Regex to check if input is a 4-digit number
-const validNumbers = [5000,5001 , 1111, 1112, 1113]; // List of valid 4-digit numbers
+    const validNumbers = [2000,2000 , 1111, 1112, 1113]; // List of valid 4-digit numbers
 
   if (!regex.test(text1) || !regex.test(text2)) {
     setError("Both inputs must be 4-digit numbers.");
     setImage1(null);
     setImage2(null);
-  } else if (false && (!validNumbers.includes(Number(text1)) || !validNumbers.includes(Number(text2)))) {
+  } else if ((!validNumbers.includes(Number(text1)) || !validNumbers.includes(Number(text2)))) {
     setError("Both inputs must be valid numbers from the list.");
     setImage1(null);
     setImage2(null);
@@ -60,7 +60,7 @@ const validNumbers = [5000,5001 , 1111, 1112, 1113]; // List of valid 4-digit nu
   const getImageSource = (digit: number | null) => {
     switch (digit) {
       case 1:
-        return require("@/assets/images/floor1A.png");
+        return { uri: "https://www.dropbox.com/scl/fi/7asaufifl3uvncjx994xv/floor1A.png?rlkey=ml7kethfabhsn5afhpoorekif&st=wi3732cw&dl=0" };
       case 2:
         return require("@/assets/images/floor2.png");
       case 3:
@@ -71,6 +71,8 @@ const validNumbers = [5000,5001 , 1111, 1112, 1113]; // List of valid 4-digit nu
         return null;
     }
   };
+    
+ 
 
   return (
     <ImageBackground
@@ -88,7 +90,7 @@ const validNumbers = [5000,5001 , 1111, 1112, 1113]; // List of valid 4-digit nu
 
 
         <TextInput
-          style={{ marginTop: '10%', height: 40, borderColor: 'gray', borderWidth: 1 }}
+          style={{ width: '75%', marginTop: '10%', height: 40, borderColor: 'gray', borderWidth: 1, alignSelf: 'center', padding: 10 }}
           onChangeText={handleInputChange1}
           value={text1}
           keyboardType="numeric"
@@ -96,7 +98,7 @@ const validNumbers = [5000,5001 , 1111, 1112, 1113]; // List of valid 4-digit nu
           placeholder="Enter first 4-digit number"
         />
         <TextInput
-          style={{ marginTop: '10%', height: 40, borderColor: 'gray', borderWidth: 1 }}
+          style={{ width: '75%', marginTop: '10%', height: 40, borderColor: 'gray', borderWidth: 1, alignSelf: 'center', padding: 10 }}
           onChangeText={handleInputChange2}
           value={text2}
           keyboardType="numeric"
@@ -114,6 +116,7 @@ const validNumbers = [5000,5001 , 1111, 1112, 1113]; // List of valid 4-digit nu
             source={getImageSource(image1)}
             style={styles.image}
             resizeMode="contain"
+            
           />
         )}
         {image2 !== null && (
@@ -139,11 +142,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   image: {
-    width: '97%', // Set width to 90% of the screen width
+    width: '92%', // Set width to 90% of the screen width
     height: undefined, // Allow the height to adjust to maintain aspect ratio
     aspectRatio: 1, // Ensure the image maintains its original aspect ratio
-    marginTop: 5,
+    marginTop: 5, // Check this value
+    marginBottom: 5, // If present, check this too
     alignSelf: 'center',
+    borderColor: 'gray',
+    borderWidth: 1,
   },
   title: {
     fontSize: 24,
@@ -152,11 +158,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'center',
     marginTop: 30, 
+    color: 'white',
   },
   subtitle: {
     fontSize: 16,
     marginBottom: 20,
     textAlign: 'center',
+    color: 'white',
   },
 });
 
