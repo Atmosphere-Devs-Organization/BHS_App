@@ -67,6 +67,10 @@ function RootLayoutNav() {
         name="clubPage/[id]"
         options={{ headerShown: false, animation: "flip" }}
       />
+      <Stack.Screen
+        name="imageZoom/[id]"
+        options={{ headerShown: false, animation: "fade" }}
+      />
     </Stack>
   );
 }

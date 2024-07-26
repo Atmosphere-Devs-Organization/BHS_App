@@ -1,25 +1,27 @@
 import {
-  View,
   Text,
   Button,
   ImageBackground,
-  StatusBar,
   StyleSheet,
   ScrollView,
   TextInput,
   Image,
+  TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useMemo, useState } from "react";
-import { FIREBASE_AUTH } from "@/FirebaseConfig";
-import { onAuthStateChanged, User } from "firebase/auth";
+import React, { useMemo, useState } from "react";
 import roomData from "@/assets/data/map-data.json";
 import { Room } from "@/interfaces/Room";
+import { router } from "expo-router";
 
 const Map = () => {
-  const [user, setUser] = useState<User | null>(null);
   const [text1, setText1] = useState("");
   const [text2, setText2] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>("Blank Error");
+
+  const [room1Width, setRoom1Width] = useState<number>(1);
+  const [room1Height, setRoom1Height] = useState<number>(1);
+  const [room2Width, setRoom2Width] = useState<number>(1);
+  const [room2Height, setRoom2Height] = useState<number>(1);
 
   const data = useMemo(() => roomData as any, []); // More efficient, idk what it does tbh
 
@@ -32,29 +34,32 @@ const Map = () => {
     item.roomId.includes(room2)
   );
 
+  const [loading, setLoading] = useState<boolean>(false);
+
   const handleSubmit = () => {
+    setLoading(true);
+
     const regex = /^\d{4}$/; // Regex to check if input is a 4-digit number
     const validNumbers = [1111, 2000]; // List of valid 4-digit numbers
 
     if (!regex.test(text1) || !regex.test(text2)) {
       setError("Both inputs must be 4-digit numbers.");
+      setLoading(false);
     } else if (
       !validNumbers.includes(Number(text1)) ||
       !validNumbers.includes(Number(text2))
     ) {
       setError("Both rooms must be valid.");
+      setLoading(false);
     } else {
       setRoom1(Number(text1));
       setRoom2(Number(text2));
+
       setError(null);
+
+      setLoading(false);
     }
   };
-
-  useEffect(() => {
-    onAuthStateChanged(FIREBASE_AUTH, (user) => {
-      setUser(user);
-    });
-  }, []);
 
   return (
     <ImageBackground
@@ -62,7 +67,10 @@ const Map = () => {
       resizeMode="cover"
       style={styles.home_BG_Image}
     >
-      <ScrollView>
+      <ScrollView
+        contentContainerStyle={{ marginTop: 50, paddingBottom: 100 }}
+        style={{ marginBottom: 100 }}
+      >
         <Text style={styles.title}>School Map</Text>
         <Text style={styles.title}>Find Your Room!</Text>
         <Text style={styles.subtitle}>For cafeteria, type 5000 </Text>
@@ -105,23 +113,65 @@ const Map = () => {
           maxLength={4}
           placeholder="Enter second 4-digit number"
         />
-        {error && <Text style={styles.error}>{error}</Text>}
+        {error && error !== "Blank Error" && (
+          <Text style={styles.error}>{error}</Text>
+        )}
         <Button title="Submit" onPress={handleSubmit} />
 
-        {error === null && (
-          <Image
-            source={{ uri: room1Item?.imageURL }}
-            style={styles.image}
-            resizeMode="contain"
-          />
-        )}
-        {error === null && (
-          <Image
-            source={{ uri: room2Item?.imageURL }}
-            style={styles.image}
-            resizeMode="contain"
-            onError={(error) => console.log("Image load error:", error)}
-          />
+        {!error &&
+          !loading &&
+          (Image.getSize(
+            room1Item ? room1Item.imageURL : "",
+            (width, height) => {
+              setRoom1Height(height);
+              setRoom1Width(width);
+            }
+          ),
+          Image.getSize(
+            room2Item ? room2Item.imageURL : "",
+            (width, height) => {
+              setRoom2Height(height);
+              setRoom2Width(width);
+            }
+          ),
+          (
+            <TouchableOpacity
+              onPress={() => router.push("/imageZoom/" + room1)}
+            >
+              <Image
+                source={{ uri: room1Item?.imageURL }}
+                style={{
+                  aspectRatio: room1Width / room1Height,
+                  width: "95%", // Set width to 95% of the screen width
+                  height: undefined, // Allow the height to adjust to maintain aspect ratio
+                  marginTop: 5, // Check this value
+                  marginBottom: 5, // If present, check this too
+                  alignSelf: "center",
+                  borderColor: "gray",
+                  borderWidth: 3,
+                }}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          ))}
+        {!error && !loading && (
+          <TouchableOpacity onPress={() => router.push("/imageZoom/" + room2)}>
+            <Image
+              source={{ uri: room2Item?.imageURL }}
+              style={{
+                aspectRatio: room2Width / room2Height,
+                width: "95%", // Set width to 95% of the screen width
+                height: undefined, // Allow the height to adjust to maintain aspect ratio
+                marginTop: 5, // Check this value
+                marginBottom: 5, // If present, check this too
+                alignSelf: "center",
+                borderColor: "gray",
+                borderWidth: 3,
+              }}
+              resizeMode="contain"
+              onError={(error) => console.log("Image load error:", error)}
+            />
+          </TouchableOpacity>
         )}
       </ScrollView>
     </ImageBackground>
@@ -137,16 +187,6 @@ const styles = StyleSheet.create({
     color: "red",
     textAlign: "center",
     marginTop: 10,
-  },
-  image: {
-    width: "92%", // Set width to 90% of the screen width
-    height: undefined, // Allow the height to adjust to maintain aspect ratio
-    aspectRatio: 1, // Ensure the image maintains its original aspect ratio
-    marginTop: 5, // Check this value
-    marginBottom: 5, // If present, check this too
-    alignSelf: "center",
-    borderColor: "gray",
-    borderWidth: 1,
   },
   title: {
     fontSize: 24,
