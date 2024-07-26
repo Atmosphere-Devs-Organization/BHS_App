@@ -127,6 +127,23 @@ const NormalProfile = ({
             color={Colors.nameEditButton}
           />
         </TouchableOpacity>
+        <AwesomeButton
+          style={styles.login_button}
+          backgroundColor={Colors.loginButtonBG}
+          backgroundDarker={Colors.loginButtonDarkerBG}
+          height={Numbers.loginButtonHeight}
+          width={Numbers.loginButtonWidth}
+          raiseLevel={10}
+          onPressOut={() => FIREBASE_AUTH.signOut()}
+        >
+          <Entypo
+            name="log-out"
+            size={Numbers.loginIconSize}
+            color={Colors.loginIcon}
+            style={{ alignSelf: "center", marginRight: 15 }}
+          />
+          <Text style={styles.login_text}>Logout</Text>
+        </AwesomeButton>
       </SafeAreaView>
     </ImageBackground>
   );

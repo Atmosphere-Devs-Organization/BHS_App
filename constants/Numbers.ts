@@ -6,24 +6,18 @@ export default {
   tabLabelFontSize: 10,
 
   gapBetweenIconAndLabel: 7,
-  bottomOfTabBar: 5,
+  bottomOfTabBar: "10%",
   horizontalMargin: 20,
 
   selectedIconScale: 1.35,
   selectedIconShift: 6,
-
-  animatedIconBGBorderRadius: Platform.OS === "ios" ? 30 : 30,
-  animatedIconBGMarginHorizontal: Platform.OS === "ios" ? 12 : 12,
-  animatedIconBGHeightOffset: Platform.OS === "ios" ? 60 : 15,
-  animatedIconBGWidthOffset: Platform.OS === "ios" ? 25 : 25,
-  animatedIconBGTop: Platform.OS === "ios" ? 35 : 16,
 
   animatedIconScaleDuration: 350,
   animatedIconBGDuration: 1500,
 
   //Home
   profileButtonXTranslate: 305,
-  profileButtonYTranslate: -293,
+  profileButtonYTranslate: -319,
   profileButtonSize: 60,
 
   //Profile
@@ -40,4 +34,7 @@ export default {
   infoFontSize: 21,
 
   editNameIconSize: 35,
+
+  //Clubs
+  cTitleFontSize: 30,
 };

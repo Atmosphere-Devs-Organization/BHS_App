@@ -63,6 +63,10 @@ function RootLayoutNav() {
           animation: "slide_from_right",
         }}
       />
+      <Stack.Screen
+        name="clubPage/[id]"
+        options={{ headerShown: false, animation: "flip" }}
+      />
     </Stack>
   );
 }

@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Test Club",
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+    "id": "1",
+    "shortDescription": "Club that does stuff - Arty, Sciency",
+    "longDescription": "Club that does stuff, and other stuff, and more stuff, and more and more and more",
+    "sponsorEmail": "mrteacher@gmail.com",
+    "categories": ["All", "Art", "Science"]
+  },
+  {
+    "name": "Test Club 2",
+    "imageURL": "https://cdn.mos.cms.futurecdn.net/jovvt4LJvEUhhCwHvqSegb.jpg",
+    "id": "2",
+    "shortDescription": "Another club that does stuff - Social-Studs, Athletes",
+    "longDescription": "Another club that does stuff, and tests, and 2s, and other stuff idk",
+    "sponsorEmail": "mssponsor@gmail.com",
+    "categories": ["All", "Social-Studies", "Athletics"]
+  }
+]

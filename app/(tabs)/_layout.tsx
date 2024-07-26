@@ -25,6 +25,7 @@ const Layout = () => {
         options={{
           tabBarLabel: "Clubs",
           headerTitle: "Clubs",
+          headerShown: true,
         }}
       />
       <Tabs.Screen
