@@ -6,16 +6,13 @@ import {
   Button,
   TextInput,
   FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
   Keyboard,
   ImageBackground,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { FIREBASE_AUTH } from "@/FirebaseConfig";
 import { User, onAuthStateChanged } from "firebase/auth";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, ScrollView } from "react-native";
 import Colors from "@/constants/Colors";
 
 const Calendar = () => {
@@ -220,33 +217,31 @@ const NormalCalendar = () => {
           </View>
         )}
         {selectedDate && (
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={styles.eventInputContainer}>
-              <Text style={styles.selectedDateText}>
-                Selected Date: {formatDate(selectedDate)}
-              </Text>
-              <TextInput
-                style={styles.input}
-                value={eventTitle}
-                onChangeText={setEventTitle}
-                placeholder="Event Title"
-              />
-              <Button title="Add Event" onPress={handleAddEvent} />
-              <FlatList
-                data={events.filter((event) => event.date === selectedDate)}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item, index }) => (
-                  <View style={styles.eventItem}>
-                    <Text>{item.title}</Text>
-                    <Button
-                      title="Remove"
-                      onPress={() => handleRemoveEvent(index)}
-                    />
-                  </View>
-                )}
-              />
-            </View>
-          </TouchableWithoutFeedback>
+          <View style={styles.eventInputContainer}>
+            <Text style={styles.selectedDateText}>
+              Selected Date: {formatDate(selectedDate)}
+            </Text>
+            <TextInput
+              style={styles.input}
+              value={eventTitle}
+              onChangeText={setEventTitle}
+              placeholder="Event Title"
+            />
+            <Button title="Add Event" onPress={handleAddEvent} />
+            <FlatList
+              data={events.filter((event) => event.date === selectedDate)}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item, index }) => (
+                <View style={styles.eventItem}>
+                  <Text>{item.title}</Text>
+                  <Button
+                    title="Remove"
+                    onPress={() => handleRemoveEvent(index)}
+                  />
+                </View>
+              )}
+            />
+          </View>
         )}
       </SafeAreaView>
     </ImageBackground>
@@ -300,7 +295,8 @@ const styles = StyleSheet.create({
   },
   eventInputContainer: {
     marginTop: 20,
-    height: "100%",
+    marginBottom: "10%",
+    paddingBottom: "208%",
   },
   selectedDateText: {
     fontSize: 18,
