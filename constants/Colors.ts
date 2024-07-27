@@ -53,4 +53,7 @@ export default {
   divider: "#000000",
 
   clubBG: "#ffffff0a",
+
+  //Calendar
+  dayBox: "#ffffff22",
 };
