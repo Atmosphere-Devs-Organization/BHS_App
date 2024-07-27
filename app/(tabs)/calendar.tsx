@@ -1,15 +1,27 @@
-import { View, Text } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Button,
+  TextInput,
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { FIREBASE_AUTH } from "@/FirebaseConfig";
 import { User, onAuthStateChanged } from "firebase/auth";
 
-const Calandar = () => {
+const Calendar = () => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    onAuthStateChanged(FIREBASE_AUTH, (user) => {
+    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
       setUser(user);
     });
+
+    return () => unsubscribe();
   }, []);
 
   return <View>{user ? <NormalCalendar /> : <LoggedOutCalendar />}</View>;
@@ -17,18 +29,219 @@ const Calandar = () => {
 
 const LoggedOutCalendar = () => {
   return (
-    <View>
+    <View style={styles.centered}>
       <Text>You need to be signed in to access the calendar</Text>
     </View>
   );
 };
 
 const NormalCalendar = () => {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [events, setEvents] = useState<{ date: string; title: string }[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [eventTitle, setEventTitle] = useState<string>("");
+
+  const irlDate = new Date();
+
+  const daysInMonth = (year: number, month: number) =>
+    new Date(year, month + 1, 0).getDate();
+
+  const firstDayOfMonth = (year: number, month: number) =>
+    new Date(year, month, 1).getDay();
+
+  const handlePrevMonth = () => {
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
+    );
+    setSelectedDate(null);
+  };
+
+  const handleNextMonth = () => {
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
+    );
+    setSelectedDate(null);
+  };
+
+  const handleAddEvent = () => {
+    if (selectedDate && eventTitle) {
+      setEvents([...events, { date: selectedDate, title: eventTitle }]);
+      setEventTitle("");
+    }
+  };
+
+  const handleRemoveEvent = (index: number) => {
+    setEvents(events.filter((_, i) => i !== index));
+  };
+
+  const formatDate = (dateStr: string) => {
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const days = daysInMonth(currentDate.getFullYear(), currentDate.getMonth());
+  const firstDay = firstDayOfMonth(
+    currentDate.getFullYear(),
+    currentDate.getMonth()
+  );
+
+  const daysArray = Array.from({ length: days }, (_, i) => i + 1);
+  const blankDays = Array.from({ length: firstDay }, (_, i) => "");
+
   return (
-    <View>
-      <Text>Calendar</Text>
-    </View>
+    <KeyboardAvoidingView
+      style={styles.calendarContainer}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <View style={styles.headerContainer}>
+        <Button title="Prev" onPress={handlePrevMonth} />
+        <Text style={styles.header}>
+          {currentDate.toLocaleString("default", { month: "long" })}{" "}
+          {currentDate.getFullYear()}
+        </Text>
+        <Button title="Next" onPress={handleNextMonth} />
+      </View>
+      <View style={styles.daysOfWeekContainer}>
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, index) => (
+          <Text key={index} style={styles.dayOfWeek}>
+            {day}
+          </Text>
+        ))}
+      </View>
+      <View style={styles.daysContainer}>
+        {blankDays.map((_, index) => (
+          <View key={`blank-${index}`} style={styles.dayBox} />
+        ))}
+        {daysArray.map((day) => {
+          const dateStr = `${currentDate.getFullYear()}-${
+            currentDate.getMonth() + 1
+          }-${day}`;
+          return (
+            <TouchableOpacity
+              key={day}
+              style={[
+                styles.dayBox,
+                selectedDate === dateStr && styles.selectedDayBox,
+              ]}
+              onPress={() => setSelectedDate(dateStr)}
+            >
+              <Text
+                style={[
+                  styles.dayText,
+                  selectedDate === dateStr && styles.selectedDayText,
+                ]}
+              >
+                {day}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+      {selectedDate && (
+        <View style={styles.eventInputContainer}>
+          <Text style={styles.selectedDateText}>
+            Selected Date: {formatDate(selectedDate)}
+          </Text>
+          <TextInput
+            style={styles.input}
+            value={eventTitle}
+            onChangeText={setEventTitle}
+            placeholder="Event Title"
+          />
+          <Button title="Add Event" onPress={handleAddEvent} />
+          <FlatList
+            data={events.filter((event) => event.date === selectedDate)}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, index }) => (
+              <View style={styles.eventItem}>
+                <Text>{item.title}</Text>
+                <Button
+                  title="Remove"
+                  onPress={() => handleRemoveEvent(index)}
+                />
+              </View>
+            )}
+          />
+        </View>
+      )}
+    </KeyboardAvoidingView>
   );
 };
 
-export default Calandar;
+const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+  },
+  calendarContainer: {
+    padding: 10,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  header: {
+    fontSize: 24,
+    marginTop: 50,
+  },
+  daysOfWeekContainer: {
+    flexDirection: "row",
+  },
+  dayOfWeek: {
+    width: "14.28%",
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  daysContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  dayBox: {
+    width: "14.28%",
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  selectedDayBox: {
+    backgroundColor: "red",
+  },
+  dayText: {
+    color: "#000",
+  },
+  selectedDayText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  eventInputContainer: {
+    marginTop: 20,
+  },
+  selectedDateText: {
+    fontSize: 18,
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    padding: 8,
+    marginVertical: 10,
+    borderRadius: 4,
+  },
+  eventItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+});
+
+export default Calendar;
