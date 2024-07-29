@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Pressable,
   View,
   Text,
   Image,
@@ -7,7 +8,6 @@ import {
   ImageBackground,
   TouchableOpacity,
   StatusBar,
-  Pressable,
   Linking,
   Dimensions,
 } from "react-native";
@@ -17,22 +17,23 @@ import { Club } from "@/interfaces/club";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import AwesomeButton from 'react-native-really-awesome-button';
-import { collection, doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { collection, doc, setDoc, updateDoc, arrayUnion, arrayRemove, getDoc } from "firebase/firestore";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig"; // Assuming you have configured Firestore here
 import { onAuthStateChanged, User } from "firebase/auth";
 
 const screenWidth = Dimensions.get('window').width;
 
-
 const Page = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const currentClub = (clubData as Club[]).find((item) => item.id === id);
   const [userId, setUserId] = useState<string | null>(null);
-  
+  const [isClubInCalendar, setIsClubInCalendar] = useState<boolean>(false);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user: User | null) => {
       if (user) {
         setUserId(user.uid);
+        checkIfClubInCalendar(user.uid);
       } else {
         setUserId(null);
       }
@@ -40,31 +41,56 @@ const Page = () => {
     return () => unsubscribe();
   }, []);
 
-  const handleAddClubToCalendar = async () => {
+  const checkIfClubInCalendar = async (userId: string) => {
     try {
-      if (!userId) {
-        alert("You must be logged in to add a club to your calendar.");
+      const userDocRef = doc(collection(FIREBASE_DB, "users"), userId);
+      const userDocSnap = await getDoc(userDocRef);
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        if (userData.clubs && userData.clubs.includes(currentClub?.name)) {
+          setIsClubInCalendar(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error checking club in calendar: ", error);
+    }
+  };
+
+  const handleAddOrRemoveClub = async () => {
+    try {
+      if (!userId || !currentClub) {
+        alert("You must be logged in to manage clubs in your calendar.");
         return;
       }
 
-      // Reference to the Firestore document
+      const userDocRef = doc(collection(FIREBASE_DB, "users"), userId);
+      const clubDocRef = doc(collection(FIREBASE_DB, "clubs"), currentClub.name);
 
-      const userCollection = collection(FIREBASE_DB, "users");
-      const userDoc = doc(userCollection, userId);
+      await setDoc(clubDocRef, {
+        name: currentClub.name,
+        id: currentClub.id,
+        // Add other fields as necessary, like description, sponsor, etc.
+      }, { merge: true });
 
-
-      // Update the document
-      await updateDoc(userDoc, {
-        clubs: arrayUnion(currentClub?.name) // Add the userId to the members array
-      });
-
-      alert("Club added to calendar!");
+      if (isClubInCalendar) {
+        await updateDoc(userDocRef, {
+          clubs: arrayRemove(currentClub.name)
+        });
+        setIsClubInCalendar(false);
+        alert("Club removed from calendar!");
+      } else {
+        await updateDoc(userDocRef, {
+          clubs: arrayUnion(currentClub.name)
+        });
+        setIsClubInCalendar(true);
+        alert("Club added to calendar!");
+      }
     } catch (error) {
-      console.error("Error adding club to calendar: ", error);
-      alert("Failed to add club to calendar.");
+      console.error("Error managing club in calendar: ", error);
+      alert("Failed to manage club in calendar.");
     }
   };
-  
+
   return (
     <ImageBackground
       source={require("@/assets/images/GenericBG.png")}
@@ -95,19 +121,19 @@ const Page = () => {
         }}
       >
         <Text style={styles.name}>{currentClub?.name}</Text>
-        
-          <AwesomeButton
-            style={styles.button}
-            
-            backgroundColor="#007BFF"
-            backgroundDarker="#0056b3"
-            height={screenWidth * 0.2}
-            width={screenWidth * 0.6}
-            onPress={handleAddClubToCalendar}
 
-          >
-            <Text style={styles.buttonText}>Add Club To</Text>
-          </AwesomeButton>
+        <AwesomeButton
+          style={styles.button}
+          backgroundColor="#007BFF"
+          backgroundDarker="#0056b3"
+          height={screenWidth * 0.2}
+          width={screenWidth * 0.6}
+          onPress={handleAddOrRemoveClub}
+        >
+          <Text style={styles.buttonText}>
+            {isClubInCalendar ? "Remove Club from Calendar" : "Add Club to Calendar"}
+          </Text>
+        </AwesomeButton>
 
         <View style={styles.divider} />
         <Text style={styles.description}>{currentClub?.longDescription}</Text>
@@ -174,15 +200,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     alignSelf: "center",
     marginBottom: 50,
-
-
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
     textAlign: 'center',
   },
-
   close_button: { padding: 10 },
 });
 
