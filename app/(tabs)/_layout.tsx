@@ -17,7 +17,7 @@ const Layout = () => {
         name="calendar"
         options={{
           tabBarLabel: "Calendar",
-          headerTitle: "Calendar",
+          headerShown: false,
         }}
       />
       <Tabs.Screen

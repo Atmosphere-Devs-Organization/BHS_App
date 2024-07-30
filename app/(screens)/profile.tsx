@@ -7,6 +7,8 @@ import {
   Button,
   Pressable,
   TextInput,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { FIREBASE_AUTH } from "@/FirebaseConfig";
@@ -92,59 +94,61 @@ const NormalProfile = ({
       resizeMode="cover"
       style={styles.BG_Image}
     >
-      <SafeAreaView style={styles.normal_profile_container}>
-        <TouchableOpacity onPress={router.back} style={styles.back_button}>
-          <Ionicons
-            name="arrow-back-sharp"
-            size={Numbers.backButtonSize}
-            color={Colors.backButton}
-          />
-        </TouchableOpacity>
-        <Text style={styles.title}>Profile</Text>
-        <Text style={styles.infoText}>Email: {email}</Text>
-        {changingName ? (
-          <TextInput
-            style={styles.infoText}
-            placeholder={username ? username : "[First Name]"}
-            onChangeText={onChangeUser}
-            value={username}
-          />
-        ) : (
-          <Text style={styles.infoText}>
-            Name: {username != "" ? username : "name"}
-          </Text>
-        )}
-        <TouchableOpacity
-          onPress={() => {
-            updateUser(username);
-            changingName ? setChangingName(false) : setChangingName(true);
-          }}
-          style={styles.edit_name_button}
-        >
-          <Entypo
-            name={changingName ? "check" : "edit"}
-            size={Numbers.editNameIconSize}
-            color={Colors.nameEditButton}
-          />
-        </TouchableOpacity>
-        <AwesomeButton
-          style={styles.login_button}
-          backgroundColor={Colors.loginButtonBG}
-          backgroundDarker={Colors.loginButtonDarkerBG}
-          height={Numbers.loginButtonHeight}
-          width={Numbers.loginButtonWidth}
-          raiseLevel={10}
-          onPressOut={() => FIREBASE_AUTH.signOut()}
-        >
-          <Entypo
-            name="log-out"
-            size={Numbers.loginIconSize}
-            color={Colors.loginIcon}
-            style={{ alignSelf: "center", marginRight: 15 }}
-          />
-          <Text style={styles.login_text}>Logout</Text>
-        </AwesomeButton>
-      </SafeAreaView>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <SafeAreaView style={styles.normal_profile_container}>
+          <TouchableOpacity onPress={router.back} style={styles.back_button}>
+            <Ionicons
+              name="arrow-back-sharp"
+              size={Numbers.backButtonSize}
+              color={Colors.backButton}
+            />
+          </TouchableOpacity>
+          <Text style={styles.title}>Profile</Text>
+          <Text style={styles.infoText}>Email: {email}</Text>
+          {changingName ? (
+            <TextInput
+              style={styles.infoText}
+              placeholder={username ? username : "[First Name]"}
+              onChangeText={onChangeUser}
+              value={username}
+            />
+          ) : (
+            <Text style={styles.infoText}>
+              Name: {username != "" ? username : "name"}
+            </Text>
+          )}
+          <TouchableOpacity
+            onPress={() => {
+              updateUser(username);
+              changingName ? setChangingName(false) : setChangingName(true);
+            }}
+            style={styles.edit_name_button}
+          >
+            <Entypo
+              name={changingName ? "check" : "edit"}
+              size={Numbers.editNameIconSize}
+              color={Colors.nameEditButton}
+            />
+          </TouchableOpacity>
+          <AwesomeButton
+            style={styles.login_button}
+            backgroundColor={Colors.loginButtonBG}
+            backgroundDarker={Colors.loginButtonDarkerBG}
+            height={Numbers.loginButtonHeight}
+            width={Numbers.loginButtonWidth}
+            raiseLevel={10}
+            onPressOut={() => FIREBASE_AUTH.signOut()}
+          >
+            <Entypo
+              name="log-out"
+              size={Numbers.loginIconSize}
+              color={Colors.loginIcon}
+              style={{ alignSelf: "center", marginRight: 15 }}
+            />
+            <Text style={styles.login_text}>Logout</Text>
+          </AwesomeButton>
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
     </ImageBackground>
   );
 };

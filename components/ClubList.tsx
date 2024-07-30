@@ -53,7 +53,7 @@ const ClubList = ({ clubs, category }: Props) => {
     </Link>
   );
   return (
-    <View>
+    <View style={{ marginBottom: 100 }}>
       {clubs ? (
         <FlatList data={filteredClubs} ref={listRef} renderItem={renderRow} />
       ) : (
