@@ -1,4 +1,5 @@
-import { FIREBASE_AUTH } from "@/FirebaseConfig";
+import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig"; // Assuming you have configured Firestore here
+import { collection, doc, setDoc, addDoc } from "firebase/firestore";
 import { router } from "expo-router";
 import {
   createUserWithEmailAndPassword,
@@ -55,6 +56,17 @@ const App = () => {
 
     try {
       const response = await createUserWithEmailAndPassword(auth, email, pass);
+      const user = response.user;
+      const userCollection = collection(FIREBASE_DB, "users");
+      const userDoc = doc(userCollection, user?.uid);
+
+      await setDoc(userDoc, {
+        name: "",
+        email: user.email,
+        HACusername: "",
+        HACpassword: "",
+        clubs: [] // Adding an empty array for clubs
+      });
 
       signIn();
     } catch (error: any) {
