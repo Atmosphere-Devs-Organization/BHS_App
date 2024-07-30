@@ -1,10 +1,307 @@
 [
   {
-    "roomId": [1111],
-    "imageURL": "https://i.ibb.co/6s18YCw/floor1A.png"
+    "roomId": ["1202", "1203", "1204", "1205", "1206"],
+    "floor": 1,
+    "coords": { "Col": 6, "Row": 0 }
   },
   {
-    "roomId": [2000],
-    "imageURL": "https://i.ibb.co/6s18YCw/floor1A.png"
+    "roomId": ["1212", "1209"],
+    "floor": 1,
+    "coords": { "Col": 4, "Row": 2 }
+  },
+  {
+    "roomId": ["1219", "1224"],
+    "floor": 1,
+    "coords": { "Col": 4, "Row": 3 }
+  },
+  {
+    "roomId": ["1239", "1240", "1241", "1242", "1243"],
+    "floor": 1,
+    "coords": { "Col": 6, "Row": 5 }
+  },
+  {
+    "roomId": ["floor 1 counselor pod"],
+    "floor": 1,
+    "coords": { "Col": 7, "Row": 2 }
+  },
+  {
+    "roomId": ["1105", "1106"],
+    "floor": 1,
+    "coords": { "Col": 11, "Row": 5 }
+  },
+  {
+    "roomId": ["1114", "1115"],
+    "floor": 1,
+    "coords": { "Col": 11, "Row": 7 }
+  },
+  {
+    "roomId": ["1132", "1131"],
+    "floor": 1,
+    "coords": { "Col": 18, "Row": 5 }
+  },
+  {
+    "roomId": ["1121", "1122"],
+    "floor": 1,
+    "coords": { "Col": 18, "Row": 7 }
+  },
+  {
+    "roomId": ["1302", "1303", "1304", "1305", "1306"],
+    "floor": 1,
+    "coords": { "Col": 23, "Row": 0 }
+  },
+  {
+    "roomId": ["1316", "1317", "1318", "1319", "1320"],
+    "floor": 1,
+    "coords": { "Col": 23, "Row": 5 }
+  },
+  {
+    "roomId": ["1029"],
+    "floor": 1,
+    "coords": { "Col": 13, "Row": 10 }
+  },
+  {
+    "roomId": ["admin offices"],
+    "floor": 1,
+    "coords": { "Col": 13, "Row": 11 }
+  },
+  {
+    "roomId": ["front receptionist"],
+    "floor": 1,
+    "coords": { "Col": 13, "Row": 12 }
+  },
+  {
+    "roomId": ["entrance"],
+    "floor": 1,
+    "coords": { "Col": 13, "Row": 13 }
+  },
+  {
+    "roomId": ["attendance office", "registrar's office", "testing office"],
+    "floor": 1,
+    "coords": { "Col": 13, "Row": 14 }
+  },
+  {
+    "roomId": ["choir", "1606", "orchestra", "1616", "band", "1601", "1631"],
+    "floor": 1,
+    "coords": { "Col": 13, "Row": 15 }
+  },
+  {
+    "roomId": ["auditorium", "theatre", "1810", "1828"],
+    "floor": 1,
+    "coords": { "Col": 13, "Row": 17 }
+  },
+  {
+    "roomId": ["cosmetology", "1832"],
+    "floor": 1,
+    "coords": { "Col": 13, "Row": 19 }
+  },
+  {
+    "roomId": ["performance gym"],
+    "floor": 1,
+    "coords": { "Col": 16, "Row": 19 }
+  },
+  {
+    "roomId": ["gym 1", "gym 2", "gym", "dance", "2705"],
+    "floor": 1,
+    "coords": { "Col": 16, "Row": 19 }
+  },
+  {
+    "roomId": ["1427", "1427b"],
+    "floor": 1,
+    "coords": { "Col": 16, "Row": 17 }
+  },
+  {
+    "roomId": ["1418", "1419", "1420"],
+    "floor": 1,
+    "coords": { "Col": 16, "Row": 16 }
+  },
+  {
+    "roomId": ["cafeteria", "commons"],
+    "floor": 1,
+    "coords": { "Col": 17, "Row": 13 }
+  },
+  {
+    "roomId": ["1527", "1537", "1538", "1541", "1554", "1557"],
+    "floor": 1,
+    "coords": { "Col": 22, "Row": 13 }
+  },
+  {
+    "roomId": ["1504", "1505", "1508", "1509", "1512", "1560"],
+    "floor": 1,
+    "coords": { "Col": 22, "Row": 11 }
+  },
+  {
+    "roomId": ["portables", "portable"],
+    "floor": 1,
+    "coords": { "Col": 22, "Row": 8 }
+  },
+  {
+    "roomId": ["2202", "2203", "2204", "2205", "2206"],
+    "floor": 2,
+    "coords": { "Col": 6, "Row": 0 }
+  },
+  {
+    "roomId": ["2209", "2214"],
+    "floor": 2,
+    "coords": { "Col": 4, "Row": 3 }
+  },
+  {
+    "roomId": ["2227", "2228", "2229", "2230", "2231"],
+    "floor": 2,
+    "coords": { "Col": 6, "Row": 5 }
+  },
+  {
+    "roomId": ["floor 2 ap office"],
+    "floor": 2,
+    "coords": { "Col": 22, "Row": 2 }
+  },
+  {
+    "roomId": ["2101", "2102"],
+    "floor": 2,
+    "coords": { "Col": 11, "Row": 5 }
+  },
+  {
+    "roomId": ["2110", "2111"],
+    "floor": 2,
+    "coords": { "Col": 11, "Row": 7 }
+  },
+  {
+    "roomId": ["2130", "2123"],
+    "floor": 2,
+    "coords": { "Col": 18, "Row": 5 }
+  },
+  {
+    "roomId": ["2116", "2117"],
+    "floor": 2,
+    "coords": { "Col": 18, "Row": 7 }
+  },
+  {
+    "roomId": ["2302", "2303", "2304", "2305", "2306"],
+    "floor": 2,
+    "coords": { "Col": 23, "Row": 0 }
+  },
+  {
+    "roomId": ["2320", "2321", "2322", "2323", "2324"],
+    "floor": 2,
+    "coords": { "Col": 23, "Row": 5 }
+  },
+  {
+    "roomId": ["2012", "2013", "2014", "2015"],
+    "floor": 2,
+    "coords": { "Col": 18, "Row": 7 }
+  },
+  {
+    "roomId": ["2007", "2008", "2009", "2010"],
+    "floor": 2,
+    "coords": { "Col": 18, "Row": 7 }
+  },
+  {
+    "roomId": ["2001", "2004"],
+    "floor": 2,
+    "coords": { "Col": 18, "Row": 7 }
+  },
+  {
+    "roomId": ["floor 2 library"],
+    "floor": 3,
+    "coords": { "Col": 14, "Row": 4 }
+  },
+  {
+    "roomId": ["3202", "3203", "3204", "3205", "3206"],
+    "floor": 3,
+    "coords": { "Col": 6, "Row": 0 }
+  },
+  {
+    "roomId": ["3221", "3222", "3223", "3224", "3225"],
+    "floor": 3,
+    "coords": { "Col": 6, "Row": 5 }
+  },
+  {
+    "roomId": ["floor 3 counselor pod"],
+    "floor": 3,
+    "coords": { "Col": 7, "Row": 2 }
+  },
+  {
+    "roomId": ["3105", "3106"],
+    "floor": 3,
+    "coords": { "Col": 11, "Row": 5 }
+  },
+  {
+    "roomId": ["3115", "3115"],
+    "floor": 3,
+    "coords": { "Col": 11, "Row": 7 }
+  },
+  {
+    "roomId": ["3131", "3124"],
+    "floor": 3,
+    "coords": { "Col": 18, "Row": 5 }
+  },
+  {
+    "roomId": ["3121", "3122"],
+    "floor": 3,
+    "coords": { "Col": 18, "Row": 7 }
+  },
+  {
+    "roomId": ["3302", "3303", "3304", "3305", "3306"],
+    "floor": 3,
+    "coords": { "Col": 23, "Row": 0 }
+  },
+  {
+    "roomId": ["3316", "3317", "3318", "3319", "3320"],
+    "floor": 3,
+    "coords": { "Col": 23, "Row": 5 }
+  },
+  {
+    "roomId": ["floor 3 library", "3132"],
+    "floor": 3,
+    "coords": { "Col": 14, "Row": 4 }
+  },
+  {
+    "roomId": ["4202", "4203", "4204", "4205", "4206"],
+    "floor": 4,
+    "coords": { "Col": 6, "Row": 0 }
+  },
+  {
+    "roomId": ["4216", "4217", "4218", "4219", "4220"],
+    "floor": 4,
+    "coords": { "Col": 6, "Row": 5 }
+  },
+  {
+    "roomId": ["floor 4 ap office"],
+    "floor": 4,
+    "coords": { "Col": 22, "Row": 2 }
+  },
+  {
+    "roomId": ["4101", "4102"],
+    "floor": 4,
+    "coords": { "Col": 11, "Row": 5 }
+  },
+  {
+    "roomId": ["4109", "4110"],
+    "floor": 4,
+    "coords": { "Col": 11, "Row": 7 }
+  },
+  {
+    "roomId": ["4124", "4123"],
+    "floor": 4,
+    "coords": { "Col": 18, "Row": 5 }
+  },
+  {
+    "roomId": ["4116", "4117"],
+    "floor": 4,
+    "coords": { "Col": 18, "Row": 7 }
+  },
+  {
+    "roomId": ["4302", "4303", "4304", "4305", "4306"],
+    "floor": 4,
+    "coords": { "Col": 23, "Row": 0 }
+  },
+  {
+    "roomId": ["4320", "4321", "4322", "4323", "4324"],
+    "floor": 4,
+    "coords": { "Col": 23, "Row": 5 }
+  },
+  {
+    "roomId": ["lgi", "4125"],
+    "floor": 4,
+    "coords": { "Col": 14, "Row": 4 }
   }
 ]

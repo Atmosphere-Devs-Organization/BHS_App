@@ -11,13 +11,18 @@ import roomData from "@/assets/data/map-data.json";
 import { Room } from "@/interfaces/Room";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
 import { Ionicons } from "@expo/vector-icons";
+import GridMap from "@/components/GridMap";
 
 const ImageZoom = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  const currentRoom = (roomData as Room[]).find((item) =>
-    item.roomId.includes(Number(id))
-  );
+  const params = id ? id.split(",") : [];
+
+  const startPosCol = Number(params[0]);
+  const startPosRow = Number(params[1]);
+  const endPosCol = Number(params[2]);
+  const endPosRow = Number(params[3]);
+  const floor = Number(params[4]);
 
   return (
     <View
@@ -40,13 +45,11 @@ const ImageZoom = () => {
           backgroundColor: "#000",
         }}
       >
-        <Image
-          source={{ uri: currentRoom?.imageURL }}
-          resizeMode="contain"
-          style={{
-            flex: 1,
-            width: "100%",
-          }}
+        <GridMap
+          startPos={{ Col: startPosCol, Row: startPosRow }}
+          endPos={{ Col: endPosCol, Row: endPosRow }}
+          floor={floor}
+          paddingHorizontal={15}
         />
       </ReactNativeZoomableView>
     </View>

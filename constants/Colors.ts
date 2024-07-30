@@ -56,4 +56,13 @@ export default {
 
   //Calendar
   dayBox: "#ffffff22",
+
+  //Map
+  start: "#00ff2f00",
+  target: "#ff000042",
+  walkable: "#ff060600",
+  walls: "#aaff0000",
+  cellBorder: "#ba2424",
+
+  mapBorder: "#787878",
 };

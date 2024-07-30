@@ -1,4 +1,7 @@
+import { MapCoords } from "./MapCoords";
+
 export interface Room {
-  roomId: number[];
-  imageURL: string;
+  roomId: string[];
+  floor: number;
+  coords: MapCoords;
 }

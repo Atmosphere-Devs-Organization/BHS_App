@@ -37,4 +37,8 @@ export default {
 
   //Clubs
   cTitleFontSize: 30,
+
+  //Maps
+  pathWidth: "3",
+  cellBorderWidth: "0",
 };
