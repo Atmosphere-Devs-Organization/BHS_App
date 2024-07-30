@@ -1,4 +1,5 @@
 // Import statements
+import React, { useEffect, useState } from "react";
 import {
   Dimensions,
   ScrollView,
@@ -6,12 +7,10 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ImageBackground,
   TextInput,
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,7 +19,7 @@ import { router } from "expo-router";
 import Numbers from "@/constants/Numbers";
 import Colors from "@/constants/Colors";
 import AwesomeButton from "react-native-really-awesome-button";
-import { collection, doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import clubsData from 'assets/data/clubs-data.json'; // Adjust the path as necessary
 
 const screenWidth = Dimensions.get('window').width;
@@ -45,11 +44,7 @@ const App = () => {
 // Logged out profile component
 const LoggedOutProfile = () => {
   return (
-    <ImageBackground
-      source={require("@/assets/images/GenericBG.png")}
-      resizeMode="cover"
-      style={styles.BG_Image}
-    >
+    <View style={styles.BG_Color}>
       <SafeAreaView style={styles.logged_out_profile_container}>
         <TouchableOpacity onPress={router.back} style={styles.back_button}>
           <Ionicons
@@ -64,8 +59,8 @@ const LoggedOutProfile = () => {
         </Text>
         <AwesomeButton
           style={styles.login_button}
-          backgroundColor={Colors.loginButtonBG}
-          backgroundDarker={Colors.loginButtonDarkerBG}
+          backgroundColor={Colors.AmarButton}
+          backgroundDarker={'orange'}
           height={Numbers.loginButtonHeight}
           width={Numbers.loginButtonWidth}
           raiseLevel={10}
@@ -80,7 +75,7 @@ const LoggedOutProfile = () => {
           <Text style={styles.login_text}>Login</Text>
         </AwesomeButton>
       </SafeAreaView>
-    </ImageBackground>
+    </View>
   );
 };
 
@@ -94,46 +89,56 @@ const NormalProfile = ({
   userName: string | null;
   userId: string;
 }) => {
-  const [changingName, setChangingName] = useState(false);
-  const [username, onChangeUser] = React.useState(userName ? userName : "");
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [isEditingSid, setIsEditingSid] = useState(false);
+  const [username, setUsername] = useState(userName || "");
+  const [sid, setSid] = useState("");
   const [clubs, setClubs] = useState<string[]>([]);
 
   useEffect(() => {
-    const fetchClubs = async () => {
+    const fetchUserData = async () => {
       try {
         const userDoc = await getDoc(doc(FIREBASE_DB, "users", userId));
         if (userDoc.exists()) {
           const userData = userDoc.data();
+          setUsername(userData.name || "");
+          setSid(userData.sid || "");
           setClubs(userData.clubs || []);
         }
       } catch (error) {
-        console.error("Error fetching clubs: ", error);
+        console.error("Error fetching user data: ", error);
       }
     };
 
-    fetchClubs();
+    fetchUserData();
   }, [userId]);
 
+  const updateUser = async (field: "name" | "HACusername") => {
+    try {
+      const userDoc = doc(FIREBASE_DB, "users", userId);
+
+      if (field === "name") {
+        await setDoc(userDoc, { name: username }, { merge: true });
+      } else if (field === "HACusername") {
+        await setDoc(userDoc, { HACusername: sid }, { merge: true });
+      }
+    } catch (error) {
+      console.error("Error updating user information: ", error);
+    }
+  };
+
   const handlePress = (clubName: string) => {
-    // Find the club in clubs-data.json that matches the clubName
     const matchedClub = clubsData.find((club) => club.name === clubName);
 
-    // Log the information if a match is found
     if (matchedClub) {
-      router.push(`/clubPage/${matchedClub?.id}`)
+      router.push(`/clubPage/${matchedClub.id}`)
     } else {
       console.log('No matching club found');
     }
   };
 
-
-
   return (
-    <ImageBackground
-      source={require("@/assets/images/GenericBG.png")}
-      resizeMode="cover"
-      style={styles.BG_Image}
-    >
+    <View style={styles.BG_Color}>
       <ScrollView>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <SafeAreaView style={styles.normal_profile_container}>
@@ -145,36 +150,81 @@ const NormalProfile = ({
               />
             </TouchableOpacity>
             <Text style={styles.title}>Profile</Text>
-            <Text style={styles.infoText}>Email: {email}</Text>
-            {changingName ? (
+
+            <Text style={styles.sectionTitle}>User Information</Text>
+
+            <View style={styles.infoContainer}>
+              <Text style={styles.infoLabel}>Email:</Text>
+              <Text style={styles.infoText}>{email}</Text>
+            </View>
+
+            <View style={styles.infoContainer}>
+              <Text style={styles.infoLabel}>Name:</Text>
               <TextInput
-                style={styles.infoText}
-                placeholder={username ? username : "[First Name]"}
-                onChangeText={onChangeUser}
+                style={styles.infoInput}
+                placeholder="Enter your name"
                 value={username}
+                onChangeText={setUsername}
+                editable={isEditingName}
               />
-            ) : (
-              <Text style={styles.infoText}>
-                Name: {username !== "" ? username : "name"}
-              </Text>
-            )}
-            <TouchableOpacity
-              onPress={() => {
-                updateUser(username);
-                setChangingName(!changingName);
-              }}
-              style={styles.edit_name_button}
-            >
-              <Entypo
-                name={changingName ? "check" : "edit"}
-                size={Numbers.editNameIconSize}
-                color={Colors.nameEditButton}
+              <TouchableOpacity
+                onPress={() => {
+                  setIsEditingName((prev) => !prev);
+                  if (isEditingName) updateUser("name");
+                }}
+                style={styles.edit_button}
+              >
+                <Text style={styles.edit_button_text}>
+                  {isEditingName ? "Save" : "Edit"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.infoContainer}>
+              <Text style={styles.infoLabel}>SID:</Text>
+              <TextInput
+                style={styles.infoInput}
+                placeholder="Enter your SID"
+                value={sid}
+                onChangeText={setSid}
+                editable={isEditingSid}
               />
-            </TouchableOpacity> 
+              <TouchableOpacity
+                onPress={() => {
+                  setIsEditingSid((prev) => !prev);
+                  if (isEditingSid) updateUser("HACusername");
+                }}
+                style={styles.edit_button}
+              >
+                <Text style={styles.edit_button_text}>
+                  {isEditingSid ? "Save" : "Edit"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.clubTitle}>Your Clubs</Text>
+
+            <View style={styles.clubContainer}>
+              {clubs.map((club, index) => (
+                <AwesomeButton
+                  key={index}
+                  style={styles.club_button}
+                  backgroundColor={Colors.AmarButton}
+                  backgroundDarker={'orange'}
+                  height={screenWidth * .2}
+                  width={(screenWidth - 40 - 20) / 3}
+                  raiseLevel={10}
+                  onPressOut={() => handlePress(club)}
+                >
+                  <Text style={styles.club_button_text}>{club}</Text>
+                </AwesomeButton>
+              ))}
+            </View>
+
             <AwesomeButton
               style={styles.logout_button}
-              backgroundColor={Colors.signInButtonNormal}
-              backgroundDarker={Colors.signInButtonDark}
+              backgroundColor={Colors.AmarButton}
+              backgroundDarker={'orange'}
               height={screenWidth * .2}
               width={screenWidth * .8}
               raiseLevel={10}
@@ -189,50 +239,37 @@ const NormalProfile = ({
               <Text style={styles.logout_text}>Logout</Text>
             </AwesomeButton>
 
-            <Text style={styles.clubTitle}>Your Clubs</Text>
-
-            <View style={styles.clubContainer}>
-              {clubs.map((club, index) => (
-                <AwesomeButton
-                  key={index}
-                  style={styles.club_button}
-                  backgroundColor={Colors.signInButtonNormal}
-                  backgroundDarker={Colors.signInButtonDark}
-                  height={screenWidth * .2}
-                  width={(screenWidth - 60) / 3} // Adjust width for 3 buttons per row
-                  raiseLevel={10}
-                  onPressOut={() => handlePress(club)}
-                >
-                  <Text style={styles.club_button_text}>{club}</Text>
-                </AwesomeButton>
-              ))}
-            </View>
-
           </SafeAreaView>
         </TouchableWithoutFeedback>
-        </ScrollView>
-    </ImageBackground>
+      </ScrollView>
+    </View>
   );
 };
 
 // Styles
-// Styles
-// Styles
-// Styles
-// Styles
 const styles = StyleSheet.create({
-  logged_out_profile_container: { flex: 1 },
-  normal_profile_container: { flex: 1 },
-  back_button: { marginVertical: 15, marginHorizontal: 10 },
+  logged_out_profile_container: { 
+    flex: 1, 
+    backgroundColor: Colors.AmarBackground 
+  },
+  normal_profile_container: { 
+    flex: 1, 
+    backgroundColor: Colors.AmarBackground 
+  },
+  BG_Color: {
+    flex: 1,
+    backgroundColor: Colors.AmarBackground,
+  },
+  back_button: { 
+    marginVertical: 15, 
+    marginHorizontal: 10 
+  },
   title: {
     fontWeight: "bold",
     fontSize: Numbers.titleFontSize,
     alignSelf: "center",
     transform: [{ translateY: -55 }],
     color: Colors.profileTitle,
-  },
-  BG_Image: {
-    flex: 1,
   },
   need_signin_text: {
     alignSelf: "center",
@@ -248,59 +285,80 @@ const styles = StyleSheet.create({
     alignContent: "center",
     alignSelf: "center",
   },
-  clubTitle: {
-    fontWeight: "bold",
-    fontSize: 24,
-    marginVertical: 20,
-    textAlign: "center",
-    color: Colors.clubName,
-  },
   login_text: {
     fontSize: Numbers.loginTextFontSize,
-    color: Colors.loginText,
+    color: 'white',
     textAlign: "center",
     fontWeight: "bold",
   },
+  infoContainer: {
+    marginHorizontal: 20,
+    marginVertical: 10,
+  },
+  infoLabel: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
   infoText: {
-    color: Colors.infoText,
-    fontSize: Numbers.infoFontSize,
-    marginHorizontal: 15,
+    color: 'white',
+    fontSize: 16,
     marginVertical: 5,
   },
-  edit_name_button: {
-    marginVertical: 40,
-    marginHorizontal: 10,
-    alignSelf: "center",
+  infoInput: {
+    color: 'white',
+    fontSize: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: 'white',
+    marginVertical: 5,
+  },
+  edit_button: {
+    marginTop: 10,
+    backgroundColor: Colors.AmarButton,
+    padding: 5,
+    borderRadius: 5,
+  },
+  edit_button_text: {
+    color: 'white',
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+    margin: 20,
+  },
+  clubTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+    margin: 20,
   },
   clubContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between', // Distribute space between buttons
-    paddingHorizontal: 10,
+    justifyContent: 'space-around',
+    marginVertical: 10,
+    marginHorizontal: 20,
   },
   club_button: {
-    flex: 1, // Allow buttons to grow and fill space
-    margin: 5, // Space around each button
-    maxWidth: (screenWidth - 40 - 20) / 3, // Maximum width considering margin
-    alignSelf: 'center', // Center buttons when they have less than max width
+    marginVertical: 10,
   },
   club_button_text: {
-    fontSize: 16,
     color: Colors.clubName,
+    fontWeight: 'bold',
+    fontSize: 15,
   },
   logout_button: {
-    marginVertical: 40,
+    marginVertical: 25,
+    alignContent: "center",
     alignSelf: "center",
   },
   logout_text: {
-    fontSize: 16,
-    color: Colors.clubName,
+    fontSize: 17,
+    color: 'white',
+    textAlign: "center",
     fontWeight: "bold",
   },
 });
-
-
-
-
 
 export default App;

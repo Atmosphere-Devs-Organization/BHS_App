@@ -59,7 +59,7 @@ export default {
 
 
   AmarBackground: "#000042",
-
+  AmarButton: "#1c1c84",
   //Map
   start: "#00ff2f00",
   target: "#ff000042",
