@@ -42,7 +42,7 @@ const App = () => {
         error instanceof Error &&
         error.message === "Firebase: Error (auth/invalid-credential)."
       ) {
-        alert("Sign in failed: Incorrect Password or you need to create an account.");
+        alert("Sign in failed: You need to create an account.");
       } else {
         alert("Please enter a valid email and password.");
       }
@@ -141,8 +141,8 @@ const App = () => {
           >
             <Text style={styles.signin_text}>Sign In</Text>
           </AwesomeButton>
-          <Pressable style={styles.createAccountButton} onPressOut={() => router.push("(modals)/create")}>
-            <Text style={styles.signup_text}>Create an Account</Text>
+          <Pressable style={styles.createAccountButton} >
+            <Text style={styles.signup_text}>welcome to bridgeland</Text>
           </Pressable>
         </ImageBackground>
       </TouchableWithoutFeedback>

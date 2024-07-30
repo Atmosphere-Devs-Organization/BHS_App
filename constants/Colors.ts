@@ -56,4 +56,6 @@ export default {
 
   //Calendar
   dayBox: "#ffffff22",
+
+  AmarBackground: "#000042",
 };
