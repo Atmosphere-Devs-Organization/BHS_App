@@ -261,10 +261,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.AmarBackground,
   },
   back_button: { 
-    marginVertical: 15, 
-    marginHorizontal: 10 
+    marginVertical: 10, 
+    marginHorizontal: 15 
   },
   title: {
+    marginVertical: 30, 
     fontWeight: "bold",
     fontSize: Numbers.titleFontSize,
     alignSelf: "center",
@@ -286,6 +287,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   login_text: {
+
     fontSize: Numbers.loginTextFontSize,
     color: 'white',
     textAlign: "center",
@@ -344,9 +346,12 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   club_button_text: {
-    color: Colors.clubName,
+    color: 'orange',
     fontWeight: 'bold',
     fontSize: 15,
+    textAlign: "center",
+
+
   },
   logout_button: {
     marginVertical: 25,
