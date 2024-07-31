@@ -1,4 +1,6 @@
 export default {
+  overallBackground: "#000c28",
+
   //Tab Bar
   tabActiveTint: "#FF385C",
   tabInactiveTint: "#c2c2c2",
@@ -57,7 +59,6 @@ export default {
   //Calendar
   dayBox: "#ffffff22",
 
-
   AmarBackground: "#000042",
   AmarButton: "#1c1c84",
   //Map
@@ -68,4 +69,13 @@ export default {
   cellBorder: "#ba2424",
 
   mapBorder: "#787878",
+
+  autoCompleteBG: "#ffffff72",
+
+  mapSubmitButton: "#3700b8",
+  mapSubmitButtonDark: "#270082",
+
+  elevatorNeededButton: "#260085",
+
+  mapTitleBorderColor: "#929292",
 };
