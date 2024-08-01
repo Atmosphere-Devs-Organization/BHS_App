@@ -56,6 +56,9 @@ export default {
 
   clubBG: "#ffffff0a",
 
+  clubNameBG: "#ffffff",
+  clubNameBorder: "#000000",
+
   //Calendar
   dayBox: "#ffffff22",
 

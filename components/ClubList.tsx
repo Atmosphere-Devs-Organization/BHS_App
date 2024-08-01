@@ -6,9 +6,10 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  ImageBackground,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { Club } from "@/interfaces/club";
+import { Club } from "@/interfaces/Club";
 import { Link } from "expo-router";
 import Colors from "@/constants/Colors";
 
@@ -38,17 +39,15 @@ const ClubList = ({ clubs, category }: Props) => {
         borderWidth: 5,
         borderRadius: 30,
         margin: 25,
-        backgroundColor: 'white',
+        backgroundColor: "white",
         borderColor: "orange",
       }}
     >
       <TouchableOpacity>
         <View style={styles.club}>
-        <Text style={styles.nameText}>{item.name}</Text>
-          <Image source={{ uri: item.imageURL }} style={styles.image} />
-          <View style={styles.bottomText}>
-            <Text style={styles.descText}>{item.shortDescription}</Text>
-          </View>
+          <ImageBackground source={{ uri: item.imageURL }} style={styles.image}>
+            <Text style={styles.nameText}>{item.name}</Text>
+          </ImageBackground>
         </View>
       </TouchableOpacity>
     </Link>
@@ -66,15 +65,14 @@ const ClubList = ({ clubs, category }: Props) => {
 
 const styles = StyleSheet.create({
   club: {
-     padding: 16 ,
-    },
+    padding: 16,
+  },
   image: {
     width: "100%",
     height: 300,
     borderRadius: 15,
     borderWidth: 4,
     borderColor: Colors.imageBorderColor,
-    
   },
   bottomText: {
     borderWidth: 2,
@@ -83,13 +81,12 @@ const styles = StyleSheet.create({
     borderColor: Colors.textBorderColor,
     marginTop: 7,
     backgroundColor: Colors.AmarButton,
-
   },
   nameText: {
     fontSize: 25,
     fontWeight: "bold",
     color: "black",
-    textAlign: 'center',
+    textAlign: "center",
     marginLeft: 10,
     marginBottom: 5,
   },
