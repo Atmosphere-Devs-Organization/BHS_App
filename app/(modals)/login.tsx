@@ -22,6 +22,7 @@ import { router } from "expo-router";
 import Colors from "@/constants/Colors";
 import { Entypo } from "@expo/vector-icons";
 import Numbers from "@/constants/Numbers";
+import { usePushNotifications } from "../usePushNotifications";
 
 const screenWidth = Dimensions.get("window").width;
 
