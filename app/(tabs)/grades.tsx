@@ -4,8 +4,8 @@ import axios from "axios";
 
 const Grades = () => {
   // const HAC_Link = "https://home-access.cfisd.net";
-  // const User = "s184491";
-  // const Pass = "Gabby2007";
+  // const User = "hello";
+  // const Pass = "hello";
 
   // const [targetData, setTargetData] = useState(
   //   "2019-2020 School Year - Semester "
