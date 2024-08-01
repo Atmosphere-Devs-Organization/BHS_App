@@ -1,19 +1,8 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Button,
-  TextInput,
-  FlatList,
-  Keyboard,
-  ImageBackground,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Button, TextInput, FlatList } from "react-native";
 import React, { useEffect, useState } from "react";
-import { FIREBASE_AUTH } from "@/FirebaseConfig";
-import { User, onAuthStateChanged } from "firebase/auth";
-import { SafeAreaView, ScrollView } from "react-native";
-import Colors from "@/constants/Colors";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
+import { onAuthStateChanged, User } from "firebase/auth";
 
 const Calendar = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -26,58 +15,68 @@ const Calendar = () => {
     return () => unsubscribe();
   }, []);
 
-  return <View>{user ? <NormalCalendar /> : <LoggedOutCalendar />}</View>;
+  return <View>{user ? <NormalCalendar user={user} /> : <LoggedOutCalendar />}</View>;
 };
 
 const LoggedOutCalendar = () => {
   return (
-    <ImageBackground
-      style={{
-        alignSelf: "center",
-        height: "100%",
-        width: "100%",
-      }}
-      source={require("@/assets/images/GenericBG.png")}
-      resizeMode="stretch"
-    >
-      <Text style={{ marginTop: "50%", color: "#fff", textAlign: "center" }}>
-        You need to be signed in to access the calendar
-      </Text>
-    </ImageBackground>
+    <View style={styles.centered}>
+      <Text>You need to be signed in to access the calendar</Text>
+    </View>
   );
 };
 
-const NormalCalendar = () => {
+const NormalCalendar = ({ user }: { user: User }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [events, setEvents] = useState<{ date: string; title: string }[]>([]);
+  const [events, setEvents] = useState<{ date: string; title: string; club: string }[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [eventTitle, setEventTitle] = useState<string>("");
 
-  const irlDate = new Date();
+  useEffect(() => {
+    fetchUserClubs();
+  }, [user]);
 
-  const daysInMonth = (year: number, month: number) =>
-    new Date(year, month + 1, 0).getDate();
+  const fetchUserClubs = async () => {
+    const userDocRef = doc(FIREBASE_DB, "users", user.uid);
+    const userDocSnap = await getDoc(userDocRef);
 
-  const firstDayOfMonth = (year: number, month: number) =>
-    new Date(year, month, 1).getDay();
+    if (userDocSnap.exists()) {
+      const userData = userDocSnap.data();
+      const clubs = userData.clubs || [];
+
+      const fetchedEvents: { date: string; title: string; club: string }[] = [];
+      for (const club of clubs) {
+        const clubDocRef = doc(FIREBASE_DB, "clubs", club);
+        const datesCollectionRef = collection(clubDocRef, "dates");
+        const datesSnapshot = await getDocs(datesCollectionRef);
+
+        datesSnapshot.forEach((doc) => {
+          const dateData = doc.data();
+          const eventDate = new Date(dateData.date.toDate()).toISOString().split("T")[0];
+          fetchedEvents.push({ date: eventDate, title: doc.id, club });
+        });
+      }
+
+      setEvents(fetchedEvents);
+    }
+  };
+
+  const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
+  const firstDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay();
 
   const handlePrevMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
-    );
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
     setSelectedDate(null);
   };
 
   const handleNextMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
-    );
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
     setSelectedDate(null);
   };
 
   const handleAddEvent = () => {
     if (selectedDate && eventTitle) {
-      setEvents([...events, { date: selectedDate, title: eventTitle }]);
+      setEvents([...events, { date: selectedDate, title: eventTitle, club: "Personal" }]);
       setEventTitle("");
     }
   };
@@ -89,170 +88,94 @@ const NormalCalendar = () => {
   const formatDate = (dateStr: string) => {
     const [year, month, day] = dateStr.split("-").map(Number);
     const date = new Date(year, month - 1, day);
-    return date.toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
+    return date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
   };
 
   const days = daysInMonth(currentDate.getFullYear(), currentDate.getMonth());
-  const firstDay = firstDayOfMonth(
-    currentDate.getFullYear(),
-    currentDate.getMonth()
-  );
+  const firstDay = firstDayOfMonth(currentDate.getFullYear(), currentDate.getMonth());
 
-  const daysArray = Array.from(
-    {
-      length:
-        currentDate.getFullYear() > irlDate.getFullYear() ||
-        (currentDate.getFullYear() === irlDate.getFullYear() &&
-          currentDate.getMonth() > irlDate.getMonth())
-          ? days
-          : currentDate.getFullYear() === irlDate.getFullYear() &&
-            currentDate.getMonth() === irlDate.getMonth()
-          ? days - irlDate.getDate() + 1
-          : 0,
-    },
-    (_, i) =>
-      i +
-      (currentDate.getMonth() === irlDate.getMonth() &&
-      currentDate.getFullYear() === irlDate.getFullYear()
-        ? irlDate.getDate()
-        : 1)
-  );
-  const blankDays = Array.from(
-    {
-      length:
-        currentDate.getFullYear() > irlDate.getFullYear() ||
-        (currentDate.getFullYear() === irlDate.getFullYear() &&
-          currentDate.getMonth() > irlDate.getMonth())
-          ? firstDay
-          : currentDate.getFullYear() === irlDate.getFullYear() &&
-            currentDate.getMonth() === irlDate.getMonth()
-          ? firstDay + irlDate.getDate() - 1
-          : days,
-    },
-    (_, i) => ""
-  );
-
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => {
-        setKeyboardVisible(true); // or some other action
-      }
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setKeyboardVisible(false); // or some other action
-      }
-    );
-
-    return () => {
-      keyboardDidHideListener.remove();
-      keyboardDidShowListener.remove();
-    };
-  }, []);
+  const daysArray = Array.from({ length: days }, (_, i) => i + 1);
+  const blankDays = Array.from({ length: firstDay }, (_, i) => "");
 
   return (
-    <ImageBackground
-      style={styles.calendarContainer}
-      source={require("@/assets/images/GenericBG.png")}
-    >
-      <SafeAreaView style={styles.calendarContainer}>
-        {!isKeyboardVisible && (
-          <View style={styles.headerContainer}>
-            <Button title="Prev" onPress={handlePrevMonth} />
-            <Text style={styles.header}>
-              {currentDate.toLocaleString("default", { month: "long" })}{" "}
-              {currentDate.getFullYear()}
-            </Text>
-            <Button title="Next" onPress={handleNextMonth} />
-          </View>
-        )}
-        {!isKeyboardVisible && (
-          <View style={styles.daysOfWeekContainer}>
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
-              (day, index) => (
-                <Text key={index} style={styles.dayOfWeek}>
-                  {day}
-                </Text>
-              )
+    <View style={styles.calendarContainer}>
+      <View style={styles.headerContainer}>
+        <Button title="Prev" onPress={handlePrevMonth} />
+        <Text style={styles.header}>
+          {currentDate.toLocaleString("default", { month: "long" })} {currentDate.getFullYear()}
+        </Text>
+        <Button title="Next" onPress={handleNextMonth} />
+      </View>
+      <View style={styles.daysOfWeekContainer}>
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, index) => (
+          <Text key={index} style={styles.dayOfWeek}>
+            {day}
+          </Text>
+        ))}
+      </View>
+      <View style={styles.daysContainer}>
+        {blankDays.map((_, index) => (
+          <View key={`blank-${index}`} style={styles.dayBox} />
+        ))}
+        {daysArray.map((day) => {
+          const dateStr = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+          const hasEvent = events.some(event => event.date === dateStr);
+          return (
+            <TouchableOpacity
+              key={day}
+              style={[
+                styles.dayBox,
+                selectedDate === dateStr && styles.selectedDayBox,
+                hasEvent && styles.eventDayBox
+              ]}
+              onPress={() => setSelectedDate(dateStr)}
+            >
+              <Text style={[
+                styles.dayText,
+                selectedDate === dateStr && styles.selectedDayText
+              ]}>
+                {day}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+      {selectedDate && (
+        <View style={styles.eventInputContainer}>
+          <Text style={styles.selectedDateText}>Selected Date: {formatDate(selectedDate)}</Text>
+          <TextInput
+            style={styles.input}
+            value={eventTitle}
+            onChangeText={setEventTitle}
+            placeholder="Event Title"
+          />
+          <Button title="Add Event" onPress={handleAddEvent} />
+          <FlatList
+            data={events.filter(event => event.date === selectedDate)}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, index }) => (
+              <View style={styles.eventItem}>
+                <Text style={styles.clubText}>{item.club}</Text>
+                <Text>{item.title}</Text>
+                <Button title="Remove" onPress={() => handleRemoveEvent(index)} />
+              </View>
             )}
-          </View>
-        )}
-        {!isKeyboardVisible && (
-          <View style={styles.daysContainer}>
-            {blankDays.map((_, index) => (
-              <View key={`blank-${index}`} style={styles.dayBox} />
-            ))}
-            {daysArray.map((day) => {
-              const dateStr = `${currentDate.getFullYear()}-${
-                currentDate.getMonth() + 1
-              }-${day}`;
-              return (
-                <TouchableOpacity
-                  key={day}
-                  style={[
-                    styles.dayBox,
-                    selectedDate === dateStr && styles.selectedDayBox,
-                  ]}
-                  onPress={() => setSelectedDate(dateStr)}
-                >
-                  <Text
-                    style={[
-                      styles.dayText,
-                      selectedDate === dateStr && styles.selectedDayText,
-                    ]}
-                  >
-                    {day}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        )}
-        {selectedDate && (
-          <View style={styles.eventInputContainer}>
-            <Text style={styles.selectedDateText}>
-              Selected Date: {formatDate(selectedDate)}
-            </Text>
-            <TextInput
-              style={styles.input}
-              value={eventTitle}
-              onChangeText={setEventTitle}
-              placeholder="Event Title"
-            />
-            <Button title="Add Event" onPress={handleAddEvent} />
-            <FlatList
-              data={events.filter((event) => event.date === selectedDate)}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item, index }) => (
-                <View style={styles.eventItem}>
-                  <Text>{item.title}</Text>
-                  <Button
-                    title="Remove"
-                    onPress={() => handleRemoveEvent(index)}
-                  />
-                </View>
-              )}
-            />
-          </View>
-        )}
-      </SafeAreaView>
-    </ImageBackground>
+          />
+        </View>
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   centered: {
     flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  calendarContainer: { padding: 10, height: "110%" },
+  calendarContainer: {
+    padding: 10,
+  },
   headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -279,12 +202,14 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: "#ddd",
-    backgroundColor: Colors.dayBox,
   },
   selectedDayBox: {
     backgroundColor: "red",
+  },
+  eventDayBox: {
+    backgroundColor: "lightblue",
   },
   dayText: {
     color: "#000",
@@ -295,8 +220,6 @@ const styles = StyleSheet.create({
   },
   eventInputContainer: {
     marginTop: 20,
-    marginBottom: "10%",
-    paddingBottom: "208%",
   },
   selectedDateText: {
     fontSize: 18,
@@ -311,12 +234,14 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   eventItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: "column",
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
+  },
+  clubText: {
+    fontWeight: "bold",
+    marginBottom: 5,
   },
 });
 
