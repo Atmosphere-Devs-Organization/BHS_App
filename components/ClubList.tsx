@@ -35,17 +35,18 @@ const ClubList = ({ clubs, category }: Props) => {
       href={"/clubPage/" + item.id}
       asChild
       style={{
-        borderWidth: 1,
+        borderWidth: 5,
         borderRadius: 30,
-        margin: 5,
-        backgroundColor: Colors.clubBG,
+        margin: 25,
+        backgroundColor: 'white',
+        borderColor: "orange",
       }}
     >
       <TouchableOpacity>
         <View style={styles.club}>
+        <Text style={styles.nameText}>{item.name}</Text>
           <Image source={{ uri: item.imageURL }} style={styles.image} />
           <View style={styles.bottomText}>
-            <Text style={styles.nameText}>{item.name}</Text>
             <Text style={styles.descText}>{item.shortDescription}</Text>
           </View>
         </View>
@@ -64,13 +65,16 @@ const ClubList = ({ clubs, category }: Props) => {
 };
 
 const styles = StyleSheet.create({
-  club: { padding: 16 },
+  club: {
+     padding: 16 ,
+    },
   image: {
     width: "100%",
     height: 300,
     borderRadius: 15,
     borderWidth: 4,
     borderColor: Colors.imageBorderColor,
+    
   },
   bottomText: {
     borderWidth: 2,
@@ -78,17 +82,20 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderColor: Colors.textBorderColor,
     marginTop: 7,
+    backgroundColor: Colors.AmarButton,
+
   },
   nameText: {
-    fontSize: 16,
+    fontSize: 25,
     fontWeight: "bold",
-    color: Colors.nameText,
+    color: "black",
+    textAlign: 'center',
     marginLeft: 10,
     marginBottom: 5,
   },
   descText: {
     fontSize: 14,
-    color: Colors.descText,
+    color: "#d3d3d3",
     marginLeft: 20,
     width: "90%",
   },

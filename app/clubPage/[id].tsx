@@ -10,6 +10,7 @@ import {
   StatusBar,
   Linking,
   Dimensions,
+  ScrollView,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import clubData from "@/assets/data/clubs-data.json";
@@ -92,26 +93,15 @@ const Page = () => {
   };
 
   return (
-    <ImageBackground
-      source={require("@/assets/images/GenericBG.png")}
-      resizeMode="cover"
-      style={{
-        flex: 1,
-        alignContent: "center",
-      }}
-    >
+    <View style={[styles.container, { backgroundColor: Colors.AmarBackground }]}>
+
       <StatusBar
         animated={true}
         barStyle={"dark-content"}
         showHideTransition={"fade"}
         hidden={true}
       />
-
-      <Image source={{ uri: currentClub?.imageURL }} style={styles.image} />
-      <TouchableOpacity onPress={router.back} style={styles.close_button}>
-        <Ionicons name="close-sharp" size={24} color="white" />
-      </TouchableOpacity>
-      <View
+      <ScrollView
         style={{
           alignContent: "center",
           borderRadius: 30,
@@ -120,7 +110,14 @@ const Page = () => {
           height: "80%",
         }}
       >
-        <Text style={styles.name}>{currentClub?.name}</Text>
+
+      <TouchableOpacity onPress={router.back} style={styles.close_button}>
+        <Ionicons name="close-sharp" size={24} color="white" />
+      </TouchableOpacity>
+
+      <Text style={styles.name}>{currentClub?.name}</Text>
+
+      <Image source={{ uri: currentClub?.imageURL }} style={styles.image} />
 
         <AwesomeButton
           style={styles.button}
@@ -149,8 +146,8 @@ const Page = () => {
             Sponsor: {currentClub?.sponsorEmail}
           </Text>
         </Pressable>
-      </View>
-    </ImageBackground>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -164,9 +161,11 @@ const styles = StyleSheet.create({
   name: {
     textAlign: "center",
     fontWeight: "bold",
-    padding: 20,
-    fontSize: 24,
-    color: Colors.clubName,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 20,
+    fontSize: 40,
+    color: "white",
     shadowColor: "#ffffff",
     shadowOpacity: 0.36,
     shadowRadius: 8,
@@ -174,7 +173,6 @@ const styles = StyleSheet.create({
       width: 1,
       height: 1,
     },
-    marginBottom: 30,
   },
   description: {
     textAlign: "left",
@@ -207,6 +205,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   close_button: { padding: 10 },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingTop: 16,
+  },
+
 });
 
 export default Page;

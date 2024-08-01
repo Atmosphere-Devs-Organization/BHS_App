@@ -4,6 +4,7 @@ import { Stack } from "expo-router";
 import ClubsHeader from "@/components/ClubsHeader";
 import ClubList from "@/components/ClubList";
 import clubData from "@/assets/data/clubs-data.json";
+import Colors from "@/constants/Colors";
 
 const Clubs = () => {
   const [category, setCategory] = useState("All");
@@ -13,11 +14,7 @@ const Clubs = () => {
     setCategory(category);
   };
   return (
-    <ImageBackground
-      source={require("@/assets/images/GenericBG.png")}
-      resizeMode="cover"
-      style={styles.home_BG_Image}
-    >
+    <View style={styles.BG_Color}>
       <View style={{ flex: 1, marginTop: 190 }}>
         <Stack.Screen
           options={{
@@ -26,13 +23,17 @@ const Clubs = () => {
         />
         <ClubList category={category} clubs={items} />
       </View>
-    </ImageBackground>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   home_BG_Image: {
     flex: 1,
+  },
+  BG_Color: {
+    flex: 1,
+    backgroundColor: Colors.AmarBackground,
   },
 });
 

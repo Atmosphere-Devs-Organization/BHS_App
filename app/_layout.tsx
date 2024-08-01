@@ -55,22 +55,8 @@ function RootLayoutNav() {
           animation: "slide_from_bottom",
         }}
       />
-      <Stack.Screen
-        name="(modals)/create"
-        options={{
-          headerShown: false,
-          presentation: "modal",
-          animation: "slide_from_bottom",
-        }}
-      />
-            <Stack.Screen
-        name="(modals)/temp"
-        options={{
-          headerShown: false,
-          presentation: "modal",
-          animation: "slide_from_bottom",
-        }}
-      />
+     
+          
       <Stack.Screen
         name="(screens)/profile"
         options={{
