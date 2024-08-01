@@ -10,6 +10,7 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
 } from "react-native";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { User, onAuthStateChanged } from "firebase/auth";
@@ -64,7 +65,7 @@ const LoggedOutProfile = () => {
           height={Numbers.loginButtonHeight}
           width={Numbers.loginButtonWidth}
           raiseLevel={10}
-          onPressOut={() => router.push("(modals)/temp")}
+          onPressOut={() => router.push("(modals)/login")}
         >
           <Entypo
             name="login"
@@ -119,8 +120,11 @@ const NormalProfile = ({
 
       if (field === "name") {
         await setDoc(userDoc, { name: username }, { merge: true });
+        Alert.alert("Success", "Name updated");
       } else if (field === "HACusername") {
         await setDoc(userDoc, { HACusername: sid }, { merge: true });
+        Alert.alert("Success", "S-id updated");
+
       }
     } catch (error) {
       console.error("Error updating user information: ", error);
@@ -265,7 +269,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 15 
   },
   title: {
-    marginVertical: 30, 
+    marginTop: 30, 
     fontWeight: "bold",
     fontSize: Numbers.titleFontSize,
     alignSelf: "center",
@@ -278,7 +282,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     fontWeight: "bold",
     fontSize: Numbers.needSignInFontSize,
-    color: Colors.needSignIn,
+    color: "white",
     textAlign: "center",
   },
   login_button: {
@@ -298,7 +302,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   infoLabel: {
-    color: 'white',
+    color: 'orange',
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -321,19 +325,21 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   edit_button_text: {
-    color: 'white',
+    color: 'orange',
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'orange',
     margin: 20,
   },
   clubTitle: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: 'bold',
     color: 'white',
     margin: 20,
+    alignSelf: "center",
+
   },
   clubContainer: {
     flexDirection: 'row',
