@@ -17,6 +17,7 @@ import { router } from "expo-router";
 import Colors from '@/constants/Colors';
 import { Entypo } from '@expo/vector-icons';
 import Numbers from '@/constants/Numbers';
+import { usePushNotifications } from '../usePushNotifications';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -111,6 +112,8 @@ const App = () => {
   return (
     <View style={[styles.container, { backgroundColor: Colors.AmarBackground }]}>
       <Text style={styles.welcomeText}>Welcome To The Bridgeland App</Text>
+
+
       {isResettingPassword ? (
         <View style={styles.form}>
           <View style={styles.box}>
@@ -128,7 +131,7 @@ const App = () => {
                 backgroundDarker={Colors.loginButtonDarkerBG}
                 height={screenWidth * .15}
                 width={Numbers.loginButtonWidth}
-                raiseLevel={10}
+                raiseLevel={1}
                 onPress={handleResetPassword}
             >
                 <Entypo
@@ -177,7 +180,7 @@ const App = () => {
                 backgroundDarker={Colors.loginButtonDarkerBG}
                 height={screenWidth * .15}
                 width={Numbers.loginButtonWidth}
-                raiseLevel={10}
+                raiseLevel={1}
                 onPress={signUp}
             >
                 <Entypo
@@ -219,7 +222,7 @@ const App = () => {
                 backgroundDarker={Colors.loginButtonDarkerBG}
                 height={screenWidth * .15}
                 width={Numbers.loginButtonWidth}
-                raiseLevel={10}
+                raiseLevel={1}
                 onPress={signIn}
             >
             <Entypo
