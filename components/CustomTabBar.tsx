@@ -52,9 +52,9 @@ export default function CustomTabBar({
             position: "absolute",
             backgroundColor: Colors.animatedIconBG,
             borderRadius: 30,
-            marginHorizontal: 12,
-            aspectRatio: 10 / 10,
+            marginHorizontal: "1%",
             width: "18%",
+            height: "150%",
             bottom: -8,
           },
         ]}
