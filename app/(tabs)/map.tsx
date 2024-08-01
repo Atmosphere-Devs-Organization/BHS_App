@@ -6,6 +6,7 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
+  View,
 } from "react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import roomData from "@/assets/data/map-data.json";
@@ -16,6 +17,10 @@ import { MapCoords } from "@/interfaces/MapCoords";
 import floorData from "@/assets/data/floor-data.json";
 import { Floor } from "@/interfaces/Floor";
 import { distance } from "@/components/DistanceCalc";
+import AutoCompleteTextInput from "@/components/AutoCompleteTextInput";
+import Colors from "@/constants/Colors";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
+import AwesomeButton from "react-native-really-awesome-button";
 
 const Map = () => {
   const floor_data = useMemo(() => floorData as any, []); // More efficient, idk what it does tbh
@@ -34,7 +39,7 @@ const Map = () => {
     (item) => item.id === room1Item?.floor
   );
 
-  const [elevatorsNeeded, setElevatorUse] = useState<boolean>(true);
+  const [elevatorsNeeded, setElevatorUse] = useState<boolean>(false);
   const [chosenStairs, setStairs] = useState<MapCoords>({ Col: 0, Row: 0 });
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -253,10 +258,6 @@ const Map = () => {
               floor1Item.stairs[i].coords,
               room1Item.coords
             );
-            console.log(
-              "New Stairs:",
-              distance(floor1Item.stairs[i].coords, room1Item.coords)
-            );
           }
         }
       } else {
@@ -268,7 +269,7 @@ const Map = () => {
         );
       }
     }
-  }, [room1, room2, data, floor_data]);
+  }, [room1, room2, data, floor_data, elevatorsNeeded]);
 
   const handleSubmit = () => {
     setLoading(true);
@@ -289,60 +290,99 @@ const Map = () => {
   };
 
   return (
-    <ImageBackground
-      source={require("@/assets/images/GenericBG.png")}
-      resizeMode="cover"
-      style={styles.home_BG_Image}
-    >
+    // <ImageBackground
+    //   source={require("@/assets/images/GenericBG.png")}
+    //   resizeMode="cover"
+    //   style={styles.container}
+    // >
+    <View style={styles.container}>
       <ScrollView
         contentContainerStyle={{ marginTop: 50, paddingBottom: 100 }}
         style={{ marginBottom: 100 }}
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.title}>School Map</Text>
-        <Text style={styles.title}>Find Your Room!</Text>
-        <Text style={styles.subtitle}>For cafeteria, type 5000 </Text>
-        <Text style={styles.subtitle}>
-          If your room number starts with PB, you are in the portables. Access
-          them from courtyard(5001){" "}
-        </Text>
-        <Text style={styles.subtitle}>For councilor pod, type </Text>
-        <Text style={styles.subtitle}>For AP pod, type </Text>
 
-        <TextInput
+        <AutoCompleteTextInput
           style={{
             width: "75%",
             marginTop: "10%",
-            height: 40,
             borderColor: "gray",
-            borderWidth: 1,
+            borderWidth: 3,
             alignSelf: "center",
             padding: 10,
+            color: "#ffffff",
           }}
           onChangeText={setText1}
           value={text1}
           keyboardType="default"
           placeholder="Enter the Room you're at now"
+          possibleInputs={validRooms}
         />
-        <TextInput
+        <AutoCompleteTextInput
           style={{
             width: "75%",
-            marginTop: "10%",
-            height: 40,
+            marginTop: "7%",
             borderColor: "gray",
-            borderWidth: 1,
+            borderWidth: 3,
             alignSelf: "center",
             padding: 10,
+            color: "#ffffff",
           }}
           onChangeText={setText2}
           value={text2}
           keyboardType="default"
           placeholder="Enter the Room you're going"
+          possibleInputs={validRooms}
         />
         {error && error !== "Blank Error" && (
           <Text style={styles.error}>{error}</Text>
         )}
-        <Button title="Submit" onPress={handleSubmit} />
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingHorizontal: "10%",
+            marginVertical: 10,
+          }}
+        >
+          <View
+            style={{
+              alignContent: "center",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <BouncyCheckbox
+              onPress={(isChecked: boolean) => {
+                setElevatorUse(isChecked);
+              }}
+              fillColor={Colors.elevatorNeededButton}
+            />
+            <Text
+              style={{
+                textAlign: "center",
+                color: "#fff",
+                paddingTop: 10,
+                fontWeight: "bold",
+              }}
+            >
+              Elevator Needed
+            </Text>
+          </View>
+          <AwesomeButton
+            style={{}}
+            backgroundColor={Colors.mapSubmitButton}
+            backgroundDarker={Colors.mapSubmitButtonDark}
+            height={60}
+            width={150}
+            raiseLevel={10}
+            onPressOut={handleSubmit}
+          >
+            <Text style={{ fontWeight: "bold" }}>Find Path!</Text>
+          </AwesomeButton>
+        </View>
 
         {!error && !loading && room1Item && room2Item && (
           //router.push: Startpos Col,Startpos Row,Endpos Col,Endpos Row,Floor
@@ -361,6 +401,7 @@ const Map = () => {
                   room1Item?.floor
               )
             }
+            style={{ marginTop: 30 }}
           >
             <GridMap
               startPos={room1Item.coords}
@@ -404,14 +445,16 @@ const Map = () => {
             </TouchableOpacity>
           )}
       </ScrollView>
-    </ImageBackground>
+    </View>
+    //</ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  home_BG_Image: {
+  container: {
     flex: 1,
     justifyContent: "center",
+    backgroundColor: Colors.overallBackground,
   },
   error: {
     color: "red",
@@ -422,10 +465,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
     justifyContent: "flex-start",
     fontWeight: "bold",
-    marginBottom: 10,
     textAlign: "center",
-    marginTop: 30,
+    marginVertical: 30,
     color: "white",
+    borderWidth: 5,
+    borderColor: Colors.mapTitleBorderColor,
+    width: "50%",
+    alignSelf: "center",
+    padding: 20,
   },
   subtitle: {
     fontSize: 16,

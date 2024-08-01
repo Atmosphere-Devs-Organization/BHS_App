@@ -1,4 +1,6 @@
 export default {
+  overallBackground: "#000c28",
+
   //Tab Bar
   tabActiveTint: "#FF385C",
   tabInactiveTint: "#c2c2c2",
@@ -54,9 +56,11 @@ export default {
 
   clubBG: "#ffffff0a",
 
+  clubNameBG: "#ffffff",
+  clubNameBorder: "#000000",
+
   //Calendar
   dayBox: "#ffffff22",
-
 
   AmarBackground: "#000042",
   AmarButton: "#1c1c84",
@@ -68,4 +72,13 @@ export default {
   cellBorder: "#ba2424",
 
   mapBorder: "#787878",
+
+  autoCompleteBG: "#ffffff72",
+
+  mapSubmitButton: "#3700b8",
+  mapSubmitButtonDark: "#270082",
+
+  elevatorNeededButton: "#260085",
+
+  mapTitleBorderColor: "#929292",
 };

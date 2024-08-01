@@ -1,7 +1,25 @@
 [
   {
+    "name": "Computer Science Club",
+    "id": "9",
+    "shortDescription": "To explore computer science concepts as a team.",
+    "longDescription": "To explore computer science concepts as a team.",
+    "sponsorEmail": "rayvan.watson@cfisd.net",
+    "categories": ["All", "STEM","CTE"],
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg"
+  },
+  {
+    "name": "Future Business leaders of America (FBLA)",
+   "id": "1",
+   "shortDescription": "Grow your business and professional skills",
+   "longDescription": "Grow your business and professional skills",
+   "sponsorEmail": "Thomas.mosley@cfisd.net",
+   "categories": ["All","CTE"],
+   "imageURL": "https://fblatx.org/wp-content/uploads/2022/08/TX-Horizontal-Logo-e1660676225791.png"
+  },
+  {
     "name": "American Sign Language Association",
-    "id": "1",
+    "id": "35",
     "shortDescription": "To learn how to use sign language in social situations to spread awareness of deaf culture and sign language.",
     "longDescription": "To learn how to use sign language in social situations to spread awareness of deaf culture and sign language.",
     "sponsorEmail": "brandy.kethley@cfisd.net",
@@ -71,15 +89,7 @@
     "categories": ["All"],
     "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg"
   },
-  {
-    "name": "Computer Science Club",
-    "id": "9",
-    "shortDescription": "To explore computer science concepts as a team.",
-    "longDescription": "To explore computer science concepts as a team.",
-    "sponsorEmail": "rayvan.watson@cfisd.net",
-    "categories": ["All", "STEM","CTE"],
-    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg"
-  },
+
   {
     "name": "Creative Writing Club",
     "id": "10",
@@ -304,14 +314,6 @@
   "sponsorEmail": "kelli.hawkins@cfisd.net",
   "categories": ["All"],
   "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg"
-  },
-  {
-    "name": "Future Business leaders of America (FBLA)",
-   "id": "35",
-   "shortDescription": "Grow your business and professional skills",
-   "longDescription": "Grow your business and professional skills",
-   "sponsorEmail": "Thomas.mosley@cfisd.net",
-   "categories": ["All","CTE"],
-   "imageURL": "https://fblatx.org/wp-content/uploads/2022/08/TX-Horizontal-Logo-e1660676225791.png"
   }
+
 ]

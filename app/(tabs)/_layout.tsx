@@ -36,6 +36,14 @@ const Layout = () => {
           headerShown: false,
         }}
       />
+      <Tabs.Screen
+        name="grades"
+        options={{
+          tabBarLabel: "Grades",
+          headerTitle: "Grades",
+          headerShown: false,
+        }}
+      />
     </Tabs>
   );
 };
