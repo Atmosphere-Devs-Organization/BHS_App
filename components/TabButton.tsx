@@ -46,6 +46,9 @@ const TabButton = ({
     map: (props: any) => (
       <Ionicons name="map-sharp" size={Numbers.iconSize} {...props} />
     ),
+    grades: (props: any) => (
+      <Ionicons name="map-sharp" size={Numbers.iconSize} {...props} />
+    ),
   };
 
   const scale = useSharedValue(0);
