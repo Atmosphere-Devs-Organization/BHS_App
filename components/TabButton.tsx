@@ -47,7 +47,7 @@ const TabButton = ({
       <Ionicons name="map-sharp" size={Numbers.iconSize} {...props} />
     ),
     grades: (props: any) => (
-      <Ionicons name="map-sharp" size={Numbers.iconSize} {...props} />
+      <Ionicons name="school-sharp" size={Numbers.iconSize} {...props} />
     ),
   };
 

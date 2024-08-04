@@ -1,42 +1,33 @@
-import { Text, SafeAreaView } from "react-native";
-import React, { useState } from "react";
-import axios from "axios";
+import { Text, SafeAreaView, View, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Stack } from "expo-router";
+import Colors from "@/constants/Colors";
+import CustomGradesHeader from "@/components/CustomGradesHeader";
+import GradesContent from "@/components/GradesContent";
 
 const Grades = () => {
-  // const HAC_Link = "https://home-access.cfisd.net";
-  // const User = "hello";
-  // const Pass = "hello";
-
-  // const [targetData, setTargetData] = useState(
-  //   "2019-2020 School Year - Semester "
-  // );
-  // const [apiSection, setApiSection] = useState("transcript");
-
-  // const fetchStudentInfo = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       "https://homeaccesscenterapi.vercel.app/api/" +
-  //         apiSection +
-  //         "?link=" +
-  //         HAC_Link +
-  //         "/&user=" +
-  //         User +
-  //         "&pass=" +
-  //         Pass
-  //     );
-
-  //     console.log(response.data[targetData]);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  // fetchStudentInfo();
+  const [category, setCategory] = useState("Grades");
   return (
-    <SafeAreaView>
-      <Text>Coming Soon</Text>
-    </SafeAreaView>
+    <View style={styles.BG_Color}>
+      <View style={{ flex: 1, marginTop: 190 }}>
+        <Stack.Screen
+          options={{
+            header: () => (
+              <CustomGradesHeader onCategoryChanged={setCategory} />
+            ),
+          }}
+        />
+        <GradesContent category={category} />
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  BG_Color: {
+    flex: 1,
+    backgroundColor: Colors.AmarBackground,
+  },
+});
 
 export default Grades;

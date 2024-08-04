@@ -5,17 +5,17 @@
     "shortDescription": "To explore computer science concepts as a team.",
     "longDescription": "To explore computer science concepts as a team.",
     "sponsorEmail": "rayvan.watson@cfisd.net",
-    "categories": ["All", "STEM","CTE"],
-    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg"
+    "categories": ["All", "STEM", "CTE"],
+    "imageURL": "https://techsteamcenter.com/wp-content/uploads/2023/08/computer-language.webp"
   },
   {
     "name": "Future Business leaders of America (FBLA)",
-   "id": "1",
-   "shortDescription": "Grow your business and professional skills",
-   "longDescription": "Grow your business and professional skills",
-   "sponsorEmail": "Thomas.mosley@cfisd.net",
-   "categories": ["All","CTE"],
-   "imageURL": "https://fblatx.org/wp-content/uploads/2022/08/TX-Horizontal-Logo-e1660676225791.png"
+    "id": "1",
+    "shortDescription": "Grow your business and professional skills",
+    "longDescription": "Grow your business and professional skills",
+    "sponsorEmail": "Thomas.mosley@cfisd.net",
+    "categories": ["All", "CTE"],
+    "imageURL": "https://mir-s3-cdn-cf.behance.net/projects/404/fc820c199004175.Y3JvcCw4ODAsNjg4LDAsNTY.png"
   },
   {
     "name": "American Sign Language Association",
@@ -24,7 +24,7 @@
     "longDescription": "To learn how to use sign language in social situations to spread awareness of deaf culture and sign language.",
     "sponsorEmail": "brandy.kethley@cfisd.net",
     "categories": ["All", "Language/Culture"],
-    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg"
+    "imageURL": "https://media.wired.com/photos/624764ed48046e8802c9c5b8/16:9/w_2172,h_1221,c_limit/Learn-ASL-Online-Gear-495674588.jpg"
   },
   {
     "name": "Artificial Intelligence Club",
@@ -32,8 +32,8 @@
     "shortDescription": "To gain a better understanding of artificial intelligence.",
     "longDescription": "To gain a better understanding of artificial intelligence.",
     "sponsorEmail": "leonas.grumulaitis@cfisd.net",
-    "categories": ["All", "STEM","CTE"],
-    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg"
+    "categories": ["All", "STEM", "CTE"],
+    "imageURL": "https://media.npr.org/assets/img/2023/05/24/gettyimages-1358149692-39527b1e42cc64b90835222f8aa203956538fe0e.jpg"
   },
   {
     "name": "Aware Bears",
@@ -59,7 +59,7 @@
     "shortDescription": "To support students with access to education-based resources, specifically in the medical field.",
     "longDescription": "To support students with access to education-based resources, specifically in the medical field.",
     "sponsorEmail": "eileen.newland@cfisd.net",
-    "categories": ["All", "STEM","CTE"],
+    "categories": ["All", "STEM", "CTE"],
     "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg"
   },
   {
@@ -132,7 +132,7 @@
     "shortDescription": "To motivate and educate students who wish to pursue a medical career.",
     "longDescription": "To motivate and educate students who wish to pursue a medical career.",
     "sponsorEmail": "lagina.nosavanh@cfisd.net",
-    "categories": ["All", "STEM","CTE"],
+    "categories": ["All", "STEM", "CTE"],
     "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg"
   },
   {
@@ -159,7 +159,7 @@
     "shortDescription": "To inspire and equip girls with computing skills for 21st-century opportunities.",
     "longDescription": "To inspire and equip girls with computing skills for 21st-century opportunities.",
     "sponsorEmail": "alejandro.garcia@cfisd.net",
-    "categories": ["All", "STEM","CTE"],
+    "categories": ["All", "STEM", "CTE"],
     "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg"
   },
   {
@@ -177,7 +177,7 @@
     "shortDescription": "To promote career opportunities in the health care industry.",
     "longDescription": "To promote career opportunities in the health care industry.",
     "sponsorEmail": "cathlene.webb@cfisd.net",
-    "categories": ["All", "STEM","CTE"],
+    "categories": ["All", "STEM", "CTE"],
     "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg"
   },
   {
@@ -240,7 +240,7 @@
     "shortDescription": "To build a championship-caliber team and compete in Science Olympiad competitions.",
     "longDescription": "To build a championship-caliber team and compete in Science Olympiad competitions.",
     "sponsorEmail": "deborah.turner@cfisd.net",
-    "categories": ["All", "STEM","CTE"],
+    "categories": ["All", "STEM", "CTE"],
     "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg"
   },
   {
@@ -294,7 +294,7 @@
     "shortDescription": "To expose and educate women about STEM opportunities and encourage their participation.",
     "longDescription": "To expose and educate women about STEM opportunities and encourage their participation.",
     "sponsorEmail": "prescellia.valenzuela@cfisd.net",
-    "categories": ["All", "STEM","CTE"],
+    "categories": ["All", "STEM", "CTE"],
     "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg"
   },
   {
@@ -303,17 +303,16 @@
     "shortDescription": "To provide students with hands-on experience in various technical fields.",
     "longDescription": "To provide students with hands-on experience in various technical fields.",
     "sponsorEmail": "priscilla.fleming@cfisd.net",
-    "categories": ["All", "CTE","STEM"],
+    "categories": ["All", "CTE", "STEM"],
     "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg"
   },
   {
-   "name": "Young Investors Society",
-  "id": "34",
-  "shortDescription": "To provide financial literacy education to all students.",
-  "longDescription": "To provide financial literacy education to all students.",
-  "sponsorEmail": "kelli.hawkins@cfisd.net",
-  "categories": ["All"],
-  "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg"
+    "name": "Young Investors Society",
+    "id": "34",
+    "shortDescription": "To provide financial literacy education to all students.",
+    "longDescription": "To provide financial literacy education to all students.",
+    "sponsorEmail": "kelli.hawkins@cfisd.net",
+    "categories": ["All"],
+    "imageURL": "https://paperandinkprinting.com/wp-content/uploads/2019/08/canstockphoto22402523-arcos-creator.com_-1024x1024.jpg"
   }
-
 ]

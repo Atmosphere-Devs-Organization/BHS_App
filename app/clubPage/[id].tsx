@@ -14,15 +14,23 @@ import {
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import clubData from "@/assets/data/clubs-data.json";
-import { Club } from "@/interfaces/club";
+import { Club } from "@/interfaces/Club";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
-import AwesomeButton from 'react-native-really-awesome-button';
-import { collection, doc, setDoc, updateDoc, arrayUnion, arrayRemove, getDoc } from "firebase/firestore";
+import AwesomeButton from "react-native-really-awesome-button";
+import {
+  collection,
+  doc,
+  setDoc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  getDoc,
+} from "firebase/firestore";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig"; // Assuming you have configured Firestore here
 import { onAuthStateChanged, User } from "firebase/auth";
 
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 
 const Page = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -31,14 +39,17 @@ const Page = () => {
   const [isClubInCalendar, setIsClubInCalendar] = useState<boolean>(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user: User | null) => {
-      if (user) {
-        setUserId(user.uid);
-        checkIfClubInCalendar(user.uid);
-      } else {
-        setUserId(null);
+    const unsubscribe = onAuthStateChanged(
+      FIREBASE_AUTH,
+      (user: User | null) => {
+        if (user) {
+          setUserId(user.uid);
+          checkIfClubInCalendar(user.uid);
+        } else {
+          setUserId(null);
+        }
       }
-    });
+    );
     return () => unsubscribe();
   }, []);
 
@@ -65,23 +76,30 @@ const Page = () => {
       }
 
       const userDocRef = doc(collection(FIREBASE_DB, "users"), userId);
-      const clubDocRef = doc(collection(FIREBASE_DB, "clubs"), currentClub.name);
+      const clubDocRef = doc(
+        collection(FIREBASE_DB, "clubs"),
+        currentClub.name
+      );
 
-      await setDoc(clubDocRef, {
-        name: currentClub.name,
-        id: currentClub.id,
-        // Add other fields as necessary, like description, sponsor, etc.
-      }, { merge: true });
+      await setDoc(
+        clubDocRef,
+        {
+          name: currentClub.name,
+          id: currentClub.id,
+          // Add other fields as necessary, like description, sponsor, etc.
+        },
+        { merge: true }
+      );
 
       if (isClubInCalendar) {
         await updateDoc(userDocRef, {
-          clubs: arrayRemove(currentClub.name)
+          clubs: arrayRemove(currentClub.name),
         });
         setIsClubInCalendar(false);
         alert("Club removed from calendar!");
       } else {
         await updateDoc(userDocRef, {
-          clubs: arrayUnion(currentClub.name)
+          clubs: arrayUnion(currentClub.name),
         });
         setIsClubInCalendar(true);
         alert("Club added to calendar!");
@@ -93,8 +111,9 @@ const Page = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: Colors.AmarBackground }]}>
-
+    <View
+      style={[styles.container, { backgroundColor: Colors.AmarBackground }]}
+    >
       <StatusBar
         animated={true}
         barStyle={"dark-content"}
@@ -110,14 +129,13 @@ const Page = () => {
           height: "80%",
         }}
       >
+        <TouchableOpacity onPress={router.back} style={styles.close_button}>
+          <Ionicons name="close-sharp" size={24} color="white" />
+        </TouchableOpacity>
 
-      <TouchableOpacity onPress={router.back} style={styles.close_button}>
-        <Ionicons name="close-sharp" size={24} color="white" />
-      </TouchableOpacity>
+        <Text style={styles.name}>{currentClub?.name}</Text>
 
-      <Text style={styles.name}>{currentClub?.name}</Text>
-
-      <Image source={{ uri: currentClub?.imageURL }} style={styles.image} />
+        <Image source={{ uri: currentClub?.imageURL }} style={styles.image} />
 
         <AwesomeButton
           style={styles.button}
@@ -128,7 +146,9 @@ const Page = () => {
           onPress={handleAddOrRemoveClub}
         >
           <Text style={styles.buttonText}>
-            {isClubInCalendar ? "Remove Club from Calendar" : "Add Club to Calendar"}
+            {isClubInCalendar
+              ? "Remove Club from Calendar"
+              : "Add Club to Calendar"}
           </Text>
         </AwesomeButton>
 
@@ -200,19 +220,18 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   close_button: { padding: 10 },
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingLeft: 16,
     paddingRight: 16,
     paddingTop: 16,
   },
-
 });
 
 export default Page;

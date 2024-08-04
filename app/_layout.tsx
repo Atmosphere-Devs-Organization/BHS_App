@@ -22,6 +22,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    Oswald: require("../assets/fonts/Oswald-VariableFont_wght.ttf"),
     ...FontAwesome.font,
   });
 
@@ -55,8 +56,7 @@ function RootLayoutNav() {
           animation: "slide_from_bottom",
         }}
       />
-     
-          
+
       <Stack.Screen
         name="(screens)/profile"
         options={{

@@ -5,7 +5,6 @@ import {
   ListRenderItem,
   StyleSheet,
   TouchableOpacity,
-  Image,
   ImageBackground,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
@@ -36,16 +35,18 @@ const ClubList = ({ clubs, category }: Props) => {
       href={"/clubPage/" + item.id}
       asChild
       style={{
-        borderWidth: 5,
-        borderRadius: 30,
-        margin: 25,
-        backgroundColor: "white",
-        borderColor: "orange",
+        marginHorizontal: 25,
+        marginVertical: 10,
       }}
     >
       <TouchableOpacity>
         <View style={styles.club}>
-          <ImageBackground source={{ uri: item.imageURL }} style={styles.image}>
+          <ImageBackground
+            source={{ uri: item.imageURL }}
+            style={styles.image}
+            resizeMode="cover"
+            imageStyle={{ borderRadius: 15 }}
+          >
             <Text style={styles.nameText}>{item.name}</Text>
           </ImageBackground>
         </View>
@@ -64,37 +65,35 @@ const ClubList = ({ clubs, category }: Props) => {
 };
 
 const styles = StyleSheet.create({
-  club: {
-    padding: 16,
-  },
+  club: {},
   image: {
+    alignSelf: "center",
     width: "100%",
-    height: 300,
-    borderRadius: 15,
-    borderWidth: 4,
-    borderColor: Colors.imageBorderColor,
-  },
-  bottomText: {
-    borderWidth: 2,
-    padding: 7,
+    borderWidth: 5,
     borderRadius: 20,
-    borderColor: Colors.textBorderColor,
-    marginTop: 7,
-    backgroundColor: Colors.AmarButton,
+    borderColor: "orange",
+    backgroundColor: "white",
+    justifyContent: "center",
+    flex: 1,
+    flexDirection: "column",
   },
   nameText: {
     fontSize: 25,
     fontWeight: "bold",
-    color: "black",
+    color: Colors.clubListName,
     textAlign: "center",
-    marginLeft: 10,
-    marginBottom: 5,
-  },
-  descText: {
-    fontSize: 14,
-    color: "#d3d3d3",
-    marginLeft: 20,
-    width: "90%",
+    // borderWidth: 2.5,
+    alignSelf: "center",
+    marginBottom: 80,
+    marginTop: 10,
+    marginHorizontal: 10,
+    // borderColor: Colors.clubNameBorder,
+    //backgroundColor: Colors.clubNameBG,
+    textShadowColor: "#000",
+    textShadowOffset: { width: -2, height: -2 },
+    textShadowRadius: 10,
+    elevation: 5,
+    padding: 6,
   },
 });
 

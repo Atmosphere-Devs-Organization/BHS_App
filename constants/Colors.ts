@@ -41,7 +41,7 @@ export default {
   title: "#abcddf",
   cTitleBorderColor: "#3e3e3e",
 
-  normalCatIcon: "#7d7d7d",
+  normalCatIcon: "#ababab",
   activeCatIcon: "#ffffff",
 
   nameText: "#abcddf",
@@ -56,8 +56,9 @@ export default {
 
   clubBG: "#ffffff0a",
 
-  clubNameBG: "#ffffff",
-  clubNameBorder: "#000000",
+  clubNameBG: "#0000008c",
+  clubNameBorder: "#9e9d9dff",
+  clubListName: "#ffffff",
 
   //Calendar
   dayBox: "#ffffff22",
@@ -81,4 +82,10 @@ export default {
   elevatorNeededButton: "#260085",
 
   mapTitleBorderColor: "#929292",
+
+  //Grades
+  topText: "#ff4d00",
+
+  transcriptBubblesBG: "#ffffff24",
+  transcriptBubbleText: "#ff4d00",
 };

@@ -21,6 +21,14 @@ const Layout = () => {
         }}
       />
       <Tabs.Screen
+        name="grades"
+        options={{
+          tabBarLabel: "Grades",
+          headerTitle: "Grades",
+          headerShown: true,
+        }}
+      />
+      <Tabs.Screen
         name="clubs"
         options={{
           tabBarLabel: "Clubs",
@@ -33,14 +41,6 @@ const Layout = () => {
         options={{
           tabBarLabel: "Map",
           headerTitle: "Map",
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
-        name="grades"
-        options={{
-          tabBarLabel: "Grades",
-          headerTitle: "Grades",
           headerShown: false,
         }}
       />
