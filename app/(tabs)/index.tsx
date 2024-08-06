@@ -137,6 +137,13 @@ const Home = () => {
           <Text style={styles.buttonText}>Contact Admin</Text>
         </AwesomeButton>
       </View>
+
+      <View style={styles.buttonLink}>
+          <Link href="/(modals)/report">
+            <Text style={styles.buttonText2}> Report an Issue </Text>
+          </Link>
+      </View>
+
     </ImageBackground>
   );
 };
@@ -173,6 +180,16 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     textAlign: 'center',
+  },
+  buttonLink: {
+    marginTop: 30,
+    width: '80%', 
+    alignItems: 'center',
+  },
+  buttonText2: {
+    fontSize: 16,
+    color: "white",
+    fontWeight: "bold",
   },
 });
 

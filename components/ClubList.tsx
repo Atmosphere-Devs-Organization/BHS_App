@@ -11,29 +11,56 @@ import React, { useEffect, useRef, useState } from "react";
 import { Club } from "@/interfaces/Club";
 import { Link } from "expo-router";
 import Colors from "@/constants/Colors";
+import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
+import {  doc, getDoc } from "firebase/firestore";
 
 interface Props {
-  clubs: Club[];
   category: string;
 }
 
 const Empty = <></>;
 
-const ClubList = ({ clubs, category }: Props) => {
+const ClubList = ({ category }: Props) => {
   const listRef = useRef<FlatList>(null);
-
-  const [filteredClubs, setFilteredClubs] = useState<Club[]>(clubs);
+  const [filteredClubs, setFilteredClubs] = useState<Club[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setFilteredClubs(
-      clubs.filter((club) => club.categories.includes(category))
-    );
+    const fetchClubs = async () => {
+      try {
+        // Fetch the array of club document names
+        const clubListRef = doc(FIREBASE_DB, 'clubs', 'Club_list');
+        const clubListSnap = await getDoc(clubListRef);
+        const clubNames = clubListSnap.data()?.club_arr || [];
+
+        // Fetch each club document based on the names in the array
+        const clubsData: Club[] = [];
+        for (const name of clubNames) {
+          const clubRef = doc(FIREBASE_DB, 'clubs', name);
+          const clubSnap = await getDoc(clubRef);
+          if (clubSnap.exists()) {
+            const club = clubSnap.data() as Club;
+            clubsData.push(club);
+          }
+        }
+
+        // Filter clubs by category
+        const filtered = clubsData.filter((club) => club.categories.includes(category));
+        setFilteredClubs(filtered);
+      } catch (error) {
+        console.error("Error fetching clubs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClubs();
   }, [category]);
 
   const renderRow: ListRenderItem<Club> = ({ item }) => (
     <Link
-      href={"/clubPage/" + item.id}
-      asChild
+    href={`/clubPage/${item.name}`}
+    asChild
       style={{
         marginHorizontal: 25,
         marginVertical: 10,
@@ -53,12 +80,13 @@ const ClubList = ({ clubs, category }: Props) => {
       </TouchableOpacity>
     </Link>
   );
+
   return (
     <View style={{ marginBottom: 100 }}>
-      {clubs ? (
-        <FlatList data={filteredClubs} ref={listRef} renderItem={renderRow} />
+      {loading ? (
+        <Text>Loading...</Text>
       ) : (
-        <Text>Loading</Text>
+        <FlatList data={filteredClubs} ref={listRef} renderItem={renderRow} />
       )}
     </View>
   );
@@ -82,13 +110,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: Colors.clubListName,
     textAlign: "center",
-    // borderWidth: 2.5,
     alignSelf: "center",
     marginBottom: 80,
     marginTop: 10,
     marginHorizontal: 10,
-    // borderColor: Colors.clubNameBorder,
-    //backgroundColor: Colors.clubNameBG,
     textShadowColor: "#000",
     textShadowOffset: { width: -2, height: -2 },
     textShadowRadius: 10,
