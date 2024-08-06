@@ -1,8 +1,9 @@
-import { View, Text, StyleSheet, TouchableOpacity, Button, TextInput, FlatList } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList } from "react-native";
 import React, { useEffect, useState } from "react";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { collection, doc, getDocs, onSnapshot } from "firebase/firestore";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
+import { Ionicons } from '@expo/vector-icons';  // Import Ionicons for arrow icons
 
 const Calendar = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -15,7 +16,11 @@ const Calendar = () => {
     return () => unsubscribe();
   }, []);
 
-  return <View>{user ? <NormalCalendar user={user} /> : <LoggedOutCalendar />}</View>;
+  return (
+    <View style={styles.mainContainer}>
+      {user ? <NormalCalendar user={user} /> : <LoggedOutCalendar />}
+    </View>
+  );
 };
 
 const LoggedOutCalendar = () => {
@@ -33,33 +38,31 @@ const NormalCalendar = ({ user }: { user: User }) => {
   const [eventTitle, setEventTitle] = useState<string>("");
 
   useEffect(() => {
-    fetchUserClubs();
-  }, [user]);
-
-  const fetchUserClubs = async () => {
     const userDocRef = doc(FIREBASE_DB, "users", user.uid);
-    const userDocSnap = await getDoc(userDocRef);
+    const unsubscribe = onSnapshot(userDocRef, async (userDocSnap) => {
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        const clubs = userData.clubs || [];
 
-    if (userDocSnap.exists()) {
-      const userData = userDocSnap.data();
-      const clubs = userData.clubs || [];
+        const fetchedEvents: { date: string; title: string; club: string }[] = [];
+        for (const club of clubs) {
+          const clubDocRef = doc(FIREBASE_DB, "clubs", club);
+          const datesCollectionRef = collection(clubDocRef, "dates");
+          const datesSnapshot = await getDocs(datesCollectionRef);
 
-      const fetchedEvents: { date: string; title: string; club: string }[] = [];
-      for (const club of clubs) {
-        const clubDocRef = doc(FIREBASE_DB, "clubs", club);
-        const datesCollectionRef = collection(clubDocRef, "dates");
-        const datesSnapshot = await getDocs(datesCollectionRef);
+          datesSnapshot.forEach((doc) => {
+            const dateData = doc.data();
+            const eventDate = new Date(dateData.date.toDate()).toISOString().split("T")[0];
+            fetchedEvents.push({ date: eventDate, title: doc.id, club });
+          });
+        }
 
-        datesSnapshot.forEach((doc) => {
-          const dateData = doc.data();
-          const eventDate = new Date(dateData.date.toDate()).toISOString().split("T")[0];
-          fetchedEvents.push({ date: eventDate, title: doc.id, club });
-        });
+        setEvents(fetchedEvents);
       }
+    });
 
-      setEvents(fetchedEvents);
-    }
-  };
+    return () => unsubscribe();
+  }, [user]);
 
   const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
   const firstDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay();
@@ -76,7 +79,7 @@ const NormalCalendar = ({ user }: { user: User }) => {
 
   const handleAddEvent = () => {
     if (selectedDate && eventTitle) {
-      setEvents([...events, { date: selectedDate, title: eventTitle, club: "Personal" }]);
+      setEvents([...events, { date: selectedDate, title: eventTitle, club: "Other" }]);
       setEventTitle("");
     }
   };
@@ -91,90 +94,140 @@ const NormalCalendar = ({ user }: { user: User }) => {
     return date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
   };
 
+  const formatDateForList = (dateStr: string) => {
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  };
+
   const days = daysInMonth(currentDate.getFullYear(), currentDate.getMonth());
   const firstDay = firstDayOfMonth(currentDate.getFullYear(), currentDate.getMonth());
 
   const daysArray = Array.from({ length: days }, (_, i) => i + 1);
   const blankDays = Array.from({ length: firstDay }, (_, i) => "");
 
+  const upcomingEvents = events
+    .filter(event => new Date(event.date) >= new Date())
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
   return (
-    <View style={styles.calendarContainer}>
-      <View style={styles.headerContainer}>
-        <Button title="Prev" onPress={handlePrevMonth} />
-        <Text style={styles.header}>
-          {currentDate.toLocaleString("default", { month: "long" })} {currentDate.getFullYear()}
-        </Text>
-        <Button title="Next" onPress={handleNextMonth} />
-      </View>
-      <View style={styles.daysOfWeekContainer}>
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, index) => (
-          <Text key={index} style={styles.dayOfWeek}>
-            {day}
+    <View style={styles.container}>
+      <View style={styles.calendarContainer}>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={handlePrevMonth}>
+            <Ionicons name="arrow-back" size={24} color="black" />
+          </TouchableOpacity>
+          <Text style={styles.header}>
+            {currentDate.toLocaleString("default", { month: "long" })} {currentDate.getFullYear()}
           </Text>
-        ))}
-      </View>
-      <View style={styles.daysContainer}>
-        {blankDays.map((_, index) => (
-          <View key={`blank-${index}`} style={styles.dayBox} />
-        ))}
-        {daysArray.map((day) => {
-          const dateStr = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-          const hasEvent = events.some(event => event.date === dateStr);
-          return (
-            <TouchableOpacity
-              key={day}
-              style={[
-                styles.dayBox,
-                selectedDate === dateStr && styles.selectedDayBox,
-                hasEvent && styles.eventDayBox
-              ]}
-              onPress={() => setSelectedDate(dateStr)}
-            >
-              <Text style={[
-                styles.dayText,
-                selectedDate === dateStr && styles.selectedDayText
-              ]}>
-                {day}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-      {selectedDate && (
-        <View style={styles.eventInputContainer}>
-          <Text style={styles.selectedDateText}>Selected Date: {formatDate(selectedDate)}</Text>
-          <TextInput
-            style={styles.input}
-            value={eventTitle}
-            onChangeText={setEventTitle}
-            placeholder="Event Title"
-          />
-          <Button title="Add Event" onPress={handleAddEvent} />
-          <FlatList
-            data={events.filter(event => event.date === selectedDate)}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item, index }) => (
-              <View style={styles.eventItem}>
-                <Text style={styles.clubText}>{item.club}</Text>
-                <Text>{item.title}</Text>
-                <Button title="Remove" onPress={() => handleRemoveEvent(index)} />
-              </View>
-            )}
-          />
+          <TouchableOpacity onPress={handleNextMonth}>
+            <Ionicons name="arrow-forward" size={24} color="black" />
+          </TouchableOpacity>
         </View>
-      )}
+        <View style={styles.daysOfWeekContainer}>
+          {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
+            <Text key={index} style={styles.dayOfWeek}>
+              {day}
+            </Text>
+          ))}
+        </View>
+        <View style={styles.daysContainer}>
+          {blankDays.map((_, index) => (
+            <View key={`blank-${index}`} style={styles.dayBox} />
+          ))}
+          {daysArray.map((day) => {
+            const dateStr = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+            const hasEvent = events.some(event => event.date === dateStr);
+            return (
+              <TouchableOpacity
+                key={day}
+                style={[
+                  styles.dayBox,
+                  selectedDate === dateStr && styles.selectedDayBox,
+                  hasEvent && styles.eventDayBox
+                ]}
+                onPress={() => {
+                  if (selectedDate === dateStr) {
+                    setSelectedDate(null);  // Deselect the current date
+                  } else {
+                    setSelectedDate(dateStr);
+                  }
+                }}
+              >
+                <Text style={[
+                  styles.dayText,
+                  selectedDate === dateStr && styles.selectedDayText,
+                  hasEvent && styles.eventDayText
+                ]}>
+                  {day}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+        {selectedDate && (
+          <View style={styles.eventInputContainer}>
+            <Text style={styles.selectedDateText}>Selected Date: {formatDate(selectedDate)}</Text>
+            <TextInput
+              style={styles.input}
+              value={eventTitle}
+              onChangeText={setEventTitle}
+              placeholder="Event Title"
+            />
+            <TouchableOpacity onPress={handleAddEvent} style={styles.addButton}>
+              <Text style={styles.addButtonText}>Add Event</Text>
+            </TouchableOpacity>
+            <FlatList
+              data={events.filter(event => event.date === selectedDate)}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item, index }) => (
+                <View style={styles.eventItem}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.eventTitleText}>{item.club}</Text>
+                    <Text style={styles.clubText}>{item.title}</Text>
+                  </View>
+                  <TouchableOpacity onPress={() => handleRemoveEvent(index)} style={styles.removeButton}>
+                    <Ionicons name="trash" size={20} color="red" />
+                  </TouchableOpacity>
+                </View>
+              )}
+            />
+          </View>
+        )}
+      </View>
+      <View style={styles.upcomingEventsContainer}>
+        <Text style={styles.upcomingEventsHeader}>Upcoming Events</Text>
+        <FlatList
+          data={upcomingEvents}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.upcomingEventItem}>
+              <Text style={styles.upcomingEventDate}>{formatDateForList(item.date)}</Text>
+              <Text style={styles.upcomingEventTitle}>{item.title}</Text>
+              <Text style={styles.upcomingEventClub}>{item.club}</Text>
+            </View>
+          )}
+        />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  centered: {
+  mainContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "#f0f0f0",
+  },
+  container: {
+    flex: 1,
+    padding: 10,
   },
   calendarContainer: {
+    marginTop: 20,
     padding: 10,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    elevation: 5,
   },
   headerContainer: {
     flexDirection: "row",
@@ -183,7 +236,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 24,
-    marginTop: 50,
+    marginVertical: 20,
   },
   daysOfWeekContainer: {
     flexDirection: "row",
@@ -202,14 +255,18 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ddd",
   },
   selectedDayBox: {
     backgroundColor: "red",
+    borderRadius: 25,
   },
   eventDayBox: {
-    backgroundColor: "lightblue",
+    backgroundColor: "blue",
+    borderRadius: 25,
+  },
+  eventDayText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
   dayText: {
     color: "#000",
@@ -233,16 +290,75 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 4,
   },
+  addButton: {
+    backgroundColor: "#007bff",
+    padding: 10,
+    borderRadius: 4,
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  addButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
   eventItem: {
-    flexDirection: "column",
+    flexDirection: "row",
+    justifyContent: "space-between",
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
   },
-  clubText: {
+  eventTitleText: {
+    fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 5,
   },
+  clubText: {
+    marginBottom: 5,
+    fontSize: 18,
+  },
+  removeButton: {
+    backgroundColor: "white",
+    padding: 10,
+    borderRadius: 50,
+    borderColor: "white",
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  upcomingEventsContainer: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    elevation: 5,
+  },
+  upcomingEventsHeader: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  upcomingEventItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  upcomingEventDate: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  upcomingEventTitle: {
+    fontSize: 16,
+    marginVertical: 5,
+  },
+  upcomingEventClub: {
+    fontSize: 14,
+    color: "#555",
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
 
 export default Calendar;
