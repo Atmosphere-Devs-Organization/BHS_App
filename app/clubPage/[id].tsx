@@ -5,7 +5,6 @@ import {
   Text,
   Image,
   StyleSheet,
-  ImageBackground,
   TouchableOpacity,
   StatusBar,
   Linking,
@@ -13,53 +12,77 @@ import {
   ScrollView,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import clubData from "@/assets/data/clubs-data.json";
 import { Club } from "@/interfaces/Club";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import AwesomeButton from "react-native-really-awesome-button";
 import {
-  collection,
   doc,
-  setDoc,
+  getDoc,
   updateDoc,
   arrayUnion,
   arrayRemove,
-  getDoc,
 } from "firebase/firestore";
-import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig"; // Assuming you have configured Firestore here
+import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
 
 const screenWidth = Dimensions.get("window").width;
 
 const Page = () => {
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const currentClub = (clubData as Club[]).find((item) => item.id === id);
+  const { id } = useLocalSearchParams<{ id?: string }>(); // Use id as optional
+
+  // Debugging: Check if id is received correctly
+  useEffect(() => {
+    console.log("Received id:", id); // Debug log
+  }, [id]);
+
+  const [currentClub, setCurrentClub] = useState<Club | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [isClubInCalendar, setIsClubInCalendar] = useState<boolean>(false);
 
   useEffect(() => {
+    const fetchClubData = async () => {
+      if (!id) {
+        console.error("Club ID is undefined");
+        return;
+      }
+
+      try {
+        const clubDocRef = doc(FIREBASE_DB, "clubs", id); // Use id to fetch the document
+        const clubDocSnap = await getDoc(clubDocRef);
+        if (clubDocSnap.exists()) {
+          setCurrentClub(clubDocSnap.data() as Club);
+        } else {
+          console.error("Club not found");
+        }
+      } catch (error) {
+        console.error("Error fetching club data: ", error);
+      }
+    };
+
     const unsubscribe = onAuthStateChanged(
       FIREBASE_AUTH,
       (user: User | null) => {
         if (user) {
           setUserId(user.uid);
+          fetchClubData(); // Fetch club data when user is authenticated
           checkIfClubInCalendar(user.uid);
         } else {
           setUserId(null);
         }
       }
     );
+
     return () => unsubscribe();
-  }, []);
+  }, [id]);
 
   const checkIfClubInCalendar = async (userId: string) => {
     try {
-      const userDocRef = doc(collection(FIREBASE_DB, "users"), userId);
+      const userDocRef = doc(FIREBASE_DB, "users", userId);
       const userDocSnap = await getDoc(userDocRef);
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
-        if (userData.clubs && userData.clubs.includes(currentClub?.name)) {
+        if (userData.clubs && userData.clubs.includes(id || "")) {
           setIsClubInCalendar(true);
         }
       }
@@ -69,37 +92,24 @@ const Page = () => {
   };
 
   const handleAddOrRemoveClub = async () => {
+    if (!userId || !currentClub) {
+      alert("You must be logged in to manage clubs in your calendar.");
+      return;
+    }
+  
     try {
-      if (!userId || !currentClub) {
-        alert("You must be logged in to manage clubs in your calendar.");
-        return;
-      }
-
-      const userDocRef = doc(collection(FIREBASE_DB, "users"), userId);
-      const clubDocRef = doc(
-        collection(FIREBASE_DB, "clubs"),
-        currentClub.name
-      );
-
-      await setDoc(
-        clubDocRef,
-        {
-          name: currentClub.name,
-          id: currentClub.id,
-          // Add other fields as necessary, like description, sponsor, etc.
-        },
-        { merge: true }
-      );
-
+      const userDocRef = doc(FIREBASE_DB, "users", userId);
+      const clubDocRef = doc(FIREBASE_DB, "clubs", id || ""); // Use id to reference the document
+  
       if (isClubInCalendar) {
         await updateDoc(userDocRef, {
-          clubs: arrayRemove(currentClub.name),
+          clubs: arrayRemove(id || ""),
         });
         setIsClubInCalendar(false);
         alert("Club removed from calendar!");
       } else {
         await updateDoc(userDocRef, {
-          clubs: arrayUnion(currentClub.name),
+          clubs: arrayUnion(id || ""),
         });
         setIsClubInCalendar(true);
         alert("Club added to calendar!");
