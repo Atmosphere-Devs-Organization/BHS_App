@@ -17,10 +17,15 @@ import {
   Alert,
   Pressable,
   Image,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { router } from "expo-router";
 import Colors from "@/constants/Colors";
-import { Entypo } from "@expo/vector-icons";
+import { Entypo, Ionicons } from "@expo/vector-icons";
 import Numbers from "@/constants/Numbers";
 
 const screenWidth = Dimensions.get("window").width;
@@ -135,138 +140,154 @@ const App = () => {
   };
 
   return (
-    <View
+    <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: Colors.AmarBackground }]}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <Text style={styles.welcomeText}>Welcome To The Bridgeland App</Text>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View>
+          <TouchableOpacity onPress={router.back} style={styles.close_button}>
+            <Ionicons name="close-sharp" size={24} color="white" />
+          </TouchableOpacity>
+          <Text style={styles.welcomeText}>Welcome To The Bridgeland App</Text>
 
-      {isResettingPassword ? (
-        <View style={styles.form}>
-          <View style={styles.box}>
-            <Text style={styles.title}>Reset Password</Text>
-            <TextInput
-              placeholder="Enter your email"
-              value={resetEmail}
-              onChangeText={setResetEmail}
-              style={styles.input}
-              placeholderTextColor="white"
-            />
-            <AwesomeButton
-              style={styles.login_button}
-              backgroundColor={Colors.loginButtonBG}
-              backgroundDarker={Colors.loginButtonDarkerBG}
-              height={screenWidth * 0.15}
-              width={Numbers.loginButtonWidth}
-              raiseLevel={1}
-              onPress={handleResetPassword}
-            >
-              <Entypo
-                name="login"
-                size={16}
-                color={Colors.loginIcon}
-                style={{ alignSelf: "center", marginRight: 15 }}
-              />
-              <Text style={styles.buttonText}>Send Password Reset Email</Text>
-            </AwesomeButton>
-          </View>
-          <Pressable onPress={handleSwitchToLogin}>
-            <Text style={styles.pressableText}>Back to Login</Text>
-          </Pressable>
+          {isResettingPassword ? (
+            <View style={styles.form}>
+              <View style={styles.box}>
+                <Text style={styles.title}>Reset Password</Text>
+                <TextInput
+                  placeholder="Enter your email"
+                  value={resetEmail}
+                  onChangeText={setResetEmail}
+                  style={styles.input}
+                  placeholderTextColor="white"
+                  textContentType="oneTimeCode"
+                />
+                <AwesomeButton
+                  style={styles.login_button}
+                  backgroundColor={Colors.loginButtonBG}
+                  backgroundDarker={Colors.loginButtonDarkerBG}
+                  height={screenWidth * 0.15}
+                  width={Numbers.loginButtonWidth}
+                  raiseLevel={1}
+                  onPress={handleResetPassword}
+                >
+                  <Entypo
+                    name="login"
+                    size={16}
+                    color={Colors.loginIcon}
+                    style={{ alignSelf: "center", marginRight: 15 }}
+                  />
+                  <Text style={styles.buttonText}>
+                    Send Password Reset Email
+                  </Text>
+                </AwesomeButton>
+              </View>
+              <Pressable onPress={handleSwitchToLogin}>
+                <Text style={styles.pressableText}>Back to Login</Text>
+              </Pressable>
+            </View>
+          ) : isCreatingAccount ? (
+            <View style={styles.form}>
+              <View style={styles.box}>
+                <Text style={styles.title}>Create Account</Text>
+                <TextInput
+                  placeholder="Name"
+                  value={name}
+                  onChangeText={setName}
+                  style={styles.input}
+                  placeholderTextColor="white"
+                  textContentType="oneTimeCode"
+                />
+                <TextInput
+                  placeholder="Email"
+                  value={email}
+                  onChangeText={setEmail}
+                  style={styles.input}
+                  placeholderTextColor="white"
+                  textContentType="oneTimeCode"
+                />
+                <TextInput
+                  placeholder="Password"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                  style={styles.input}
+                  placeholderTextColor="white"
+                  textContentType="oneTimeCode"
+                />
+                <AwesomeButton
+                  style={styles.login_button}
+                  backgroundColor={Colors.loginButtonBG}
+                  backgroundDarker={Colors.loginButtonDarkerBG}
+                  height={screenWidth * 0.15}
+                  width={Numbers.loginButtonWidth}
+                  raiseLevel={1}
+                  onPress={signUp}
+                >
+                  <Entypo
+                    name="login"
+                    size={16}
+                    color={Colors.loginIcon}
+                    style={{ alignSelf: "center", marginRight: 15 }}
+                  />
+                  <Text style={styles.buttonText}>Create Account</Text>
+                </AwesomeButton>
+              </View>
+              <Pressable onPress={handleSwitchToLogin}>
+                <Text style={styles.pressableText}>Back to Login</Text>
+              </Pressable>
+            </View>
+          ) : (
+            <View style={styles.form}>
+              <View style={styles.box}>
+                <Text style={styles.title}>Login</Text>
+                <TextInput
+                  placeholder="Email"
+                  value={email}
+                  onChangeText={setEmail}
+                  style={styles.input}
+                  placeholderTextColor="white"
+                  textContentType="oneTimeCode"
+                />
+                <TextInput
+                  placeholder="Password"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                  style={styles.input}
+                  placeholderTextColor="white"
+                  textContentType="oneTimeCode"
+                />
+                <AwesomeButton
+                  style={styles.login_button}
+                  backgroundColor={Colors.loginButtonBG}
+                  backgroundDarker={Colors.loginButtonDarkerBG}
+                  height={screenWidth * 0.15}
+                  width={Numbers.loginButtonWidth}
+                  raiseLevel={1}
+                  onPress={signIn}
+                >
+                  <Entypo
+                    name="login"
+                    size={16}
+                    color={Colors.loginIcon}
+                    style={{ alignSelf: "center", marginRight: 15 }}
+                  />
+                  <Text style={styles.buttonText}>Login</Text>
+                </AwesomeButton>
+              </View>
+              <Pressable onPress={handleSwitchToCreateAccount}>
+                <Text style={styles.pressableText}>Create New Account</Text>
+              </Pressable>
+              <Pressable onPress={handleForgotPassword}>
+                <Text style={styles.pressableText}>Forgot Password</Text>
+              </Pressable>
+            </View>
+          )}
         </View>
-      ) : isCreatingAccount ? (
-        <View style={styles.form}>
-          <View style={styles.box}>
-            <Text style={styles.title}>Create Account</Text>
-            <TextInput
-              placeholder="Name"
-              value={name}
-              onChangeText={setName}
-              style={styles.input}
-              placeholderTextColor="white"
-            />
-            <TextInput
-              placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
-              style={styles.input}
-              placeholderTextColor="white"
-            />
-            <TextInput
-              placeholder="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              style={styles.input}
-              placeholderTextColor="white"
-            />
-            <AwesomeButton
-              style={styles.login_button}
-              backgroundColor={Colors.loginButtonBG}
-              backgroundDarker={Colors.loginButtonDarkerBG}
-              height={screenWidth * 0.15}
-              width={Numbers.loginButtonWidth}
-              raiseLevel={1}
-              onPress={signUp}
-            >
-              <Entypo
-                name="login"
-                size={16}
-                color={Colors.loginIcon}
-                style={{ alignSelf: "center", marginRight: 15 }}
-              />
-              <Text style={styles.buttonText}>Create Account</Text>
-            </AwesomeButton>
-          </View>
-          <Pressable onPress={handleSwitchToLogin}>
-            <Text style={styles.pressableText}>Back to Login</Text>
-          </Pressable>
-        </View>
-      ) : (
-        <View style={styles.form}>
-          <View style={styles.box}>
-            <Text style={styles.title}>Login</Text>
-            <TextInput
-              placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
-              style={styles.input}
-              placeholderTextColor="white"
-            />
-            <TextInput
-              placeholder="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              style={styles.input}
-              placeholderTextColor="white"
-            />
-            <AwesomeButton
-              style={styles.login_button}
-              backgroundColor={Colors.loginButtonBG}
-              backgroundDarker={Colors.loginButtonDarkerBG}
-              height={screenWidth * 0.15}
-              width={Numbers.loginButtonWidth}
-              raiseLevel={1}
-              onPress={signIn}
-            >
-              <Entypo
-                name="login"
-                size={16}
-                color={Colors.loginIcon}
-                style={{ alignSelf: "center", marginRight: 15 }}
-              />
-              <Text style={styles.buttonText}>Login</Text>
-            </AwesomeButton>
-          </View>
-          <Pressable onPress={handleSwitchToCreateAccount}>
-            <Text style={styles.pressableText}>Create New Account</Text>
-          </Pressable>
-          <Pressable onPress={handleForgotPassword}>
-            <Text style={styles.pressableText}>Forgot Password</Text>
-          </Pressable>
-        </View>
-      )}
-    </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -333,6 +354,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingVertical: 10,
   },
+  close_button: { padding: 10 },
 });
 
 export default App;

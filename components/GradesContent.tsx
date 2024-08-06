@@ -13,15 +13,40 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
+import { FIREBASE_AUTH } from "@/FirebaseConfig";
+import { onAuthStateChanged, User } from "firebase/auth";
+import * as SecureStore from "expo-secure-store";
+import { useFocusEffect } from "@react-navigation/native";
 
 interface Props {
   category: string;
 }
 
 const GradesContent = ({ category }: Props) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
+  const [password, setPassword] = useState<string | null>(null);
+  useEffect(() => {
+    onAuthStateChanged(FIREBASE_AUTH, (user) => {
+      setUser(user);
+      setUsername(SecureStore.getItem(user?.uid + "HACusername"));
+      setPassword(SecureStore.getItem(user?.uid + "HACpassword"));
+    });
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setUsername(SecureStore.getItem(user?.uid + "HACusername"));
+      setPassword(SecureStore.getItem(user?.uid + "HACpassword"));
+
+      return () => {
+        // Do something when the screen is unfocused
+        // Useful for cleanup functions
+      };
+    }, [])
+  );
+
   const HAC_Link = "https://home-access.cfisd.net";
-  const User = "s184491";
-  const Pass = "Gabby2007";
 
   const fetchStudentInfo = async (apiSection: string): Promise<any> => {
     try {
@@ -31,13 +56,12 @@ const GradesContent = ({ category }: Props) => {
           "?link=" +
           HAC_Link +
           "/&user=" +
-          User +
+          username +
           "&pass=" +
-          Pass
+          password
       );
       return response.data;
     } catch (error) {
-      console.error(error);
       return undefined;
     }
   };
@@ -47,7 +71,7 @@ const GradesContent = ({ category }: Props) => {
   const [schoolYears, setSchoolYears] = useState<any>([]);
 
   useEffect(() => {
-    if (!transcriptData) {
+    if (username && password) {
       async function fetchAPI() {
         let response = await fetchStudentInfo("transcript");
         //let response2 = await fetchStudentInfo("averages");
@@ -64,7 +88,7 @@ const GradesContent = ({ category }: Props) => {
 
       fetchAPI();
     }
-  }, []);
+  }, [username, password]);
 
   switch (category) {
     case "Grades": {
@@ -135,10 +159,33 @@ const Transcript = ({
   const [showingTranscriptDetails, setShowingDetails] =
     useState<boolean>(false);
 
-  const printDataArray = (array: any[][]): string => {
+  const printSingleTranscriptEntry = (array: any[]): string => {
+    return (
+      array[1] +
+      (array[2] == "" ? "" : ", SEM1: " + array[2]) +
+      (array[3] == "" ? "" : ", SEM2: " + array[3]) +
+      ", " +
+      array[4]
+    );
+  };
+  const printTranscriptArray = (array: any[][]): string => {
+    array.sort((a, b) => {
+      let comp = String(a[1]).localeCompare(String(b[1]));
+      return comp !== 0 ? comp : String(a[0]).localeCompare(String(b[0]));
+    });
     let out = "";
-    for (let i = 1; i < (array ? array.length : 0); i++) {
-      out += "- " + array[i] + "\n\n";
+    for (let i = 0; i < (array ? array.length : 0); i++) {
+      if (String(array[i][0]) !== "Course") {
+        out +=
+          "- " +
+          printSingleTranscriptEntry(array[i]) +
+          (i === array.length - 1
+            ? ""
+            : String(array[i][1]).toUpperCase() ===
+              String(array[i + 1][1]).toUpperCase()
+            ? "\n"
+            : "\n\n");
+      }
     }
     return out;
   };
@@ -176,7 +223,7 @@ const Transcript = ({
 
   const listRef = useRef<FlatList>(null);
 
-  return (
+  return transcriptData !== undefined ? (
     <View>
       {!showingTranscriptDetails && (
         <View>
@@ -236,29 +283,35 @@ const Transcript = ({
               color: "#ff4d00",
               paddingVertical: 20,
               alignSelf: "center",
-              fontSize: 30,
+              fontSize: 35,
               textAlign: "center",
+              fontWeight: "bold",
+              fontFamily: "Oswald",
             }}
           >
-            Courses--Descriptions--SEM1--SEM2--Credit
+            {yearItem.year}
           </Text>
           <ScrollView
-            style={{ marginBottom: 560 }}
+            style={{ marginBottom: 510 }}
             showsVerticalScrollIndicator={false}
           >
             <Text
               style={{
                 color: "white",
                 paddingVertical: 30,
-                paddingHorizontal: 20,
-                fontSize: 18,
+                paddingHorizontal: 25,
+                fontSize: 19,
               }}
             >
-              {printDataArray(yearItem.data)}
+              {printTranscriptArray(yearItem.data)}
             </Text>
           </ScrollView>
         </View>
       )}
+    </View>
+  ) : (
+    <View>
+      <Text style={{ color: "white" }}>HAC Info is Incorrect</Text>
     </View>
   );
 };
