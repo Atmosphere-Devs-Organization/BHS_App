@@ -4,6 +4,7 @@ import { collection, doc, getDocs, onSnapshot } from "firebase/firestore";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { Ionicons } from '@expo/vector-icons';  // Import Ionicons for arrow icons
+import Colors from "@/constants/Colors";
 
 const Calendar = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -234,6 +235,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    backgroundColor: Colors.AmarBackground,
+
   },
   calendarContainer: {
     marginTop: 50,
