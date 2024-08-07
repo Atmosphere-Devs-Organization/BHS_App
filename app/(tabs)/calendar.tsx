@@ -4,6 +4,7 @@ import { collection, doc, getDocs, onSnapshot } from "firebase/firestore";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { Ionicons } from '@expo/vector-icons';  // Import Ionicons for arrow icons
+import Colors from "@/constants/Colors";
 
 const Calendar = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -26,7 +27,7 @@ const Calendar = () => {
 const LoggedOutCalendar = () => {
   return (
     <View style={styles.centered}>
-      <Text>You need to be signed in to access the calendar</Text>
+      <Text style={styles.text}>You need to be signed in to access the calendar</Text>
     </View>
   );
 };
@@ -39,12 +40,16 @@ const NormalCalendar = ({ user }: { user: User }) => {
 
   useEffect(() => {
     const userDocRef = doc(FIREBASE_DB, "users", user.uid);
+    const schoolEventsRef = collection(FIREBASE_DB, "admin", "SchoolDates", "dates");
+
     const unsubscribe = onSnapshot(userDocRef, async (userDocSnap) => {
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
         const clubs = userData.clubs || [];
 
         const fetchedEvents: { date: string; title: string; club: string }[] = [];
+
+        // Fetch club events
         for (const club of clubs) {
           const clubDocRef = doc(FIREBASE_DB, "clubs", club);
           const datesCollectionRef = collection(clubDocRef, "dates");
@@ -56,6 +61,14 @@ const NormalCalendar = ({ user }: { user: User }) => {
             fetchedEvents.push({ date: eventDate, title: doc.id, club });
           });
         }
+
+        // Fetch schoolwide events
+        const schoolEventsSnapshot = await getDocs(schoolEventsRef);
+        schoolEventsSnapshot.forEach((doc) => {
+          const dateData = doc.data();
+          const eventDate = new Date(dateData.date.toDate()).toISOString().split("T")[0];
+          fetchedEvents.push({ date: eventDate, title: doc.id, club: "Schoolwide" });
+        });
 
         setEvents(fetchedEvents);
       }
@@ -115,13 +128,13 @@ const NormalCalendar = ({ user }: { user: User }) => {
       <View style={styles.calendarContainer}>
         <View style={styles.headerContainer}>
           <TouchableOpacity onPress={handlePrevMonth}>
-            <Ionicons name="arrow-back" size={24} color="black" />
+            <Ionicons name="arrow-back" size={24} color="#fff" />
           </TouchableOpacity>
           <Text style={styles.header}>
             {currentDate.toLocaleString("default", { month: "long" })} {currentDate.getFullYear()}
           </Text>
           <TouchableOpacity onPress={handleNextMonth}>
-            <Ionicons name="arrow-forward" size={24} color="black" />
+            <Ionicons name="arrow-forward" size={24} color="#fff" />
           </TouchableOpacity>
         </View>
         <View style={styles.daysOfWeekContainer}>
@@ -173,6 +186,7 @@ const NormalCalendar = ({ user }: { user: User }) => {
               value={eventTitle}
               onChangeText={setEventTitle}
               placeholder="Event Title"
+              placeholderTextColor="#999"
             />
             <TouchableOpacity onPress={handleAddEvent} style={styles.addButton}>
               <Text style={styles.addButtonText}>Add Event</Text>
@@ -216,34 +230,43 @@ const NormalCalendar = ({ user }: { user: User }) => {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#121212",
   },
   container: {
     flex: 1,
     padding: 10,
+    backgroundColor: Colors.AmarBackground,
+
   },
   calendarContainer: {
-    marginTop: 20,
+    marginTop: 50,
     padding: 10,
-    backgroundColor: "#fff",
+    backgroundColor: "#1E1E1E",
     borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
     elevation: 5,
   },
   headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 20,
   },
   header: {
-    fontSize: 24,
-    marginVertical: 20,
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#FFF",
   },
   daysOfWeekContainer: {
     flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 5,
   },
   dayOfWeek: {
-    width: "14.28%",
-    textAlign: "center",
+    color: "#FFF",
     fontWeight: "bold",
   },
   daysContainer: {
@@ -252,50 +275,55 @@ const styles = StyleSheet.create({
   },
   dayBox: {
     width: "14.28%",
-    height: 50,
+    height: 40,
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: 5,
   },
   selectedDayBox: {
-    backgroundColor: "red",
-    borderRadius: 25,
+    backgroundColor: "#2176ff",
+    borderRadius: 50,
   },
   eventDayBox: {
-    backgroundColor: "blue",
-    borderRadius: 25,
+    borderColor: "#FF8500",
+    borderWidth: 2,
+    borderRadius: 50,
+  },
+  dayText: {
+    color: "#FFF",
+  },
+  selectedDayText: {
+    color: "white",
+    fontWeight: "bold",
   },
   eventDayText: {
     color: "#fff",
     fontWeight: "bold",
   },
-  dayText: {
-    color: "#000",
-  },
-  selectedDayText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
   eventInputContainer: {
-    marginTop: 20,
+    marginTop: 10,
+    backgroundColor: "#1E1E1E",
+    padding: 10,
+    borderRadius: 10,
   },
   selectedDateText: {
-    fontSize: 18,
-    marginBottom: 10,
-    textAlign: "center",
+    color: "white",
+    marginBottom: 5,
   },
   input: {
+    height: 40,
+    borderColor: "#666",
     borderWidth: 1,
-    borderColor: "#ddd",
-    padding: 8,
-    marginVertical: 10,
-    borderRadius: 4,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    color: "#FFF",
+    marginBottom: 10,
   },
   addButton: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#ff8500",
     padding: 10,
-    borderRadius: 4,
+    borderRadius: 5,
     alignItems: "center",
-    marginVertical: 10,
   },
   addButtonText: {
     color: "#fff",
@@ -303,62 +331,61 @@ const styles = StyleSheet.create({
   },
   eventItem: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center",
     padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    backgroundColor: "#292929",
+    borderRadius: 5,
+    marginVertical: 5,
   },
   eventTitleText: {
-    fontSize: 16,
+    color: "#FFF",
     fontWeight: "bold",
   },
   clubText: {
-    marginBottom: 5,
-    fontSize: 18,
+    color: "#BBB",
   },
   removeButton: {
-    backgroundColor: "white",
-    padding: 10,
-    borderRadius: 50,
-    borderColor: "white",
-    borderWidth: 2,
-    alignItems: "center",
-    justifyContent: "center",
+    padding: 5,
   },
   upcomingEventsContainer: {
     marginTop: 20,
     padding: 10,
-    backgroundColor: "#fff",
+    backgroundColor: "#1E1E1E",
     borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
     elevation: 5,
   },
   upcomingEventsHeader: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
+    color: "#FFF",
     marginBottom: 10,
   },
   upcomingEventItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    marginBottom: 10,
   },
   upcomingEventDate: {
-    fontSize: 16,
-    fontWeight: "bold",
+    color: "#03DAC6",
   },
   upcomingEventTitle: {
-    fontSize: 16,
-    marginVertical: 5,
+    color: "#FFF",
+    fontWeight: "bold",
   },
   upcomingEventClub: {
-    fontSize: 14,
-    color: "#555",
+    color: "#BBB",
   },
   centered: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  }
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  text: {
+    color: "#FFF",
+    fontSize: 18,
+  },
 });
 
 export default Calendar;
