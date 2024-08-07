@@ -11,8 +11,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { Club } from "@/interfaces/Club";
 import { Link } from "expo-router";
 import Colors from "@/constants/Colors";
-import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
-import {  doc, getDoc } from "firebase/firestore";
+import { FIREBASE_DB } from "@/FirebaseConfig";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 interface Props {
   category: string;
@@ -27,22 +27,31 @@ const ClubList = ({ category }: Props) => {
 
   useEffect(() => {
     const fetchClubs = async () => {
+      console.log("Fetching clubs...");
       try {
         // Fetch the array of club document names
         const clubListRef = doc(FIREBASE_DB, 'admin', 'Club_list');
         const clubListSnap = await getDoc(clubListRef);
         const clubNames = clubListSnap.data()?.club_arr || [];
+        console.log("Club names fetched:", clubNames);
 
         // Fetch each club document based on the names in the array
         const clubsData: Club[] = [];
-        for (const name of clubNames) {
+        for (const [index, name] of clubNames.entries()) {
           const clubRef = doc(FIREBASE_DB, 'clubs', name);
           const clubSnap = await getDoc(clubRef);
           if (clubSnap.exists()) {
             const club = clubSnap.data() as Club;
             clubsData.push(club);
+            
+            // Update each club's id field with its index
+            await updateDoc(clubRef, { id: index });
+          } else {
+            console.log(`Club ${name} does not exist.`);
           }
         }
+
+        // Log each club in the array along with its index
 
         // Filter clubs by category
         const filtered = clubsData.filter((club) => club.categories.includes(category));
@@ -59,8 +68,8 @@ const ClubList = ({ category }: Props) => {
 
   const renderRow: ListRenderItem<Club> = ({ item }) => (
     <Link
-    href={`/clubPage/${item.name}`}
-    asChild
+      href={`/clubPage/${item.name}`}
+      asChild
       style={{
         marginHorizontal: 25,
         marginVertical: 10,
@@ -86,7 +95,12 @@ const ClubList = ({ category }: Props) => {
       {loading ? (
         <Text>Loading...</Text>
       ) : (
-        <FlatList data={filteredClubs} ref={listRef} renderItem={renderRow} />
+        <FlatList 
+          data={filteredClubs} 
+          ref={listRef} 
+          renderItem={renderRow} 
+          keyExtractor={(item) => item.name} // Ensure each item has a unique key
+        />
       )}
     </View>
   );

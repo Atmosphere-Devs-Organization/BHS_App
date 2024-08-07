@@ -1,5 +1,5 @@
 export default {
-  overallBackground: "#000c28",
+  overallBackground: "#000042",
 
   //Tab Bar
   tabActiveTint: "#FF385C",
