@@ -29,7 +29,7 @@ const ClubList = ({ category }: Props) => {
     const fetchClubs = async () => {
       try {
         // Fetch the array of club document names
-        const clubListRef = doc(FIREBASE_DB, 'clubs', 'Club_list');
+        const clubListRef = doc(FIREBASE_DB, 'admin', 'Club_list');
         const clubListSnap = await getDoc(clubListRef);
         const clubNames = clubListSnap.data()?.club_arr || [];
 
