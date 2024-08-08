@@ -290,11 +290,6 @@ const Map = () => {
   };
 
   return (
-    // <ImageBackground
-    //   source={require("@/assets/images/GenericBG.png")}
-    //   resizeMode="cover"
-    //   style={styles.container}
-    // >
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={{ marginTop: 50, paddingBottom: 100 }}
@@ -303,89 +298,52 @@ const Map = () => {
       >
         <Text style={styles.title}>School Map</Text>
 
-        <AutoCompleteTextInput
-          style={{
-            width: "75%",
-            marginTop: "10%",
-            borderColor: "gray",
-            borderWidth: 3,
-            alignSelf: "center",
-            padding: 10,
-            color: "#ffffff",
-          }}
-          onChangeText={setText1}
-          value={text1}
-          keyboardType="default"
-          placeholder="Enter the Room you're at now"
-          possibleInputs={validRooms}
-        />
-        <AutoCompleteTextInput
-          style={{
-            width: "75%",
-            marginTop: "7%",
-            borderColor: "gray",
-            borderWidth: 3,
-            alignSelf: "center",
-            padding: 10,
-            color: "#ffffff",
-          }}
-          onChangeText={setText2}
-          value={text2}
-          keyboardType="default"
-          placeholder="Enter the Room you're going"
-          possibleInputs={validRooms}
-        />
-        {error && error !== "Blank Error" && (
-          <Text style={styles.error}>{error}</Text>
-        )}
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "row",
-            justifyContent: "space-between",
-            paddingHorizontal: "10%",
-            marginVertical: 10,
-          }}
-        >
-          <View
-            style={{
-              alignContent: "center",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <BouncyCheckbox
-              onPress={(isChecked: boolean) => {
-                setElevatorUse(isChecked);
-              }}
-              fillColor={Colors.elevatorNeededButton}
-            />
-            <Text
-              style={{
-                textAlign: "center",
-                color: "#fff",
-                paddingTop: 10,
-                fontWeight: "bold",
-              }}
+        <View style={styles.card}>
+          <AutoCompleteTextInput
+            style={styles.textInput}
+            onChangeText={setText1}
+            value={text1}
+            keyboardType="default"
+            placeholder="Current Room Number/Name"
+            placeholderTextColor="#ffffff"
+            possibleInputs={validRooms}
+          />
+          <AutoCompleteTextInput
+            style={styles.textInput}
+            onChangeText={setText2}
+            value={text2}
+            keyboardType="default"
+            placeholder="Destination Room Number/Name"
+            placeholderTextColor="#ffffff"
+            possibleInputs={validRooms}
+          />
+          {error && error !== "Blank Error" && (
+            <Text style={styles.error}>{error}</Text>
+          )}
+          <View style={styles.buttonContainer}>
+            <View style={styles.checkboxContainer}>
+              <BouncyCheckbox
+                onPress={(isChecked: boolean) => {
+                  setElevatorUse(isChecked);
+                }}
+                fillColor={Colors.elevatorNeededButton}
+              />
+              <Text style={styles.checkboxText}>Elevator Needed</Text>
+            </View>
+            <AwesomeButton
+              backgroundColor={Colors.mapSubmitButton}
+              backgroundDarker={Colors.mapSubmitButtonDark}
+              height={60}
+              width={150}
+              raiseLevel={10}
+              onPressOut={handleSubmit}
             >
-              Elevator Needed
-            </Text>
+              <Text style={styles.buttonText}>Find Path!</Text>
+            </AwesomeButton>
           </View>
-          <AwesomeButton
-            style={{}}
-            backgroundColor={Colors.mapSubmitButton}
-            backgroundDarker={Colors.mapSubmitButtonDark}
-            height={60}
-            width={150}
-            raiseLevel={10}
-            onPressOut={handleSubmit}
-          >
-            <Text style={{ fontWeight: "bold" }}>Find Path!</Text>
-          </AwesomeButton>
         </View>
 
         {!error && !loading && room1Item && room2Item && (
-          //router.push: Startpos Col,Startpos Row,Endpos Col,Endpos Row,Floor
           <TouchableOpacity
             onPress={() =>
               router.push(
@@ -446,7 +404,6 @@ const Map = () => {
           )}
       </ScrollView>
     </View>
-    //</ImageBackground>
   );
 };
 
@@ -454,7 +411,49 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    backgroundColor: Colors.overallBackground,
+    backgroundColor: "#121212",
+  },
+  card: {
+    backgroundColor: "#1e1e1e",
+    borderRadius: 10,
+    padding: 20,
+    marginHorizontal: 20,
+    marginVertical: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  textInput: {
+    width: "100%",
+    marginVertical: 7,
+    borderColor: "gray",
+    borderWidth: 2,
+    borderRadius: 10,
+    padding: 10,
+    paddingLeft: 20,
+    color: "#ffffff",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  checkboxContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  checkboxText: {
+    textAlign: "center",
+    color: "#fff",
+    paddingTop: 10,
+    fontWeight: "bold",
+  },
+  buttonText: {
+    fontWeight: "bold",
+    color: "#ffffff",
   },
   error: {
     color: "red",
@@ -462,23 +461,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   title: {
-    fontSize: 24,
+    fontSize: 50,
     justifyContent: "flex-start",
     fontWeight: "bold",
     textAlign: "center",
-    marginVertical: 30,
-    color: "white",
-    borderWidth: 5,
-    borderColor: Colors.mapTitleBorderColor,
-    width: "50%",
-    alignSelf: "center",
-    padding: 20,
-  },
-  subtitle: {
-    fontSize: 16,
-    marginBottom: 20,
-    textAlign: "center",
-    color: "white",
+    marginBottom: 30,
+    color: "#ffffff",
   },
 });
 

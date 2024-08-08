@@ -1,10 +1,9 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import { collection, doc, getDocs, onSnapshot } from "firebase/firestore";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { Ionicons } from '@expo/vector-icons';  // Import Ionicons for arrow icons
-import Colors from "@/constants/Colors";
 
 const Calendar = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -125,6 +124,10 @@ const NormalCalendar = ({ user }: { user: User }) => {
 
   return (
     <View style={styles.container}>
+      {/* Title Section */}
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>My Calendar</Text>
+      </View>
       <View style={styles.calendarContainer}>
         <View style={styles.headerContainer}>
           <TouchableOpacity onPress={handlePrevMonth}>
@@ -181,16 +184,7 @@ const NormalCalendar = ({ user }: { user: User }) => {
         {selectedDate && (
           <View style={styles.eventInputContainer}>
             <Text style={styles.selectedDateText}>Selected Date: {formatDate(selectedDate)}</Text>
-            <TextInput
-              style={styles.input}
-              value={eventTitle}
-              onChangeText={setEventTitle}
-              placeholder="Event Title"
-              placeholderTextColor="#999"
-            />
-            <TouchableOpacity onPress={handleAddEvent} style={styles.addButton}>
-              <Text style={styles.addButtonText}>Add Event</Text>
-            </TouchableOpacity>
+            
             <FlatList
               data={events.filter(event => event.date === selectedDate)}
               keyExtractor={(item, index) => index.toString()}
@@ -200,9 +194,6 @@ const NormalCalendar = ({ user }: { user: User }) => {
                     <Text style={styles.eventTitleText}>{item.club}</Text>
                     <Text style={styles.clubText}>{item.title}</Text>
                   </View>
-                  <TouchableOpacity onPress={() => handleRemoveEvent(index)} style={styles.removeButton}>
-                    <Ionicons name="trash" size={20} color="red" />
-                  </TouchableOpacity>
                 </View>
               )}
             />
@@ -237,7 +228,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   calendarContainer: {
-    marginTop: 50,
+    marginTop: 20,
     padding: 10,
     backgroundColor: "#1E1E1E",
     borderRadius: 10,
@@ -303,10 +294,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#1E1E1E",
     padding: 10,
     borderRadius: 10,
+    alignContent: "center",
   },
   selectedDateText: {
     color: "white",
-    marginBottom: 5,
+    marginTop: -10,
+    fontWeight: "bold",
   },
   input: {
     height: 40,
@@ -357,16 +350,19 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   upcomingEventsHeader: {
-    fontSize: 18,
+    fontSize: 26,
     fontWeight: "bold",
     color: "#FFF",
     marginBottom: 10,
+    marginLeft: 10,
   },
   upcomingEventItem: {
     marginBottom: 10,
+    marginLeft: 10,
   },
   upcomingEventDate: {
-    color: "#03DAC6",
+    color: "#2176ff",
+    fontWeight: "bold",
   },
   upcomingEventTitle: {
     color: "#FFF",
@@ -383,6 +379,15 @@ const styles = StyleSheet.create({
   text: {
     color: "#FFF",
     fontSize: 18,
+  },
+  titleContainer: {
+    marginTop: 30,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    color: '#FFF',
   },
 });
 

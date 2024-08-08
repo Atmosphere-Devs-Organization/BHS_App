@@ -18,6 +18,7 @@ interface Props {
   value: string | undefined;
   keyboardType: KeyboardTypeOptions | undefined;
   placeholder: string | undefined;
+  placeholderTextColor?: string;
   possibleInputs: string[];
 }
 
@@ -27,6 +28,7 @@ const AutoCompleteTextInput = ({
   value,
   keyboardType,
   placeholder,
+  placeholderTextColor, // Add this line
   possibleInputs,
 }: Props) => {
   const listRef = useRef<FlatList>(null);
@@ -52,6 +54,7 @@ const AutoCompleteTextInput = ({
       </View>
     </TouchableOpacity>
   );
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -60,6 +63,7 @@ const AutoCompleteTextInput = ({
         value={value}
         keyboardType={keyboardType}
         placeholder={placeholder}
+        placeholderTextColor={placeholderTextColor} // Add this line
       />
 
       {value !== "" ? (

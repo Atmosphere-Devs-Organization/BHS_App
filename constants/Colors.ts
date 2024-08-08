@@ -79,7 +79,7 @@ export default {
   mapSubmitButton: "#3700b8",
   mapSubmitButtonDark: "#270082",
 
-  elevatorNeededButton: "#260085",
+  elevatorNeededButton: "#ffffff",
 
   mapTitleBorderColor: "#929292",
 

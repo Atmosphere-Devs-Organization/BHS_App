@@ -233,7 +233,7 @@ const Page = () => {
     setImageHeight(calculatedHeight);
   };
   return (
-    <View style={[styles.container, { backgroundColor: Colors.AmarBackground }]}>
+    <View style={[styles.container, { backgroundColor: "#121212" }]}>
       <StatusBar
         animated={true}
         barStyle={"dark-content"}

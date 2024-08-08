@@ -139,9 +139,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginHorizontal: 10,
     textShadowColor: "#000",
-    textShadowOffset: { width: -2, height: -2 },
+    textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 10,
-    elevation: 5,
+    elevation: 10,
     padding: 6,
   },
 });
