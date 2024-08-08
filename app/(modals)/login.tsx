@@ -81,7 +81,7 @@ const App = () => {
         email: user.email,
         HACusername: "",
         HACpassword: "",
-        clubs: ["Computer Science Club", "Future Business Leaders of America"],
+        clubs: ["Computer Science Club", "Future Business leaders of America (FBLA)"],
       });
 
       signIn();

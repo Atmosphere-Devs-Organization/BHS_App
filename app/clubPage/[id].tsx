@@ -12,7 +12,7 @@ import {
   ScrollView,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { Club } from "@/interfaces/Club";
+import { Club } from "@/interfaces/club";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import AwesomeButton from "react-native-really-awesome-button";
@@ -44,7 +44,10 @@ const Page = () => {
   const [isClubInCalendar, setIsClubInCalendar] = useState<boolean>(false);
   const [upcomingDates, setUpcomingDates] = useState<{ name: string; time: Date }[]>([]);
   const [pastEvents, setPastEvents] = useState<{ name: string; imageURL: string; description: string }[]>([]);
-
+  
+  // State to store image dimensions
+  const [imageHeight, setImageHeight] = useState<number>(screenHeight * 0.3);
+  
   useEffect(() => {
     console.log("useEffect called");
 
@@ -223,6 +226,12 @@ const Page = () => {
     }
   };
 
+  // Handle image load to get dimensions
+  const handleImageLoad = (event: { nativeEvent: { source: { width: number; height: number } } }) => {
+    const { width, height } = event.nativeEvent.source;
+    const calculatedHeight = (screenWidth - 32) * (height / width);
+    setImageHeight(calculatedHeight);
+  };
   return (
     <View style={[styles.container, { backgroundColor: Colors.AmarBackground }]}>
       <StatusBar
@@ -235,7 +244,12 @@ const Page = () => {
         <TouchableOpacity onPress={router.back} style={styles.close_button}>
           <Ionicons name="close-sharp" size={24} color="white" />
         </TouchableOpacity>
-        <Image source={{ uri: currentClub?.imageURL }} style={styles.image} />
+        <Image
+          source={{ uri: currentClub?.imageURL }}
+          style={[styles.image, { height: imageHeight }]}
+          resizeMode="contain"
+          onLoad={handleImageLoad}
+        />
         <Text style={styles.name}>{currentClub?.name}</Text>
         <View style={styles.divider} />
         <Text style={styles.description}>{currentClub?.longDescription}</Text>
@@ -262,6 +276,7 @@ const Page = () => {
         ) : (
           <Text style={styles.noDates}>No upcoming dates.</Text>
         )}
+      <View style={styles.buttonContainer}>
         <AwesomeButton
           style={styles.button}
           backgroundColor="#007BFF"
@@ -272,12 +287,17 @@ const Page = () => {
         >
           {isClubInCalendar ? "Remove from Calendar" : "Add to Calendar"}
         </AwesomeButton>
+      </View>
         <View style={styles.divider} />
         <Text style={styles.title}>Past Events</Text>
         {pastEvents.length > 0 ? (
           pastEvents.map((event, index) => (
             <View key={index} style={styles.eventContainer}>
-              <Image source={{ uri: event.imageURL }} style={styles.eventImage} />
+              <Image 
+                source={{ uri: event.imageURL }} 
+                style={[styles.image, { height: imageHeight }]}
+                onLoad={handleImageLoad}
+               />
               <Text style={styles.eventName}>{event.name}</Text>
               <Text style={styles.eventDescription}>{event.description}</Text>
             </View>
@@ -299,12 +319,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   close_button: {
-    alignSelf: 'flex-end',
+    alignSelf: 'flex-start',
     margin: 10,
   },
   image: {
     width: screenWidth - 32,
-    height: screenHeight * 0.3,
     borderRadius: 10,
     marginBottom: 16,
   },
@@ -375,6 +394,10 @@ const styles = StyleSheet.create({
   noEvents: {
     fontSize: 16,
     color: 'white',
+  },
+  buttonContainer: {
+    alignItems: 'center', // Center horizontally
+    marginVertical: 16,
   },
 });
 
