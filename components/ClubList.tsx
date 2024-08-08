@@ -8,25 +8,36 @@ import {
   ImageBackground,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { Club } from "@/interfaces/Club";
+import { Club } from "@/interfaces/club";
 import { Link } from "expo-router";
 import Colors from "@/constants/Colors";
 import { FIREBASE_DB } from "@/FirebaseConfig";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 
 interface Props {
   category: string;
 }
 
-const Empty = <></>;
-
 const ClubList = ({ category }: Props) => {
   const listRef = useRef<FlatList>(null);
   const [filteredClubs, setFilteredClubs] = useState<Club[]>([]);
   const [loading, setLoading] = useState(true);
+  const clubsCacheRef = useRef<Club[]>([]); // Cache for clubs data
 
   useEffect(() => {
     const fetchClubs = async () => {
+      if (clubsCacheRef.current.length > 0) {
+        // Use cached data if available
+        console.log("Using cached clubs data...");
+        const filtered = clubsCacheRef.current.filter((club) =>
+          club.categories.includes(category)
+        );
+        console.log("Filtered clubs from cache:", filtered);
+        setFilteredClubs(filtered);
+        setLoading(false);
+        return;
+      }
+
       console.log("Fetching clubs...");
       try {
         // Fetch the array of club document names
@@ -37,24 +48,23 @@ const ClubList = ({ category }: Props) => {
 
         // Fetch each club document based on the names in the array
         const clubsData: Club[] = [];
-        for (const [index, name] of clubNames.entries()) {
+        for (const name of clubNames) {
           const clubRef = doc(FIREBASE_DB, 'clubs', name);
           const clubSnap = await getDoc(clubRef);
           if (clubSnap.exists()) {
             const club = clubSnap.data() as Club;
             clubsData.push(club);
-            
-            // Update each club's id field with its index
-            await updateDoc(clubRef, { id: index });
-          } else {
-            console.log(`Club ${name} does not exist.`);
           }
         }
 
-        // Log each club in the array along with its index
+        // Cache the fetched clubs data
+        clubsCacheRef.current = clubsData;
 
         // Filter clubs by category
-        const filtered = clubsData.filter((club) => club.categories.includes(category));
+        const filtered = clubsData.filter((club) =>
+          club.categories.includes(category)
+        );
+        console.log("Filtered clubs:", filtered);
         setFilteredClubs(filtered);
       } catch (error) {
         console.error("Error fetching clubs:", error);
