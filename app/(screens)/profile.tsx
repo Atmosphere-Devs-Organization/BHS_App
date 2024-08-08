@@ -271,7 +271,7 @@ const NormalProfile = ({
                 onPress={() => {
                   if (isEditingPassword) {
                     setIsEditingPass(false);
-                    updateUser("HACusername");
+                    updateUser("HACpassword");
                   } else {
                     setIsEditingSid(false);
                     setIsEditingName(false);
