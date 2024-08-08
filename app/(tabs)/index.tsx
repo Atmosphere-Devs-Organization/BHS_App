@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   StatusBar,
   StyleSheet,
@@ -7,15 +7,15 @@ import {
   Dimensions,
   Image,
   TouchableOpacity,
-  ScrollView,
+  Animated,
   TextInput,
   Alert,
   Linking,
-  Animated
+  TouchableWithoutFeedback
 } from 'react-native';
 import AwesomeButton from 'react-native-really-awesome-button';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter, Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { FIREBASE_AUTH } from '@/FirebaseConfig';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import Colors from '@/constants/Colors';
@@ -23,7 +23,7 @@ import Numbers from '@/constants/Numbers';
 import Carousel from 'react-native-reanimated-carousel';
 import * as MailComposer from 'expo-mail-composer';
 import * as ImagePicker from 'expo-image-picker';
-import { buttons, Button } from '@/components/ButtonData'; // Import the button data
+import { buttons, Button } from '@/components/ButtonData'; 
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -41,9 +41,12 @@ const Home: React.FC = () => {
   const [issueDescription, setIssueDescription] = useState<string>('');
   const [reportImages, setReportImages] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [isScrolling, setIsScrolling] = useState<boolean>(false);
+  const [pressedButton, setPressedButton] = useState<string | null>(null);
 
   const scrollY = useRef(new Animated.Value(0)).current;
   const [isButtonVisible, setIsButtonVisible] = useState(true);
+  const [buttonPressTimeout, setButtonPressTimeout] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
@@ -115,6 +118,30 @@ const Home: React.FC = () => {
     }
   };
 
+  const handleButtonPress = (url: string) => {
+    if (!isScrolling) {
+      Linking.openURL(url);
+    }
+  };
+
+  const handlePressIn = (buttonTitle: string) => {
+    setPressedButton(buttonTitle);
+
+    
+    if (buttonPressTimeout) {
+      clearTimeout(buttonPressTimeout);
+    }
+  };
+
+  const handlePressOut = (buttonTitle: string, url: string) => {
+    setButtonPressTimeout(setTimeout(() => {
+      if (pressedButton === buttonTitle) {
+        handleButtonPress(url);
+      }
+      setPressedButton(null);
+    }, 500)); 
+  };
+
   return (
     <View style={[styles.home_BG_Color, { backgroundColor: Colors.overallBackground }]}>
       <StatusBar
@@ -124,123 +151,132 @@ const Home: React.FC = () => {
         hidden={false}
       />
 
-      <Animated.ScrollView
-        contentContainerStyle={styles.scrollViewContent}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
-        )}
-      >
-        <Animated.View style={[
-          styles.profileButtonContainer,
-          {
-            opacity: scrollY.interpolate({
-              inputRange: [0, 100], // Change to match when the button should start hiding
-              outputRange: [1, 0],
-              extrapolate: 'clamp',
-            }),
-          }
-        ]}>
-          {isButtonVisible && (
-            <TouchableOpacity
-              onPress={() => router.push('(screens)/profile')}
-              style={styles.profileButton}
-            >
-              <Ionicons
-                name="person-circle-sharp"
-                size={Numbers.profileButtonSize}
-                color={Colors.profileButton}
-              />
-            </TouchableOpacity>
+      <TouchableWithoutFeedback onPressIn={() => setIsScrolling(true)}>
+        <Animated.ScrollView
+          contentContainerStyle={styles.scrollViewContent}
+          onScrollBeginDrag={() => setIsScrolling(true)}
+          onScrollEndDrag={() => setIsScrolling(false)}
+          onMomentumScrollEnd={() => setIsScrolling(false)}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: false }
           )}
-        </Animated.View>
-
-        <View style={styles.welcomeContainer}>
-          <Text style={styles.welcomeText}>Welcome to the BHS app</Text>
-        </View>
-
-        <View style={styles.carouselContainer}>
-          <Carousel
-            loop
-            width={screenWidth * 0.9} // Adjusted width
-            height={180} // Adjusted height
-            autoPlay={true}
-            autoPlayInterval={8000}
-            data={images}
-            scrollAnimationDuration={1000}
-            renderItem={({ item }: { item: any }) => (
-              <Image source={item} style={styles.carouselImage} />
-            )}
-          />
-        </View>
-
-        <View style={styles.resourcesContainer}>
-          <Text style={styles.resourcesText}>Resources</Text>
-        </View>
-
-        <View style={styles.tabContainer}>
-          {categories.map(category => (
-            <TouchableOpacity
-              key={category}
-              style={[
-                styles.tabButton,
-                selectedCategory === category && styles.tabButtonActive
-              ]}
-              onPress={() => setSelectedCategory(category)}
-            >
-              <Text style={styles.tabButtonText}>{category}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <View style={styles.buttonsContainer}>
-          {filterButtons().map((button: Button) => (
-            <AwesomeButton
-              key={button.title}
-              style={styles.button}
-              backgroundColor="#007BFF"
-              backgroundDarker="#0056b3"
-              height={50}
-              width={screenWidth * 0.7}
-              onPressOut={() => Linking.openURL(button.link)}
-            >
-              <Text style={styles.buttonText}>{button.title}</Text>
-            </AwesomeButton>
-          ))}
-        </View>
-
-        <View style={styles.reportSection}>
-          <Link href="/(tabs)/calendar" style={styles.backButton}>
-            <Ionicons name="arrow-back-outline" size={24} color={Colors.clubName} />
-          </Link>
-          <Text style={styles.title}>Report an Issue</Text>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Describe the issue..."
-            multiline
-            numberOfLines={6}
-            value={issueDescription}
-            onChangeText={setIssueDescription}
-          />
-
-          <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-            <Text style={styles.uploadButtonText}>Upload Image</Text>
-          </TouchableOpacity>
-          {reportImages.map((image, index) => (
-            <View key={index} style={styles.imageContainer}>
-              <Image source={{ uri: image }} style={styles.image} />
-              <TouchableOpacity onPress={() => removeImage(index)} style={styles.removeButton}>
-                <Ionicons name="close-circle-outline" size={24} color="white" />
+        >
+          <Animated.View style={[
+            styles.profileButtonContainer,
+            {
+              opacity: scrollY.interpolate({
+                inputRange: [0, 100],
+                outputRange: [1, 0],
+                extrapolate: 'clamp',
+              }),
+            }
+          ]}>
+            {isButtonVisible && (
+              <TouchableOpacity
+                onPress={() => router.push('(screens)/profile')}
+                style={styles.profileButton}
+              >
+                <Ionicons
+                  name="person-circle-sharp"
+                  size={Numbers.profileButtonSize}
+                  color={Colors.profileButton}
+                />
               </TouchableOpacity>
-            </View>
-          ))}
+            )}
+          </Animated.View>
 
-          <TouchableOpacity style={styles.reportButton} onPress={handleReportIssue}>
-            <Text style={styles.reportButtonText}>Report Issue</Text>
-          </TouchableOpacity>
-        </View>
-      </Animated.ScrollView>
+          <View style={styles.welcomeContainer}>
+            <Text style={styles.welcomeText}>Welcome to the BHS app</Text>
+          </View>
+
+          <View style={styles.carouselContainer}>
+            <Carousel
+              loop
+              width={screenWidth * 0.9}
+              height={180}
+              autoPlay={true}
+              autoPlayInterval={8000}
+              data={images}
+              scrollAnimationDuration={1000}
+              renderItem={({ item }: { item: any }) => (
+                <Image source={item} style={styles.carouselImage} />
+              )}
+            />
+          </View>
+
+          <View style={styles.resourcesContainer}>
+            <Text style={styles.resourcesText}>Resources</Text>
+          </View>
+
+          <View style={styles.tabContainer}>
+            {categories.map(category => (
+              <TouchableOpacity
+                key={category}
+                style={[
+                  styles.tabButton,
+                  selectedCategory === category && styles.tabButtonActive
+                ]}
+                onPress={() => setSelectedCategory(category)}
+              >
+                <Text style={styles.tabButtonText}>{category}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <View style={styles.buttonsContainer}>
+            {filterButtons().map((button: Button) => (
+              <AwesomeButton
+                key={button.title}
+                onPressIn={() => handlePressIn(button.title)}
+                onPressOut={() => handlePressOut(button.title, button.link)}
+                style={[
+                  styles.button,
+                  pressedButton === button.title && styles.buttonPressed
+                ]}
+                backgroundColor="#007BFF"
+                backgroundDarker="#0056b3"
+                height={50}
+                width={screenWidth * 0.7}
+              >
+                <Text style={styles.buttonText}>{button.title}</Text>
+              </AwesomeButton>
+            ))}
+          </View>
+
+          <View style={styles.reportSection}>
+            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+              <Ionicons name="arrow-back-outline" size={24} color={Colors.clubName} />
+            </TouchableOpacity>
+            <Text style={styles.title}>Report an Issue</Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Describe the issue..."
+              multiline
+              numberOfLines={6}
+              value={issueDescription}
+              onChangeText={setIssueDescription}
+            />
+
+            <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
+              <Text style={styles.uploadButtonText}>Upload Image</Text>
+            </TouchableOpacity>
+            {reportImages.map((image, index) => (
+              <View key={index} style={styles.imageContainer}>
+                <Image source={{ uri: image }} style={styles.image} />
+                <TouchableOpacity onPress={() => removeImage(index)} style={styles.removeButton}>
+                  <Ionicons name="close-circle-outline" size={24} color="white" />
+                </TouchableOpacity>
+              </View>
+            ))}
+
+            <TouchableOpacity style={styles.reportButton} onPress={handleReportIssue}>
+              <Text style={styles.reportButtonText}>Report Issue</Text>
+            </TouchableOpacity>
+          </View>
+        </Animated.ScrollView>
+      </TouchableWithoutFeedback>
     </View>
   );
 };
@@ -252,30 +288,23 @@ const styles = StyleSheet.create({
   scrollViewContent: {
     flexGrow: 1,
     alignItems: 'center',
-    paddingBottom: 150, // Ensures enough space for the bottom buttons
-    paddingTop: 140, // Adjusted to move carousel down further
+    paddingBottom: 150, 
+    paddingTop: 140, 
   },
   welcomeContainer: {
-    width: '100%',
     alignItems: 'center',
     paddingTop: 20,
     marginBottom: 20,
-   // borderWidth: 1,
-    //borderColor: 'white',
-    //backgroundColor: 'orange',
   },
   welcomeText: {
-    color: 'white',
-    fontSize: 30, // Adjust font size as needed
+    fontSize: 34,
     fontWeight: 'bold',
-    marginBottom: 15,
+    color: 'white',
   },
   carouselContainer: {
-    width: '90%', // Adjusted width
-    aspectRatio: 1.7,
+    width: '100%',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 10,
+    marginBottom: 20,
   },
   carouselImage: {
     width: '100%',
@@ -286,13 +315,12 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     paddingTop: 0,
-
   },
   resourcesText: {
-    color: Colors.clubName, // Updated color
-    fontSize: 30, // Adjust font size as needed
-    fontWeight: '600', // Semi-bold
-    marginBottom: 10, // Adjust margin as needed
+    color: Colors.clubName,
+    fontSize: 30,
+    fontWeight: '600',
+    marginBottom: 10,
   },
   tabContainer: {
     flexDirection: 'row',
@@ -329,6 +357,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  buttonPressed: {
+    backgroundColor: '#0056b3',
+  },
   reportSection: {
     width: '100%',
     alignItems: 'center',
@@ -342,7 +373,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: Colors.clubName, // Updated color
+    color: Colors.clubName,
     marginBottom: 20,
   },
   input: {
@@ -354,13 +385,13 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 20,
     backgroundColor: Colors.overallBackground,
+    color: 'white',
   },
   uploadButton: {
     backgroundColor: '#007BFF',
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 50,
-    
   },
   uploadButtonText: {
     color: 'white',
