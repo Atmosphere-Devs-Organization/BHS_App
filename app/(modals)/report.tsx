@@ -45,6 +45,8 @@ const PrivacyPolicyPage = () => {
         attachments: images, // Attach images directly
       });
       Alert.alert('Success', 'Issue reported successfully.');
+      setIssueDescription('');
+      setImages([]);
     } catch (error) {
       Alert.alert('Error', 'An error occurred while reporting the issue. Please try again later.');
       console.error(error);
@@ -58,7 +60,7 @@ const PrivacyPolicyPage = () => {
         <View>
           {/* Back Button */}
           <Link href="/(tabs)/calendar" style={styles.backButton}>
-            <Ionicons name="arrow-back-outline" size={24} color="black" />
+            <Ionicons name="arrow-back-outline" size={24} color="white" />
           </Link>
           <Text style={styles.title}>Report an Issue</Text>
 
@@ -72,10 +74,7 @@ const PrivacyPolicyPage = () => {
             onChangeText={setIssueDescription}
           />
 
-          {/* Image Upload */}
-          <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-            <Text style={styles.uploadButtonText}>Upload Image</Text>
-          </TouchableOpacity>
+          
           {images.map((image, index) => (
             <View key={index} style={styles.imageContainer}>
               <Image source={{ uri: image }} style={styles.image} />
@@ -84,6 +83,10 @@ const PrivacyPolicyPage = () => {
               </TouchableOpacity>
             </View>
           ))}
+          {/* Image Upload */}
+          <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
+            <Text style={styles.uploadButtonText}>Upload Image</Text>
+          </TouchableOpacity>
 
           {/* Report Issue Button */}
           <TouchableOpacity style={styles.reportButton} onPress={handleReportIssue}>
@@ -99,17 +102,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    backgroundColor: "#121212",
   },
   title: {
     fontFamily: "mon-b",
-    fontSize: 25,
+    fontSize: 32,
+    fontWeight: "bold",
     textAlign: 'center',
-    marginTop: 15,
+    marginTop: 25,
     marginBottom: 35,
+    color: 'white',
   },
   input: {
     height: 200, // Initial height
-    borderColor: "gray",
+    borderColor: "white",
     borderWidth: 1,
     marginBottom: 20,
     paddingLeft: 10,
@@ -118,6 +124,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
     textAlignVertical: "top",
+    color: 'white', // Text color
   },
   uploadButton: {
     backgroundColor: "white", // Custom color
@@ -142,7 +149,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   reportButton: {
-    backgroundColor: "red",
+    backgroundColor: "#2176ff",
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
@@ -154,10 +161,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   backButton: {
-    top: 18,
+    top: 32,
     left: 16,
     zIndex: 1,
     position: 'absolute',
+    color: 'white',
   },
   imageContainer: {
     position: 'relative',
@@ -169,5 +177,6 @@ const styles = StyleSheet.create({
     zIndex: 1, // Ensure the remove button is above the image
   },
 });
+
 
 export default PrivacyPolicyPage;
