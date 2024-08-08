@@ -51,7 +51,7 @@ const GradesContent = ({ category }: Props) => {
   const fetchStudentInfo = async (apiSection: string): Promise<any> => {
     try {
       const response = await axios.get(
-        "https://homeaccesscenterapi.vercel.app/api/" +
+        "https://home-access-center-ap-iv2-sooty.vercel.app/api/" +
           apiSection +
           "?link=" +
           HAC_Link +
@@ -71,10 +71,12 @@ const GradesContent = ({ category }: Props) => {
   const [schoolYears, setSchoolYears] = useState<any>([]);
 
   useEffect(() => {
+    setTData(null);
     if (username && password) {
       async function fetchAPI() {
         let response = await fetchStudentInfo("transcript");
         //let response2 = await fetchStudentInfo("averages");
+        console.log(response);
         setTData(response);
         //setGData(response2);
         const schoolYearArray = Object.keys(response)

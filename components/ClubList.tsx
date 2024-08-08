@@ -6,9 +6,10 @@ import {
   StyleSheet,
   TouchableOpacity,
   ImageBackground,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { Club } from "@/interfaces/club";
+import { Club } from "@/interfaces/Club";
 import { Link } from "expo-router";
 import Colors from "@/constants/Colors";
 import { FIREBASE_DB } from "@/FirebaseConfig";
@@ -41,7 +42,7 @@ const ClubList = ({ category }: Props) => {
       console.log("Fetching clubs...");
       try {
         // Fetch the array of club document names
-        const clubListRef = doc(FIREBASE_DB, 'admin', 'Club_list');
+        const clubListRef = doc(FIREBASE_DB, "admin", "Club_list");
         const clubListSnap = await getDoc(clubListRef);
         const clubNames = clubListSnap.data()?.club_arr || [];
         console.log("Club names fetched:", clubNames);
@@ -49,7 +50,7 @@ const ClubList = ({ category }: Props) => {
         // Fetch each club document based on the names in the array
         const clubsData: Club[] = [];
         for (const name of clubNames) {
-          const clubRef = doc(FIREBASE_DB, 'clubs', name);
+          const clubRef = doc(FIREBASE_DB, "clubs", name);
           const clubSnap = await getDoc(clubRef);
           if (clubSnap.exists()) {
             const club = clubSnap.data() as Club;
@@ -103,12 +104,16 @@ const ClubList = ({ category }: Props) => {
   return (
     <View style={{ marginBottom: 100 }}>
       {loading ? (
-        <Text>Loading...</Text>
+        <ActivityIndicator
+          size="large"
+          color="#ff4d00"
+          style={{ alignSelf: "center", marginTop: 100 }}
+        />
       ) : (
-        <FlatList 
-          data={filteredClubs} 
-          ref={listRef} 
-          renderItem={renderRow} 
+        <FlatList
+          data={filteredClubs}
+          ref={listRef}
+          renderItem={renderRow}
           keyExtractor={(item) => item.name} // Ensure each item has a unique key
         />
       )}
