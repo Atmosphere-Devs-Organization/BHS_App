@@ -1,13 +1,13 @@
-import React from 'react';
-import { Dimensions, Image, StyleSheet, View } from 'react-native';
-import Carousel from 'react-native-reanimated-carousel';
+import React from "react";
+import { Dimensions, Image, StyleSheet, View } from "react-native";
+import Carousel from "react-native-reanimated-carousel";
 
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 
 const images = [
-  require('@/assets/images/image1.png'),
-  require('@/assets/images/image2.png'),
-  require('@/assets/images/image3.png'),
+  require("@/assets/images/image1.png"),
+  require("@/assets/images/image2.png"),
+  require("@/assets/images/image3.png"),
 ];
 
 const CarouselComponent: React.FC = () => {
@@ -35,8 +35,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   carouselImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     borderRadius: 10,
   },
 });
