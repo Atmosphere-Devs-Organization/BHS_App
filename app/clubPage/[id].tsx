@@ -49,15 +49,10 @@ const Page = () => {
   const [imageHeight, setImageHeight] = useState<number>(screenHeight * 0.3);
   
   useEffect(() => {
-    console.log("useEffect called");
-
     const updateAndFetch = async () => {
-      console.log("Updating club IDs...");
       await updateClubIds();
-      console.log("Finished updateClubIds");
-
       if (id) {
-        fetchClubData(); // Fetch club data after updating IDs
+        fetchClubData(); 
         const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user: User | null) => {
           if (user) {
             setUserId(user.uid);
@@ -75,47 +70,36 @@ const Page = () => {
   }, [id]);
 
   const updateClubIds = async () => {
-    console.log("updateClubIds function started");
     try {
       const clubsRef = collection(FIREBASE_DB, "clubs");
       const clubsSnapshot = await getDocs(clubsRef);
       
-      if (clubsSnapshot.empty) {
-        console.log("No clubs found.");
-        return;
-      }
+      if (clubsSnapshot.empty) return;
 
       const batch = writeBatch(FIREBASE_DB);
       let index = 0; // Counter to ensure unique IDs
       
       clubsSnapshot.forEach((docSnap: QueryDocumentSnapshot) => {
         const docRef = doc(FIREBASE_DB, "clubs", docSnap.id);
-        batch.update(docRef, { id: index++ }); // Use a counter instead of indexOf
+        batch.update(docRef, { id: index++ }); 
       });
 
-      console.log("Committing batch...");
       await batch.commit();
-      console.log("Club IDs updated successfully.");
     } catch (error) {
       console.error("Error updating club IDs: ", error);
     }
   };
 
   const fetchClubData = async () => {
-    if (!id) {
-      console.error("Club ID is undefined");
-      return;
-    }
+    if (!id) return;
 
     try {
       const clubDocRef = doc(FIREBASE_DB, "clubs", id);
       const clubDocSnap = await getDoc(clubDocRef);
       if (clubDocSnap.exists()) {
         setCurrentClub(clubDocSnap.data() as Club);
-        fetchUpcomingDates(); // Fetch dates after setting the club data
-        fetchPastEvents(); // Fetch past events after setting the club data
-      } else {
-        console.error("Club not found");
+        fetchUpcomingDates(); 
+        fetchPastEvents(); 
       }
     } catch (error) {
       console.error("Error fetching club data: ", error);
@@ -129,24 +113,19 @@ const Page = () => {
         const datesQuery = query(datesRef, orderBy("date"));
         const datesSnapshot = await getDocs(datesQuery);
 
-        if (datesSnapshot.empty) {
-          console.log("No upcoming dates found.");
-          return;
-        }
+        if (datesSnapshot.empty) return;
 
-        const now = new Date(); // Get the current date and time
+        const now = new Date(); 
 
         const datesList = datesSnapshot.docs.map(doc => {
           const data = doc.data();
-          // Convert Timestamp to Date
           const eventTime = data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date.seconds * 1000);
           return {
             name: doc.id,
             time: eventTime,
           };
-        }).filter(date => date.time !== null && !isNaN(date.time.getTime()) && date.time >= now); // Filter out past dates
+        }).filter(date => date.time !== null && !isNaN(date.time.getTime()) && date.time >= now); 
 
-        console.log("Fetched upcoming dates:", datesList);
         setUpcomingDates(datesList);
       }
     } catch (error) {
@@ -160,10 +139,7 @@ const Page = () => {
         const pastEventsRef = collection(FIREBASE_DB, "clubs", id, "pastEvents");
         const pastEventsSnapshot = await getDocs(pastEventsRef);
 
-        if (pastEventsSnapshot.empty) {
-          console.log("No past events found.");
-          return;
-        }
+        if (pastEventsSnapshot.empty) return;
 
         const pastEventsList = pastEventsSnapshot.docs.map(doc => {
           const data = doc.data();
@@ -174,7 +150,6 @@ const Page = () => {
           };
         });
 
-        console.log("Fetched past events:", pastEventsList); // Debugging
         setPastEvents(pastEventsList);
       }
     } catch (error) {
@@ -226,12 +201,12 @@ const Page = () => {
     }
   };
 
-  // Handle image load to get dimensions
   const handleImageLoad = (event: { nativeEvent: { source: { width: number; height: number } } }) => {
     const { width, height } = event.nativeEvent.source;
     const calculatedHeight = (screenWidth - 32) * (height / width);
     setImageHeight(calculatedHeight);
   };
+
   return (
     <View style={[styles.container, { backgroundColor: "#121212" }]}>
       <StatusBar
@@ -247,7 +222,7 @@ const Page = () => {
         <Image
           source={{ uri: currentClub?.imageURL }}
           style={[styles.image, { height: imageHeight }]}
-          resizeMode="contain"
+          resizeMode="cover"
           onLoad={handleImageLoad}
         />
         <Text style={styles.name}>{currentClub?.name}</Text>
@@ -277,33 +252,29 @@ const Page = () => {
           <Text style={styles.noDates}>No upcoming dates.</Text>
         )}
       <View style={styles.buttonContainer}>
-        <AwesomeButton
-          style={styles.button}
-          backgroundColor="#007BFF"
-          backgroundDarker="#0056b3"
-          height={screenWidth * 0.2}
-          width={screenWidth * 0.8}
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: isClubInCalendar ? "#d9534f" : "#007BFF" }]}
           onPress={handleAddOrRemoveClub}
         >
-          {isClubInCalendar ? "Remove from Calendar" : "Add to Calendar"}
-        </AwesomeButton>
+          <Text style={styles.buttonText}>
+            {isClubInCalendar ? "Remove from Calendar" : "Add to Calendar"}
+          </Text>
+        </TouchableOpacity>
       </View>
         <View style={styles.divider} />
         <Text style={styles.title}>Past Events</Text>
         {pastEvents.length > 0 ? (
           pastEvents.map((event, index) => (
-            <View key={index} style={styles.eventContainer}>
-              <Image 
-                source={{ uri: event.imageURL }} 
-                style={[styles.image, { height: imageHeight }]}
-                onLoad={handleImageLoad}
-               />
-              <Text style={styles.eventName}>{event.name}</Text>
-              <Text style={styles.eventDescription}>{event.description}</Text>
+            <View key={index} style={styles.pastEventContainer}>
+              <Image source={{ uri: event.imageURL }} style={styles.pastEventImage} />
+              <View style={styles.pastEventDetails}>
+                <Text style={styles.pastEventName}>{event.name}</Text>
+                <Text style={styles.pastEventDescription}>{event.description}</Text>
+              </View>
             </View>
           ))
         ) : (
-          <Text style={styles.noEvents}>No past events.</Text>
+          <Text style={styles.noDates}>No past events.</Text>
         )}
       </ScrollView>
     </View>
@@ -314,90 +285,112 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    paddingTop: 42,
   },
   scrollView: {
     flex: 1,
   },
   close_button: {
-    alignSelf: 'flex-start',
-    margin: 10,
+    alignSelf: "flex-end",
   },
   image: {
-    width: screenWidth - 32,
-    borderRadius: 10,
+    width: "100%",
+    height: screenHeight * 0.3,
+    borderRadius: 12,
+    marginTop: 10,
     marginBottom: 16,
   },
   name: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 8,
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
+    marginBottom: 16,
   },
   divider: {
     height: 1,
-    backgroundColor: 'white',
-    marginVertical: 8,
+    backgroundColor: "grey",
+    marginVertical: 16,
   },
   description: {
     fontSize: 16,
-    color: 'white',
-    marginBottom: 8,
+    color: "white",
+    textAlign: "center",
   },
   sponsorEmail: {
     fontSize: 16,
-    color: '#007BFF',
-    marginBottom: 8,
+    color: "lightblue",
+    textAlign: "center",
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "white",
     marginBottom: 8,
   },
   dateContainer: {
+    backgroundColor: "#1e1e1e",
+    padding: 16,
+    borderRadius: 8,
     marginBottom: 8,
   },
   dateName: {
-    fontSize: 16,
-    color: 'white',
+    fontSize: 18,
+    color: "white",
+    marginBottom: 4,
   },
   dateTime: {
-    fontSize: 14,
-    color: 'lightgray',
+    fontSize: 16,
+    color: "grey",
   },
   noDates: {
     fontSize: 16,
-    color: 'white',
-  },
-  button: {
+    color: "grey",
+    textAlign: "center",
     marginVertical: 16,
   },
-  eventContainer: {
+  pastEventContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 16,
+    backgroundColor: "#1e1e1e",
+    borderRadius: 8,
+    padding: 16,
   },
-  eventImage: {
-    width: '100%',
-    height: 150,
-    borderRadius: 10,
-    marginBottom: 8,
+  pastEventImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    marginRight: 16,
   },
-  eventName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: 'white',
+  pastEventDetails: {
+    flex: 1,
+  },
+  pastEventName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "white",
     marginBottom: 4,
   },
-  eventDescription: {
-    fontSize: 14,
-    color: 'lightgray',
-  },
-  noEvents: {
+  pastEventDescription: {
     fontSize: 16,
-    color: 'white',
+    color: "grey",
   },
   buttonContainer: {
-    alignItems: 'center', // Center horizontally
-    marginVertical: 16,
+    alignItems: "center",
+    marginTop: 16,
+    marginBottom: 16,
+  },
+  button: {
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  buttonText: {
+    fontSize: 16,
+    color: "white",
+    fontWeight: "bold",
   },
 });
 

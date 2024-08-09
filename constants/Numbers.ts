@@ -18,7 +18,7 @@ export default {
   //Home
   profileButtonXTranslate: 305,
   profileButtonYTranslate: -319,
-  profileButtonSize: 90,
+  profileButtonSize: 70,
 
   //Profile
   backButtonSize: 35,
