@@ -11,7 +11,7 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import roomData from "@/assets/data/map-data.json";
 import { Room } from "@/interfaces/Room";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import GridMap from "@/components/GridMap";
 import { MapCoords } from "@/interfaces/MapCoords";
 import floorData from "@/assets/data/floor-data.json";
@@ -21,8 +21,82 @@ import AutoCompleteTextInput from "@/components/AutoCompleteTextInput";
 import Colors from "@/constants/Colors";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import AwesomeButton from "react-native-really-awesome-button";
+import { FIREBASE_AUTH } from "@/FirebaseConfig";
+import axios from "axios";
+import { User, onAuthStateChanged } from "firebase/auth";
+import * as SecureStore from "expo-secure-store";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Map = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
+  const [password, setPassword] = useState<string | null>(null);
+  useEffect(() => {
+    onAuthStateChanged(FIREBASE_AUTH, (user) => {
+      setUser(user);
+    });
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchCredentials = async () => {
+        const storedUsername = await SecureStore.getItemAsync(
+          user?.uid + "HACusername"
+        );
+        const storedPassword = await SecureStore.getItemAsync(
+          user?.uid + "HACpassword"
+        );
+
+        setUsername(storedUsername);
+        setPassword(storedPassword);
+      };
+
+      fetchCredentials();
+
+      return () => {
+        // Do something when the screen is unfocused
+        // Useful for cleanup functions
+      };
+    }, [user?.uid])
+  );
+
+  const HAC_Link = "https://home-access.cfisd.net";
+
+  const fetchStudentInfo = async (apiSection: string): Promise<any> => {
+    try {
+      const response = await axios.get(
+        "https://home-access-center-ap-iv2-sooty.vercel.app/api/" +
+          apiSection +
+          "?link=" +
+          HAC_Link +
+          "/&user=" +
+          username +
+          "&pass=" +
+          password
+      );
+      return response.data;
+    } catch (error) {
+      return undefined;
+    }
+  };
+
+  const [hasAccess, setAccess] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (username && password) {
+      async function fetchAPI() {
+        let response = await fetchStudentInfo("info");
+        setAccess(
+          response
+            ? response["school"].toLowerCase().includes("bridgeland")
+            : false
+        );
+      }
+
+      fetchAPI();
+    }
+  }, [username, password]);
+
   const floor_data = useMemo(() => floorData as any, []); // More efficient, idk what it does tbh
   const data = useMemo(() => roomData as any, []); // More efficient, idk what it does tbh
 
@@ -289,7 +363,7 @@ const Map = () => {
     setLoading(false);
   };
 
-  return (
+  return hasAccess ? (
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={{ marginTop: 50, paddingBottom: 100 }}
@@ -404,6 +478,10 @@ const Map = () => {
           )}
       </ScrollView>
     </View>
+  ) : (
+    <SafeAreaView>
+      <Text>HAC Login allowed</Text>
+    </SafeAreaView>
   );
 };
 

@@ -29,21 +29,30 @@ const GradesContent = ({ category }: Props) => {
   useEffect(() => {
     onAuthStateChanged(FIREBASE_AUTH, (user) => {
       setUser(user);
-      setUsername(SecureStore.getItem(user?.uid + "HACusername"));
-      setPassword(SecureStore.getItem(user?.uid + "HACpassword"));
     });
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
-      setUsername(SecureStore.getItem(user?.uid + "HACusername"));
-      setPassword(SecureStore.getItem(user?.uid + "HACpassword"));
+      const fetchCredentials = async () => {
+        const storedUsername = await SecureStore.getItemAsync(
+          user?.uid + "HACusername"
+        );
+        const storedPassword = await SecureStore.getItemAsync(
+          user?.uid + "HACpassword"
+        );
+
+        setUsername(storedUsername);
+        setPassword(storedPassword);
+      };
+
+      fetchCredentials();
 
       return () => {
         // Do something when the screen is unfocused
         // Useful for cleanup functions
       };
-    }, [])
+    }, [user?.uid])
   );
 
   const HAC_Link = "https://home-access.cfisd.net";
