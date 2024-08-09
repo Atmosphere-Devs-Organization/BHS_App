@@ -37,7 +37,7 @@ const App = () => {
   const [resetEmail, setResetEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false); // Default to false so the password is hidden initially
   const auth = FIREBASE_AUTH;
 
   const togglePasswordVisibility = () => {
@@ -217,14 +217,14 @@ const App = () => {
                     placeholder="Password"
                     value={password}
                     onChangeText={setPassword}
-                    secureTextEntry={!isPasswordVisible}
+                    secureTextEntry={!isPasswordVisible} // Password hidden by default
                     style={styles.passwordInput}
                     placeholderTextColor="white"
                     textContentType="oneTimeCode"
                   />
                   <TouchableOpacity onPress={togglePasswordVisibility}>
                     <Ionicons
-                      name={isPasswordVisible ? "eye-off" : "eye"}
+                      name={isPasswordVisible ? "eye" : "eye-off"} // Show eye-off when password is hidden
                       size={24}
                       color="white"
                     />
@@ -269,14 +269,14 @@ const App = () => {
                     placeholder="Password"
                     value={password}
                     onChangeText={setPassword}
-                    secureTextEntry={!isPasswordVisible}
+                    secureTextEntry={!isPasswordVisible} // Password hidden by default
                     style={styles.passwordInput}
                     placeholderTextColor="white"
                     textContentType="oneTimeCode"
                   />
                   <TouchableOpacity onPress={togglePasswordVisibility}>
                     <Ionicons
-                      name={isPasswordVisible ? "eye-off" : "eye"}
+                      name={isPasswordVisible ? "eye" : "eye-off"} // Show eye-off when password is hidden
                       size={24}
                       color="white"
                     />
@@ -300,13 +300,11 @@ const App = () => {
                   <Text style={styles.buttonText}>Login</Text>
                 </AwesomeButton>
               </View>
+              <Pressable onPress={handleSwitchToCreateAccount}>
+                <Text style={styles.pressableText}>Create Account</Text>
+              </Pressable>
               <Pressable onPress={handleForgotPassword}>
                 <Text style={styles.pressableText}>Forgot Password?</Text>
-              </Pressable>
-              <Pressable onPress={handleSwitchToCreateAccount}>
-                <Text style={styles.pressableText}>
-                  Don't have an account? Create one
-                </Text>
               </Pressable>
             </View>
           )}
