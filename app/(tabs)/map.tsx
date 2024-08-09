@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import roomData from "@/assets/data/map-data.json";
@@ -25,7 +26,8 @@ import { FIREBASE_AUTH } from "@/FirebaseConfig";
 import axios from "axios";
 import { User, onAuthStateChanged } from "firebase/auth";
 import * as SecureStore from "expo-secure-store";
-import { SafeAreaView } from "react-native-safe-area-context";
+import Numbers from "@/constants/Numbers";
+import { Ionicons } from "@expo/vector-icons";
 
 const Map = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -81,16 +83,19 @@ const Map = () => {
   };
 
   const [hasAccess, setAccess] = useState<boolean>(false);
+  const [loadingInfo, setLoadingInfo] = useState<boolean>(true);
 
   useEffect(() => {
     if (username && password) {
       async function fetchAPI() {
+        setLoadingInfo(true);
         let response = await fetchStudentInfo("info");
         setAccess(
           response
             ? response["school"].toLowerCase().includes("bridgeland")
             : false
         );
+        setLoadingInfo(false);
       }
 
       fetchAPI();
@@ -363,7 +368,15 @@ const Map = () => {
     setLoading(false);
   };
 
-  return hasAccess ? (
+  return loadingInfo ? (
+    <View style={{ backgroundColor: "#121212", height: "100%", width: "100%" }}>
+      <ActivityIndicator
+        size="large"
+        color="#ff4d00"
+        style={{ alignSelf: "center", marginTop: 300 }}
+      />
+    </View>
+  ) : hasAccess ? (
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={{ marginTop: 50, paddingBottom: 100 }}
@@ -479,9 +492,39 @@ const Map = () => {
       </ScrollView>
     </View>
   ) : (
-    <SafeAreaView>
-      <Text>HAC Login allowed</Text>
-    </SafeAreaView>
+    <View style={{ backgroundColor: "#121212", height: "100%", width: "100%" }}>
+      <Text
+        style={{
+          marginTop: 150,
+          color: "#ff6600",
+          textAlign: "center",
+          fontSize: 30,
+          fontWeight: "bold",
+          paddingHorizontal: 15,
+          paddingBottom: 75,
+        }}
+      >
+        You must be signed into your BHS Home Access Center account to access
+        the map!
+      </Text>
+      <AwesomeButton
+        style={styles.profile_button}
+        backgroundColor={"#ff9100"}
+        backgroundDarker={"#c26e00"}
+        height={100}
+        width={320}
+        raiseLevel={20}
+        onPressOut={() => router.push("(screens)/profile")}
+      >
+        <Ionicons
+          name="person-circle-sharp"
+          size={50}
+          color="#422500"
+          style={{ alignSelf: "center", marginRight: 15 }}
+        />
+        <Text style={styles.profile_text}>Profile</Text>
+      </AwesomeButton>
+    </View>
   );
 };
 
@@ -545,6 +588,17 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 30,
     color: "#ffffff",
+  },
+  profile_button: {
+    marginVertical: 25,
+    alignContent: "center",
+    alignSelf: "center",
+  },
+  profile_text: {
+    fontSize: Numbers.loginTextFontSize,
+    color: "#422500",
+    textAlign: "center",
+    fontWeight: "bold",
   },
 });
 
