@@ -83,8 +83,6 @@ const App = () => {
       await setDoc(userDoc, {
         name: name,
         email: user.email,
-        HACusername: "",
-        HACpassword: "",
         clubs: [
           "Computer Science Club",
           "Future Business leaders of America (FBLA)",
