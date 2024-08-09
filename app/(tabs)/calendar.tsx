@@ -226,6 +226,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    marginBottom: 675,
   },
   calendarContainer: {
     marginTop: 20,
@@ -381,7 +382,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   titleContainer: {
-    marginTop: 30,
+    marginTop: 50,
     alignItems: 'center',
   },
   title: {

@@ -2,11 +2,11 @@ export default {
   overallBackground: "#000042",
 
   //Tab Bar
-  tabActiveTint: "#FF385C",
-  tabInactiveTint: "#c2c2c2",
+  tabActiveTint: "#ff4800",
+  tabInactiveTint: "#ced4da",
 
   tabBarBG: "#ffffff00",
-  animatedIconBG: "#353e5f75",
+  animatedIconBG: "#343a4050",
 
   //Login
   signInPlaceholderText: "#B3B3B3",
