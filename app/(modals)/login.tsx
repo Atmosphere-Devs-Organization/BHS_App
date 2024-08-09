@@ -16,7 +16,6 @@ import {
   TextInput,
   Alert,
   Pressable,
-  Image,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
@@ -24,9 +23,9 @@ import {
   Keyboard,
 } from "react-native";
 import { router } from "expo-router";
-import Colors from "@/constants/Colors";
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import Numbers from "@/constants/Numbers";
+import Colors from "@/constants/Colors";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -38,7 +37,12 @@ const App = () => {
   const [resetEmail, setResetEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const auth = FIREBASE_AUTH;
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
 
   const signIn = async () => {
     setLoading(true);
@@ -79,7 +83,10 @@ const App = () => {
       await setDoc(userDoc, {
         name: name,
         email: user.email,
-        clubs: ["Computer Science Club", "Future Business leaders of America (FBLA)"],
+        clubs: [
+          "Computer Science Club",
+          "Future Business leaders of America (FBLA)",
+        ],
       });
 
       signIn();
@@ -139,7 +146,7 @@ const App = () => {
 
   return (
     <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: Colors.AmarBackground }]}
+      style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -173,7 +180,7 @@ const App = () => {
                   <Entypo
                     name="login"
                     size={16}
-                    color={Colors.loginIcon}
+                    color="white" // Reverted to original
                     style={{ alignSelf: "center", marginRight: 15 }}
                   />
                   <Text style={styles.buttonText}>
@@ -205,15 +212,24 @@ const App = () => {
                   placeholderTextColor="white"
                   textContentType="oneTimeCode"
                 />
-                <TextInput
-                  placeholder="Password"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry
-                  style={styles.input}
-                  placeholderTextColor="white"
-                  textContentType="oneTimeCode"
-                />
+                <View style={styles.passwordContainer}>
+                  <TextInput
+                    placeholder="Password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!isPasswordVisible}
+                    style={styles.passwordInput}
+                    placeholderTextColor="white"
+                    textContentType="oneTimeCode"
+                  />
+                  <TouchableOpacity onPress={togglePasswordVisibility}>
+                    <Ionicons
+                      name={isPasswordVisible ? "eye-off" : "eye"}
+                      size={24}
+                      color="white"
+                    />
+                  </TouchableOpacity>
+                </View>
                 <AwesomeButton
                   style={styles.login_button}
                   backgroundColor={Colors.loginButtonBG}
@@ -248,19 +264,28 @@ const App = () => {
                   placeholderTextColor="white"
                   textContentType="oneTimeCode"
                 />
-                <TextInput
-                  placeholder="Password"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry
-                  style={styles.input}
-                  placeholderTextColor="white"
-                  textContentType="oneTimeCode"
-                />
+                <View style={styles.passwordContainer}>
+                  <TextInput
+                    placeholder="Password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!isPasswordVisible}
+                    style={styles.passwordInput}
+                    placeholderTextColor="white"
+                    textContentType="oneTimeCode"
+                  />
+                  <TouchableOpacity onPress={togglePasswordVisibility}>
+                    <Ionicons
+                      name={isPasswordVisible ? "eye-off" : "eye"}
+                      size={24}
+                      color="white"
+                    />
+                  </TouchableOpacity>
+                </View>
                 <AwesomeButton
                   style={styles.login_button}
-                  backgroundColor={Colors.loginButtonBG}
-                  backgroundDarker={Colors.loginButtonDarkerBG}
+                  backgroundColor={Colors.loginButtonBG} // Reverted to original
+                  backgroundDarker={Colors.loginButtonDarkerBG} // Reverted to original
                   height={screenWidth * 0.15}
                   width={Numbers.loginButtonWidth}
                   raiseLevel={1}
@@ -269,17 +294,19 @@ const App = () => {
                   <Entypo
                     name="login"
                     size={16}
-                    color={Colors.loginIcon}
+                    color="white" // Reverted to original
                     style={{ alignSelf: "center", marginRight: 15 }}
                   />
                   <Text style={styles.buttonText}>Login</Text>
                 </AwesomeButton>
               </View>
-              <Pressable onPress={handleSwitchToCreateAccount}>
-                <Text style={styles.pressableText}>Create New Account</Text>
-              </Pressable>
               <Pressable onPress={handleForgotPassword}>
-                <Text style={styles.pressableText}>Forgot Password</Text>
+                <Text style={styles.pressableText}>Forgot Password?</Text>
+              </Pressable>
+              <Pressable onPress={handleSwitchToCreateAccount}>
+                <Text style={styles.pressableText}>
+                  Don't have an account? Create one
+                </Text>
               </Pressable>
             </View>
           )}
@@ -294,6 +321,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 16,
+    backgroundColor: Colors.overallBackground,
   },
   icon: {
     width: "200%", // Double the width as a percentage of the screen width
@@ -311,11 +339,16 @@ const styles = StyleSheet.create({
     marginTop: "25%",
   },
   input: {
-    height: 40,
+    height: 41,
+    flexDirection: "row",
+    alignItems: "center",
     borderColor: "gray",
+    borderRadius: 8,
     borderWidth: 1,
     marginBottom: 12,
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    fontSize: 16,
     color: "white",
   },
   box: {
@@ -345,6 +378,22 @@ const styles = StyleSheet.create({
     color: "orange",
     textAlign: "center",
     paddingVertical: 10,
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderColor: 'gray', // Reverted to original
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginBottom: 15,
+    
+  },
+  passwordInput: {
+    flex: 1,
+    fontSize: 16,
+    color: "white", // Reverted to original
   },
   buttonText: {
     fontSize: 20,
