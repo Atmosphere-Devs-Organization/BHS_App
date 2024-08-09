@@ -1,4 +1,3 @@
-// Import statements
 import React, { useEffect, useRef, useState } from "react";
 import {
   Dimensions,
@@ -10,6 +9,7 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   Keyboard,
+  Pressable,
   Alert,
 } from "react-native";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
@@ -26,14 +26,15 @@ import * as SecureStore from "expo-secure-store";
 
 const screenWidth = Dimensions.get("window").width;
 
-// Main App component
 const App = () => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    onAuthStateChanged(FIREBASE_AUTH, (user) => {
+    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
       setUser(user);
     });
+
+    return () => unsubscribe();
   }, []);
 
   return user ? (
@@ -47,7 +48,6 @@ const App = () => {
   );
 };
 
-// Logged out profile component
 const LoggedOutProfile = () => {
   return (
     <View style={styles.BG_Color}>
@@ -85,7 +85,6 @@ const LoggedOutProfile = () => {
   );
 };
 
-// Normal profile component
 const NormalProfile = ({
   email,
   userName,
@@ -97,16 +96,17 @@ const NormalProfile = ({
 }) => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingSid, setIsEditingSid] = useState(false);
-  const [isEditingPassword, setIsEditingPass] = useState(false);
+  const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [username, setUsername] = useState(userName || "");
   const [sid, setSid] = useState("");
-  const [HACpassword, setHACPass] = useState("");
+  const [HACpassword, setHACPassword] = useState("");
   const [clubs, setClubs] = useState<string[]>([]);
+  const [showPassword, setShowPassword] = useState(false);
 
   const usernameInputRef = useRef<TextInput>(null);
   const sidInputRef = useRef<TextInput>(null);
   const hacPasswordInputRef = useRef<TextInput>(null);
-  const scrollReff = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -117,14 +117,10 @@ const NormalProfile = ({
           setUsername(userData.name || "");
           setClubs(userData.clubs || []);
           setSid(
-            SecureStore.getItem(userId + "HACusername")
-              ? String(SecureStore.getItem(userId + "HACusername"))
-              : ""
+            (await SecureStore.getItemAsync(userId + "HACusername")) || ""
           );
-          setHACPass(
-            SecureStore.getItem(userId + "HACpassword")
-              ? String(SecureStore.getItem(userId + "HACpassword"))
-              : ""
+          setHACPassword(
+            (await SecureStore.getItemAsync(userId + "HACpassword")) || ""
           );
         }
       } catch (error) {
@@ -138,13 +134,13 @@ const NormalProfile = ({
   useEffect(() => {
     if (isEditingName && !isEditingPassword && !isEditingSid) {
       usernameInputRef.current?.focus();
-      scrollReff.current?.scrollToEnd({ animated: true });
+      scrollRef.current?.scrollToEnd({ animated: true });
     } else if (!isEditingName && !isEditingPassword && isEditingSid) {
       sidInputRef.current?.focus();
-      scrollReff.current?.scrollToEnd({ animated: true });
+      scrollRef.current?.scrollToEnd({ animated: true });
     } else if (!isEditingName && isEditingPassword && !isEditingSid) {
       hacPasswordInputRef.current?.focus();
-      scrollReff.current?.scrollToEnd({ animated: true });
+      scrollRef.current?.scrollToEnd({ animated: true });
     }
   }, [isEditingName, isEditingPassword, isEditingSid]);
 
@@ -179,7 +175,7 @@ const NormalProfile = ({
 
   return (
     <View style={styles.BG_Color}>
-      <ScrollView ref={scrollReff}>
+      <ScrollView ref={scrollRef}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <SafeAreaView style={styles.normal_profile_container}>
             <TouchableOpacity onPress={router.back} style={styles.back_button}>
@@ -214,7 +210,7 @@ const NormalProfile = ({
                     setIsEditingName(false);
                     updateUser("name");
                   } else {
-                    setIsEditingPass(false);
+                    setIsEditingPassword(false);
                     setIsEditingSid(false);
                     setIsEditingName(true);
                   }
@@ -243,7 +239,7 @@ const NormalProfile = ({
                     setIsEditingSid(false);
                     updateUser("HACusername");
                   } else {
-                    setIsEditingPass(false);
+                    setIsEditingPassword(false);
                     setIsEditingName(false);
                     setIsEditingSid(true);
                   }
@@ -258,24 +254,36 @@ const NormalProfile = ({
 
             <View style={styles.infoContainer}>
               <Text style={styles.infoLabel}>HAC Password:</Text>
-              <TextInput
-                style={styles.infoInput}
-                placeholder="Enter your HAC password"
-                value={HACpassword}
-                onChangeText={setHACPass}
-                editable={isEditingPassword}
-                secureTextEntry={true}
-                ref={hacPasswordInputRef}
-              />
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={styles.infoInput}
+                  placeholder="Enter your HAC password"
+                  value={HACpassword}
+                  onChangeText={setHACPassword}
+                  secureTextEntry={!showPassword}
+                  editable={isEditingPassword}
+                  ref={hacPasswordInputRef}
+                />
+                <Pressable
+                  onPress={() => setShowPassword(!showPassword)}
+                  style={styles.eyeIcon}
+                >
+                  <Entypo
+                    name={showPassword ? "eye" : "eye-with-line"}
+                    size={20}
+                    color="white"
+                  />
+                </Pressable>
+              </View>
               <TouchableOpacity
                 onPress={() => {
                   if (isEditingPassword) {
-                    setIsEditingPass(false);
+                    setIsEditingPassword(false);
                     updateUser("HACpassword");
                   } else {
                     setIsEditingSid(false);
                     setIsEditingName(false);
-                    setIsEditingPass(true);
+                    setIsEditingPassword(true);
                   }
                 }}
                 style={styles.edit_button}
@@ -390,6 +398,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   infoInput: {
+    flex: 1,
     color: "white",
     fontSize: 16,
     borderBottomWidth: 1,
@@ -438,6 +447,15 @@ const styles = StyleSheet.create({
     marginVertical: 25,
     alignContent: "center",
     alignSelf: "center",
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 5,
+    paddingHorizontal: 0,  // Align with the input field
+  },
+  eyeIcon: {
+    marginLeft: 10,
   },
   logout_text: {
     fontSize: 17,
