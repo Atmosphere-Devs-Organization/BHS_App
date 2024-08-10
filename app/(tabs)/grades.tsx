@@ -26,7 +26,7 @@ const Grades = () => {
 const styles = StyleSheet.create({
   BG_Color: {
     flex: 1,
-    backgroundColor: Colors.AmarBackground,
+    backgroundColor: "#121212",
   },
 });
 

@@ -48,7 +48,7 @@ const ClubsHeader = ({ onCategoryChanged }: Props) => {
     <View style={{ flex: 1 }}>
       <SafeAreaView style={styles.container}>
         <View style={styles.topRow}>
-          <Text style={styles.title}>Grades:</Text>
+          <Text style={styles.title}>Grades</Text>
         </View>
 
         <ScrollView
@@ -107,25 +107,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   title: {
-    fontSize: Numbers.cTitleFontSize,
+    fontSize: 50,
     fontWeight: "bold",
-    color: Colors.title,
-    borderColor: Colors.cTitleBorderColor,
-    borderWidth: Platform.OS === "ios" ? 0 : StyleSheet.hairlineWidth,
+    color: "#ffffff",
     flex: 1,
     textAlign: "center",
     marginHorizontal: 70,
     padding: 5,
     borderRadius: 30,
-
-    elevation: 15,
-    shadowColor: "#000000",
-    shadowOpacity: 1,
-    shadowRadius: 8,
-    shadowOffset: {
-      width: -1,
-      height: 1,
-    },
+    marginTop: 20,
   },
   categoriesScroll: {
     alignItems: "center",

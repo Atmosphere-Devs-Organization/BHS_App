@@ -150,13 +150,15 @@ const GradesContent = ({ category }: Props) => {
 const Grades = () => {
   return (
     <View>
-      <Text style={{ color: "white" }}>Grades Coming Soon</Text>
+      <Text style={styles.comingSoonText}>Grades Coming Soon</Text>
     </View>
   );
 };
 
 const Calculator = () => {
-  return <Text style={{ color: "white" }}>Calculator Coming Soon</Text>;
+  return (
+    <Text style={styles.comingSoonText}>Calculator Coming Soon</Text>
+  );
 };
 
 const Transcript = ({
@@ -209,12 +211,12 @@ const Transcript = ({
     >
       <Text
         style={{
-          color: Colors.transcriptBubbleText,
+          color: "white",
           marginVertical: 10,
           fontWeight: "bold",
           fontSize: 30,
           borderWidth: 5,
-          borderColor: "#ffffff",
+          borderColor: "#2176ff",
           padding: 40,
           textAlign: "center",
           borderRadius: 15,
@@ -329,7 +331,7 @@ const Transcript = ({
 
 const styles = StyleSheet.create({
   topText: {
-    color: Colors.topText,
+    color: "#ffffff",
     fontSize: 20,
     fontWeight: "bold",
     borderWidth: 1,
@@ -338,6 +340,13 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   close_button: { padding: 10 },
+  comingSoonText: {
+    color: "white",
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center", 
+    marginVertical: 20, 
+  },
 });
 
 export default GradesContent;
