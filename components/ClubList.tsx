@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { Club } from "@/interfaces/Club";
+import { Club } from "@/interfaces/club";
 import { Link } from "expo-router";
 import Colors from "@/constants/Colors";
 import { FIREBASE_DB } from "@/FirebaseConfig";
@@ -29,23 +29,19 @@ const ClubList = ({ category }: Props) => {
     const fetchClubs = async () => {
       if (clubsCacheRef.current.length > 0) {
         // Use cached data if available
-        console.log("Using cached clubs data...");
         const filtered = clubsCacheRef.current.filter((club) =>
           club.categories.includes(category)
         );
-        console.log("Filtered clubs from cache:", filtered);
         setFilteredClubs(filtered);
         setLoading(false);
         return;
       }
 
-      console.log("Fetching clubs...");
       try {
         // Fetch the array of club document names
         const clubListRef = doc(FIREBASE_DB, "admin", "Club_list");
         const clubListSnap = await getDoc(clubListRef);
         const clubNames = clubListSnap.data()?.club_arr || [];
-        console.log("Club names fetched:", clubNames);
 
         // Fetch each club document based on the names in the array
         const clubsData: Club[] = [];
@@ -65,10 +61,8 @@ const ClubList = ({ category }: Props) => {
         const filtered = clubsData.filter((club) =>
           club.categories.includes(category)
         );
-        console.log("Filtered clubs:", filtered);
         setFilteredClubs(filtered);
       } catch (error) {
-        console.error("Error fetching clubs:", error);
       } finally {
         setLoading(false);
       }
