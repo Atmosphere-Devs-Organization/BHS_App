@@ -11,6 +11,7 @@ import {
   Keyboard,
   Pressable,
   Alert,
+  ListRenderItem,
 } from "react-native";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { User, onAuthStateChanged } from "firebase/auth";
@@ -95,8 +96,8 @@ const NormalProfile = ({
   userId: string;
 }) => {
   const [isEditingName, setIsEditingName] = useState(false);
-  const [isEditingSid, setIsEditingSid] = useState(false);
-  const [isEditingPassword, setIsEditingPassword] = useState(false);
+  const [isEditingHAC, setIsEditingHAC] = useState(false);
+
   const [username, setUsername] = useState(userName || "");
   const [sid, setSid] = useState("");
   const [HACpassword, setHACPassword] = useState("");
@@ -132,17 +133,14 @@ const NormalProfile = ({
   }, [userId]);
 
   useEffect(() => {
-    if (isEditingName && !isEditingPassword && !isEditingSid) {
+    if (isEditingName && !isEditingHAC) {
       usernameInputRef.current?.focus();
-      scrollRef.current?.scrollToEnd({ animated: true });
-    } else if (!isEditingName && !isEditingPassword && isEditingSid) {
+      scrollRef.current?.scrollTo({ x: 0, y: 80, animated: true });
+    } else if (!isEditingName && isEditingHAC) {
       sidInputRef.current?.focus();
-      scrollRef.current?.scrollToEnd({ animated: true });
-    } else if (!isEditingName && isEditingPassword && !isEditingSid) {
-      hacPasswordInputRef.current?.focus();
-      scrollRef.current?.scrollToEnd({ animated: true });
+      scrollRef.current?.scrollTo({ x: 0, y: 80, animated: true });
     }
-  }, [isEditingName, isEditingPassword, isEditingSid]);
+  }, [isEditingName, isEditingHAC]);
 
   const updateUser = async (field: "name" | "HACusername" | "HACpassword") => {
     try {
@@ -167,7 +165,7 @@ const NormalProfile = ({
     const matchedClub = clubsData.find((club) => club.name === clubName);
 
     if (matchedClub) {
-      router.push(`/clubPage/${matchedClub.id}`);
+      router.replace(`/clubPage/${matchedClub.name}`);
     } else {
       console.log("No matching club found");
     }
@@ -175,164 +173,160 @@ const NormalProfile = ({
 
   return (
     <View style={styles.BG_Color}>
-      <ScrollView ref={scrollRef}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <SafeAreaView style={styles.normal_profile_container}>
-            <TouchableOpacity onPress={router.back} style={styles.back_button}>
-              <Ionicons
-                name="arrow-back-sharp"
-                size={Numbers.backButtonSize}
-                color={Colors.backButton}
-              />
-            </TouchableOpacity>
-            <Text style={styles.title}>Profile</Text>
+      <SafeAreaView>
+        <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false}>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <SafeAreaView style={styles.normal_profile_container}>
+              <View style={{ flexDirection: "row", marginBottom: 30 }}>
+                <TouchableOpacity
+                  onPress={router.back}
+                  style={styles.back_button}
+                >
+                  <Ionicons
+                    name="arrow-back-sharp"
+                    size={Numbers.backButtonSize}
+                    color={Colors.backButton}
+                  />
+                </TouchableOpacity>
+                <Text style={styles.title}>Profile</Text>
+              </View>
 
-            <Text style={styles.sectionTitle}>User Information</Text>
+              <Text style={styles.sectionTitle}>User Information</Text>
 
-            <View style={styles.infoContainer}>
-              <Text style={styles.infoLabel}>Email:</Text>
-              <Text style={styles.infoText}>{email}</Text>
-            </View>
+              <View style={styles.infoContainer}>
+                <Text style={styles.infoLabel}>Email:</Text>
+                <Text style={styles.infoText}>{email}</Text>
+              </View>
 
-            <View style={styles.infoContainer}>
-              <Text style={styles.infoLabel}>Name:</Text>
-              <TextInput
-                style={styles.infoInput}
-                placeholder="Enter your name"
-                value={username}
-                onChangeText={setUsername}
-                editable={isEditingName}
-                ref={usernameInputRef}
-              />
-              <TouchableOpacity
-                onPress={() => {
-                  if (isEditingName) {
-                    setIsEditingName(false);
-                    updateUser("name");
-                  } else {
-                    setIsEditingPassword(false);
-                    setIsEditingSid(false);
-                    setIsEditingName(true);
-                  }
-                }}
-                style={styles.edit_button}
-              >
-                <Text style={styles.edit_button_text}>
-                  {isEditingName ? "Save" : "Edit"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.infoContainer}>
-              <Text style={styles.infoLabel}>SID (include S):</Text>
-              <TextInput
-                style={styles.infoInput}
-                placeholder="Enter your SID: (Include the S)"
-                value={sid}
-                onChangeText={setSid}
-                editable={isEditingSid}
-                ref={sidInputRef}
-              />
-              <TouchableOpacity
-                onPress={() => {
-                  if (isEditingSid) {
-                    setIsEditingSid(false);
-                    updateUser("HACusername");
-                  } else {
-                    setIsEditingPassword(false);
-                    setIsEditingName(false);
-                    setIsEditingSid(true);
-                  }
-                }}
-                style={styles.edit_button}
-              >
-                <Text style={styles.edit_button_text}>
-                  {isEditingSid ? "Save" : "Edit"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.infoContainer}>
-              <Text style={styles.infoLabel}>HAC Password:</Text>
-              <View style={styles.passwordContainer}>
+              <View style={styles.infoContainer}>
+                <Text style={styles.infoLabel}>Name:</Text>
                 <TextInput
                   style={styles.infoInput}
-                  placeholder="Enter your HAC password"
-                  value={HACpassword}
-                  onChangeText={setHACPassword}
-                  secureTextEntry={!showPassword}
-                  editable={isEditingPassword}
-                  ref={hacPasswordInputRef}
+                  placeholder="Enter your name"
+                  value={username}
+                  onChangeText={setUsername}
+                  editable={isEditingName}
+                  ref={usernameInputRef}
                 />
-                <Pressable
-                  onPress={() => setShowPassword(!showPassword)}
-                  style={styles.eyeIcon}
+                <TouchableOpacity
+                  onPress={() => {
+                    if (isEditingName) {
+                      setIsEditingName(false);
+                      updateUser("name");
+                    } else {
+                      if (isEditingHAC) {
+                        updateUser("HACusername");
+                        updateUser("HACpassword");
+                      }
+                      setIsEditingHAC(false);
+                      setIsEditingName(true);
+                    }
+                  }}
+                  style={styles.edit_button}
                 >
-                  <Entypo
-                    name={showPassword ? "eye" : "eye-with-line"}
-                    size={20}
-                    color="white"
-                  />
-                </Pressable>
+                  <Text style={styles.edit_button_text}>
+                    {isEditingName ? "Save" : "Edit"}
+                  </Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                onPress={() => {
-                  if (isEditingPassword) {
-                    setIsEditingPassword(false);
-                    updateUser("HACpassword");
-                  } else {
-                    setIsEditingSid(false);
-                    setIsEditingName(false);
-                    setIsEditingPassword(true);
-                  }
-                }}
-                style={styles.edit_button}
-              >
-                <Text style={styles.edit_button_text}>
-                  {isEditingPassword ? "Save" : "Edit"}
-                </Text>
-              </TouchableOpacity>
-            </View>
 
-            <Text style={styles.clubTitle}>Your Clubs</Text>
+              <View style={styles.infoContainer}>
+                <Text style={styles.infoLabel}>SID (include S):</Text>
+                <TextInput
+                  style={styles.infoInput}
+                  placeholder="Enter your SID: (Include the S)"
+                  value={sid}
+                  onChangeText={setSid}
+                  editable={isEditingHAC}
+                  ref={sidInputRef}
+                />
+              </View>
 
-            <View style={styles.clubContainer}>
-              {clubs.map((club, index) => (
-                <AwesomeButton
-                  key={index}
-                  style={styles.club_button}
-                  backgroundColor={Colors.AmarButton}
-                  backgroundDarker={"orange"}
-                  height={screenWidth * 0.2}
-                  width={(screenWidth - 40 - 20) / 3}
-                  raiseLevel={10}
-                  onPressOut={() => handlePress(club)}
+              <View style={styles.infoContainer}>
+                <Text style={styles.infoLabel}>HAC Password:</Text>
+                <View style={styles.passwordContainer}>
+                  <TextInput
+                    style={styles.infoInput}
+                    placeholder="Enter your HAC password"
+                    value={HACpassword}
+                    onChangeText={setHACPassword}
+                    secureTextEntry={!showPassword}
+                    editable={isEditingHAC}
+                    ref={hacPasswordInputRef}
+                  />
+                  <Pressable
+                    onPress={() => setShowPassword(!showPassword)}
+                    style={styles.eyeIcon}
+                  >
+                    <Entypo
+                      name={showPassword ? "eye" : "eye-with-line"}
+                      size={20}
+                      color="white"
+                    />
+                  </Pressable>
+                </View>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (isEditingHAC) {
+                      setIsEditingHAC(false);
+                      updateUser("HACusername");
+                      updateUser("HACpassword");
+                    } else {
+                      if (isEditingName) {
+                        updateUser("name");
+                      }
+                      setIsEditingName(false);
+                      setIsEditingHAC(true);
+                    }
+                  }}
+                  style={styles.edit_button}
                 >
-                  <Text style={styles.club_button_text}>{club}</Text>
-                </AwesomeButton>
-              ))}
-            </View>
+                  <Text style={styles.edit_button_text}>
+                    {isEditingHAC ? "Save" : "Edit"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-            <AwesomeButton
-              style={styles.logout_button}
-              backgroundColor={Colors.AmarButton}
-              backgroundDarker={"orange"}
-              height={screenWidth * 0.2}
-              width={screenWidth * 0.8}
-              raiseLevel={10}
-              onPressOut={() => FIREBASE_AUTH.signOut()}
-            >
-              <Entypo
-                name="log-out"
-                size={17}
-                color={Colors.clubName}
-                style={{ alignSelf: "center", marginRight: 15 }}
-              />
-              <Text style={styles.logout_text}>Logout</Text>
-            </AwesomeButton>
-          </SafeAreaView>
-        </TouchableWithoutFeedback>
-      </ScrollView>
+              <Text style={styles.clubTitle}>Your Clubs</Text>
+
+              <View style={styles.clubContainer}>
+                {clubs.map((club, index) => (
+                  <AwesomeButton
+                    key={index}
+                    style={styles.club_button}
+                    backgroundColor={Colors.AmarButton}
+                    backgroundDarker={"orange"}
+                    height={screenWidth * 0.2}
+                    width={(screenWidth - 40 - 20) / 3}
+                    raiseLevel={10}
+                    onPress={() => handlePress(club)}
+                  >
+                    <Text style={styles.club_button_text}>{club}</Text>
+                  </AwesomeButton>
+                ))}
+              </View>
+
+              <AwesomeButton
+                style={styles.logout_button}
+                backgroundColor={Colors.AmarButton}
+                backgroundDarker={"orange"}
+                height={screenWidth * 0.25}
+                width={screenWidth * 0.85}
+                raiseLevel={13}
+                onPress={() => FIREBASE_AUTH.signOut()}
+              >
+                <Entypo
+                  name="log-out"
+                  size={25}
+                  color={Colors.clubName}
+                  style={{ alignSelf: "center", marginRight: 15 }}
+                />
+                <Text style={styles.logout_text}>Logout</Text>
+              </AwesomeButton>
+            </SafeAreaView>
+          </TouchableWithoutFeedback>
+        </ScrollView>
+      </SafeAreaView>
     </View>
   );
 };
@@ -352,15 +346,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.AmarBackground,
   },
   back_button: {
-    marginVertical: 10,
+    marginVertical: 0,
     marginHorizontal: 15,
   },
   title: {
-    marginTop: 30,
     fontWeight: "bold",
     fontSize: Numbers.titleFontSize,
-    alignSelf: "center",
-    transform: [{ translateY: -55 }],
+    marginHorizontal: "20%",
     color: Colors.profileTitle,
   },
   need_signin_text: {
@@ -444,7 +436,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   logout_button: {
-    marginVertical: 25,
+    marginVertical: 40,
     alignContent: "center",
     alignSelf: "center",
   },
@@ -452,13 +444,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 5,
-    paddingHorizontal: 0,  // Align with the input field
+    paddingHorizontal: 0, // Align with the input field
   },
   eyeIcon: {
     marginLeft: 10,
   },
   logout_text: {
-    fontSize: 17,
+    fontSize: 25,
     color: "white",
     textAlign: "center",
     fontWeight: "bold",

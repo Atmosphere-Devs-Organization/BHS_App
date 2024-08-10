@@ -12,10 +12,8 @@ import {
   ScrollView,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { Club } from "@/interfaces/club";
-import Colors from "@/constants/Colors";
+import { Club } from "@/interfaces/Club";
 import { Ionicons } from "@expo/vector-icons";
-import AwesomeButton from "react-native-really-awesome-button";
 import {
   doc,
   collection,
@@ -28,7 +26,7 @@ import {
   arrayUnion,
   arrayRemove,
   QueryDocumentSnapshot,
-  writeBatch
+  writeBatch,
 } from "firebase/firestore";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
@@ -42,25 +40,32 @@ const Page = () => {
   const [currentClub, setCurrentClub] = useState<Club | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [isClubInCalendar, setIsClubInCalendar] = useState<boolean>(false);
-  const [upcomingDates, setUpcomingDates] = useState<{ name: string; time: Date }[]>([]);
-  const [pastEvents, setPastEvents] = useState<{ name: string; imageURL: string; description: string }[]>([]);
-  
+  const [upcomingDates, setUpcomingDates] = useState<
+    { name: string; time: Date }[]
+  >([]);
+  const [pastEvents, setPastEvents] = useState<
+    { name: string; imageURL: string; description: string }[]
+  >([]);
+
   // State to store image dimensions
   const [imageHeight, setImageHeight] = useState<number>(screenHeight * 0.3);
-  
+
   useEffect(() => {
     const updateAndFetch = async () => {
       await updateClubIds();
       if (id) {
-        fetchClubData(); 
-        const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user: User | null) => {
-          if (user) {
-            setUserId(user.uid);
-            checkIfClubInCalendar(user.uid);
-          } else {
-            setUserId(null);
+        fetchClubData();
+        const unsubscribe = onAuthStateChanged(
+          FIREBASE_AUTH,
+          (user: User | null) => {
+            if (user) {
+              setUserId(user.uid);
+              checkIfClubInCalendar(user.uid);
+            } else {
+              setUserId(null);
+            }
           }
-        });
+        );
 
         return () => unsubscribe();
       }
@@ -73,15 +78,15 @@ const Page = () => {
     try {
       const clubsRef = collection(FIREBASE_DB, "clubs");
       const clubsSnapshot = await getDocs(clubsRef);
-      
+
       if (clubsSnapshot.empty) return;
 
       const batch = writeBatch(FIREBASE_DB);
       let index = 0; // Counter to ensure unique IDs
-      
+
       clubsSnapshot.forEach((docSnap: QueryDocumentSnapshot) => {
         const docRef = doc(FIREBASE_DB, "clubs", docSnap.id);
-        batch.update(docRef, { id: index++ }); 
+        batch.update(docRef, { id: index++ });
       });
 
       await batch.commit();
@@ -98,8 +103,8 @@ const Page = () => {
       const clubDocSnap = await getDoc(clubDocRef);
       if (clubDocSnap.exists()) {
         setCurrentClub(clubDocSnap.data() as Club);
-        fetchUpcomingDates(); 
-        fetchPastEvents(); 
+        fetchUpcomingDates();
+        fetchPastEvents();
       }
     } catch (error) {
       console.error("Error fetching club data: ", error);
@@ -115,16 +120,26 @@ const Page = () => {
 
         if (datesSnapshot.empty) return;
 
-        const now = new Date(); 
+        const now = new Date();
 
-        const datesList = datesSnapshot.docs.map(doc => {
-          const data = doc.data();
-          const eventTime = data.date instanceof Timestamp ? data.date.toDate() : new Date(data.date.seconds * 1000);
-          return {
-            name: doc.id,
-            time: eventTime,
-          };
-        }).filter(date => date.time !== null && !isNaN(date.time.getTime()) && date.time >= now); 
+        const datesList = datesSnapshot.docs
+          .map((doc) => {
+            const data = doc.data();
+            const eventTime =
+              data.date instanceof Timestamp
+                ? data.date.toDate()
+                : new Date(data.date.seconds * 1000);
+            return {
+              name: doc.id,
+              time: eventTime,
+            };
+          })
+          .filter(
+            (date) =>
+              date.time !== null &&
+              !isNaN(date.time.getTime()) &&
+              date.time >= now
+          );
 
         setUpcomingDates(datesList);
       }
@@ -136,17 +151,22 @@ const Page = () => {
   const fetchPastEvents = async () => {
     try {
       if (id) {
-        const pastEventsRef = collection(FIREBASE_DB, "clubs", id, "pastEvents");
+        const pastEventsRef = collection(
+          FIREBASE_DB,
+          "clubs",
+          id,
+          "pastEvents"
+        );
         const pastEventsSnapshot = await getDocs(pastEventsRef);
 
         if (pastEventsSnapshot.empty) return;
 
-        const pastEventsList = pastEventsSnapshot.docs.map(doc => {
+        const pastEventsList = pastEventsSnapshot.docs.map((doc) => {
           const data = doc.data();
           return {
             name: doc.id,
-            imageURL: data.imageURL || '',
-            description: data.description || '',
+            imageURL: data.imageURL || "",
+            description: data.description || "",
           };
         });
 
@@ -201,7 +221,9 @@ const Page = () => {
     }
   };
 
-  const handleImageLoad = (event: { nativeEvent: { source: { width: number; height: number } } }) => {
+  const handleImageLoad = (event: {
+    nativeEvent: { source: { width: number; height: number } };
+  }) => {
     const { width, height } = event.nativeEvent.source;
     const calculatedHeight = (screenWidth - 32) * (height / width);
     setImageHeight(calculatedHeight);
@@ -215,7 +237,10 @@ const Page = () => {
         showHideTransition={"fade"}
         hidden={true}
       />
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         <TouchableOpacity onPress={router.back} style={styles.close_button}>
           <Ionicons name="close-sharp" size={24} color="white" />
         </TouchableOpacity>
@@ -229,11 +254,13 @@ const Page = () => {
         <View style={styles.divider} />
         <Text style={styles.description}>{currentClub?.longDescription}</Text>
         <View style={styles.divider} />
-        <Pressable onPress={() => {
-          currentClub?.sponsorEmail.indexOf(",") === -1
-            ? Linking.openURL("mailto:" + currentClub?.sponsorEmail)
-            : null;
-        }}>
+        <Pressable
+          onPress={() => {
+            currentClub?.sponsorEmail.indexOf(",") === -1
+              ? Linking.openURL("mailto:" + currentClub?.sponsorEmail)
+              : null;
+          }}
+        >
           <Text style={styles.sponsorEmail}>
             Sponsor: {currentClub?.sponsorEmail}
           </Text>
@@ -251,25 +278,33 @@ const Page = () => {
         ) : (
           <Text style={styles.noDates}>No upcoming dates.</Text>
         )}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: isClubInCalendar ? "#d9534f" : "#007BFF" }]}
-          onPress={handleAddOrRemoveClub}
-        >
-          <Text style={styles.buttonText}>
-            {isClubInCalendar ? "Remove from Calendar" : "Add to Calendar"}
-          </Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              { backgroundColor: isClubInCalendar ? "#d9534f" : "#007BFF" },
+            ]}
+            onPress={handleAddOrRemoveClub}
+          >
+            <Text style={styles.buttonText}>
+              {isClubInCalendar ? "Remove from Calendar" : "Add to Calendar"}
+            </Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.divider} />
         <Text style={styles.title}>Past Events</Text>
         {pastEvents.length > 0 ? (
           pastEvents.map((event, index) => (
             <View key={index} style={styles.pastEventContainer}>
-              <Image source={{ uri: event.imageURL }} style={styles.pastEventImage} />
+              <Image
+                source={{ uri: event.imageURL }}
+                style={styles.pastEventImage}
+              />
               <View style={styles.pastEventDetails}>
                 <Text style={styles.pastEventName}>{event.name}</Text>
-                <Text style={styles.pastEventDescription}>{event.description}</Text>
+                <Text style={styles.pastEventDescription}>
+                  {event.description}
+                </Text>
               </View>
             </View>
           ))
