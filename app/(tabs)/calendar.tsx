@@ -202,17 +202,20 @@ const NormalCalendar = ({ user }: { user: User }) => {
       </View>
       <View style={styles.upcomingEventsContainer}>
         <Text style={styles.upcomingEventsHeader}>Upcoming Events</Text>
-        <FlatList
-          data={upcomingEvents}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.upcomingEventItem}>
-              <Text style={styles.upcomingEventDate}>{formatDateForList(item.date)}</Text>
-              <Text style={styles.upcomingEventTitle}>{item.title}</Text>
-              <Text style={styles.upcomingEventClub}>{item.club}</Text>
-            </View>
-          )}
-        />
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={true} >
+          <FlatList
+            data={upcomingEvents}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.upcomingEventItem}>
+                <Text style={styles.upcomingEventDate}>{formatDateForList(item.date)}</Text>
+                <Text style={styles.upcomingEventTitle}>{item.title}</Text>
+                <Text style={styles.upcomingEventClub}>{item.club}</Text>
+              </View>
+            )}
+          />
+        </ScrollView>
+        
       </View>
     </View>
   );
@@ -222,6 +225,9 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: "#121212",
+  },
+  scrollView: {
+    flex: 1,
   },
   container: {
     flex: 1,
@@ -349,6 +355,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
+    height: 200,
   },
   upcomingEventsHeader: {
     fontSize: 26,

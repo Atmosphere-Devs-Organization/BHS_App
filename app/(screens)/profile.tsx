@@ -4,6 +4,7 @@ import {
   ScrollView,
   View,
   Text,
+  FlatList,
   StyleSheet,
   TouchableOpacity,
   TextInput,
@@ -21,7 +22,7 @@ import { router } from "expo-router";
 import Numbers from "@/constants/Numbers";
 import Colors from "@/constants/Colors";
 import AwesomeButton from "react-native-really-awesome-button";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import clubsData from "assets/data/clubs-data.json"; // Adjust the path as necessary
 import * as SecureStore from "expo-secure-store";
 
@@ -116,7 +117,15 @@ const NormalProfile = ({
         if (userDoc.exists()) {
           const userData = userDoc.data();
           setUsername(userData.name || "");
-          setClubs(userData.clubs || []);
+          const clubsCollection = collection(FIREBASE_DB, "clubs");
+          const querySnapshot = await getDocs(clubsCollection);
+          const existingClubs = querySnapshot.docs.map(doc => doc.id);
+
+          const allClubs = userData.clubs || [];
+
+          // Filter user's clubs to only include those that exist in Firestore
+          const validClubs = allClubs.filter((club: string) => existingClubs.includes(club));
+          setClubs(validClubs);
           setSid(
             (await SecureStore.getItemAsync(userId + "HACusername")) || ""
           );
@@ -164,8 +173,8 @@ const NormalProfile = ({
   const handlePress = (clubName: string) => {
     const matchedClub = clubsData.find((club) => club.name === clubName);
 
-    if (matchedClub) {
-      router.replace(`/clubPage/${matchedClub.name}`);
+    if (true) {
+      router.replace(`/clubPage/${clubName}`);
     } else {
       console.log("No matching club found");
     }
@@ -177,7 +186,7 @@ const NormalProfile = ({
         <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false}>
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <SafeAreaView style={styles.normal_profile_container}>
-              <View style={{ flexDirection: "row", marginBottom: 30 }}>
+              <View style={{ flexDirection: "row", marginTop: 5 }}>
                 <TouchableOpacity
                   onPress={router.back}
                   style={styles.back_button}
@@ -188,83 +197,92 @@ const NormalProfile = ({
                     color={Colors.backButton}
                   />
                 </TouchableOpacity>
-                <Text style={styles.title}>Profile</Text>
               </View>
+              <Text style={styles.title}>Profile</Text>
 
+  
+              <View style={styles.cardContainer}>
               <Text style={styles.sectionTitle}>User Information</Text>
+                <View style={styles.infoContainer}>
+                  <Text style={styles.infoLabel}>Email</Text>
+                  <Text style={styles.infoText}>{email}</Text>
+                </View>
 
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Email:</Text>
-                <Text style={styles.infoText}>{email}</Text>
-              </View>
-
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Name:</Text>
-                <TextInput
-                  style={styles.infoInput}
-                  placeholder="Enter your name"
-                  value={username}
-                  onChangeText={setUsername}
-                  editable={isEditingName}
-                  ref={usernameInputRef}
-                />
-                <TouchableOpacity
-                  onPress={() => {
-                    if (isEditingName) {
-                      setIsEditingName(false);
-                      updateUser("name");
-                    } else {
-                      if (isEditingHAC) {
-                        updateUser("HACusername");
-                        updateUser("HACpassword");
-                      }
-                      setIsEditingHAC(false);
-                      setIsEditingName(true);
-                    }
-                  }}
-                  style={styles.edit_button}
-                >
-                  <Text style={styles.edit_button_text}>
-                    {isEditingName ? "Save" : "Edit"}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>SID (include S):</Text>
-                <TextInput
-                  style={styles.infoInput}
-                  placeholder="Enter your SID: (Include the S)"
-                  value={sid}
-                  onChangeText={setSid}
-                  editable={isEditingHAC}
-                  ref={sidInputRef}
-                />
-              </View>
-
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>HAC Password:</Text>
-                <View style={styles.passwordContainer}>
+                <View style={styles.infoContainer}>
+                  <Text style={styles.infoLabel}>Name</Text>
                   <TextInput
                     style={styles.infoInput}
-                    placeholder="Enter your HAC password"
-                    value={HACpassword}
-                    onChangeText={setHACPassword}
-                    secureTextEntry={!showPassword}
-                    editable={isEditingHAC}
-                    ref={hacPasswordInputRef}
+                    placeholder="Enter your name"
+                    placeholderTextColor={"darkGrey"}
+                    value={username}
+                    onChangeText={setUsername}
+                    editable={isEditingName}
+                    ref={usernameInputRef}
                   />
-                  <Pressable
-                    onPress={() => setShowPassword(!showPassword)}
-                    style={styles.eyeIcon}
-                  >
-                    <Entypo
-                      name={showPassword ? "eye" : "eye-with-line"}
-                      size={20}
-                      color="white"
-                    />
-                  </Pressable>
                 </View>
+                <TouchableOpacity
+                    onPress={() => {
+                      if (isEditingName) {
+                        setIsEditingName(false);
+                        updateUser("name");
+                      } else {
+                        if (isEditingHAC) {
+                          updateUser("HACusername");
+                          updateUser("HACpassword");
+                        }
+                        setIsEditingHAC(false);
+                        setIsEditingName(true);
+                      }
+                    }}
+                    style={styles.edit_button}
+                  >
+                    <Text style={styles.edit_button_text}>
+                      {isEditingName ? "Save" : "Edit"}
+                    </Text>
+                  </TouchableOpacity>
+              </View>
+              
+              <View style={styles.cardContainer}>
+              <Text style={styles.sectionTitle}>HAC Information</Text>
+                <View style={styles.infoContainer}>
+                  <Text style={styles.infoLabel}>SID (include S)</Text>
+                  <TextInput
+                    style={styles.infoInput}
+                    placeholder="Enter your SID: (Include the S)"
+                    placeholderTextColor={"grey"}
+                    value={sid}
+                    onChangeText={setSid}
+                    editable={isEditingHAC}
+                    ref={sidInputRef}
+                  />
+                </View>
+
+                <View style={styles.infoContainer}>
+                  <Text style={styles.infoLabel}>HAC Password</Text>
+                  <View style={styles.passwordContainer}>
+                    <TextInput
+                      style={styles.infoInput}
+                      placeholder="Enter your HAC password"
+                      placeholderTextColor={"darkGrey"}
+                      value={HACpassword}
+                      onChangeText={setHACPassword}
+                      secureTextEntry={!showPassword}
+                      editable={isEditingHAC}
+                      ref={hacPasswordInputRef}
+                    />
+                    <Pressable
+                      onPress={() => setShowPassword(!showPassword)}
+                      style={styles.eyeIcon}
+                    >
+                      <Entypo
+                        name={showPassword ? "eye" : "eye-with-line"}
+                        size={20}
+                        color="white"
+                      />
+                    </Pressable>
+                  </View>
+                </View>
+
                 <TouchableOpacity
                   onPress={() => {
                     if (isEditingHAC) {
@@ -286,43 +304,61 @@ const NormalProfile = ({
                   </Text>
                 </TouchableOpacity>
               </View>
-
+  
               <Text style={styles.clubTitle}>Your Clubs</Text>
-
+  
               <View style={styles.clubContainer}>
                 {clubs.map((club, index) => (
                   <AwesomeButton
                     key={index}
                     style={styles.club_button}
-                    backgroundColor={Colors.AmarButton}
+                    backgroundColor={"#1E1E1E"}
                     backgroundDarker={"orange"}
                     height={screenWidth * 0.2}
                     width={(screenWidth - 40 - 20) / 3}
-                    raiseLevel={10}
+                    raiseLevel={0}
                     onPress={() => handlePress(club)}
                   >
                     <Text style={styles.club_button_text}>{club}</Text>
                   </AwesomeButton>
                 ))}
               </View>
-
+  
               <AwesomeButton
                 style={styles.logout_button}
-                backgroundColor={Colors.AmarButton}
-                backgroundDarker={"orange"}
-                height={screenWidth * 0.25}
-                width={screenWidth * 0.85}
-                raiseLevel={13}
-                onPress={() => FIREBASE_AUTH.signOut()}
+                backgroundColor={"#2176ff"}
+                height={screenWidth * 0.2}
+                width={screenWidth * 0.8}
+                raiseLevel={0}
+                onPressOut={() =>
+                  Alert.alert(
+                    "Confirm Logout",
+                    "Are you sure you want to log out?",
+                    [
+                      {
+                        text: "Cancel",
+                        onPress: () => console.log("Logout cancelled"),
+                        style: "cancel",
+                      },
+                      {
+                        text: "Log Out",
+                        onPress: () => FIREBASE_AUTH.signOut(),
+                        style: "destructive",
+                      },
+                    ],
+                    { cancelable: true }
+                  )
+                }
               >
                 <Entypo
                   name="log-out"
-                  size={25}
-                  color={Colors.clubName}
+                  size={17}
+                  color={"white"}
                   style={{ alignSelf: "center", marginRight: 15 }}
                 />
                 <Text style={styles.logout_text}>Logout</Text>
               </AwesomeButton>
+  
             </SafeAreaView>
           </TouchableWithoutFeedback>
         </ScrollView>
@@ -335,25 +371,28 @@ const NormalProfile = ({
 const styles = StyleSheet.create({
   logged_out_profile_container: {
     flex: 1,
-    backgroundColor: Colors.AmarBackground,
+    backgroundColor: "#121212",
   },
   normal_profile_container: {
     flex: 1,
-    backgroundColor: Colors.AmarBackground,
+    backgroundColor: "#121212",
   },
   BG_Color: {
     flex: 1,
-    backgroundColor: Colors.AmarBackground,
+    backgroundColor: "#121212",
   },
   back_button: {
     marginVertical: 0,
     marginHorizontal: 15,
   },
   title: {
+    fontSize: 50,
     fontWeight: "bold",
-    fontSize: Numbers.titleFontSize,
-    marginHorizontal: "20%",
-    color: Colors.profileTitle,
+    marginBottom: "5%",
+    marginHorizontal: "17%",
+    color: "#ffffff",
+    textAlign: "center",
+
   },
   need_signin_text: {
     alignSelf: "center",
@@ -380,7 +419,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   infoLabel: {
-    color: "orange",
+    color: "#2176ff",
     fontSize: 18,
     fontWeight: "bold",
   },
@@ -399,18 +438,20 @@ const styles = StyleSheet.create({
   },
   edit_button: {
     marginTop: 10,
-    backgroundColor: Colors.AmarButton,
+    backgroundColor: "orange",
     padding: 5,
     borderRadius: 5,
   },
   edit_button_text: {
-    color: "orange",
+    color: "white",
+    fontWeight: "bold",
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: "bold",
-    color: "orange",
-    margin: 20,
+    color: "white",
+    textAlign: "center",
+    margin: 10,
   },
   clubTitle: {
     fontSize: 30,
@@ -430,7 +471,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   club_button_text: {
-    color: "orange",
+    color: "#FF8500",
     fontWeight: "bold",
     fontSize: 15,
     textAlign: "center",
@@ -454,6 +495,25 @@ const styles = StyleSheet.create({
     color: "white",
     textAlign: "center",
     fontWeight: "bold",
+  },
+  cardContainer: {
+    backgroundColor: "#1E1E1E",
+    borderRadius: 10,
+    padding: 15,
+    marginVertical: 10,
+    marginHorizontal: 20,
+  },
+  cardLabel: {
+    color: "#2176ff",
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  cardInput: {
+    color: "black",
+    fontSize: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "black",
   },
 });
 
