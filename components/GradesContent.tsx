@@ -164,11 +164,13 @@ const Transcript = ({
   schoolYears,
 }: {
   transcriptData: any;
-  schoolYears: any;
+  schoolYears: any[];
 }) => {
   const [yearItem, setYearItem] = useState<any>(null);
   const [showingTranscriptDetails, setShowingDetails] =
     useState<boolean>(false);
+
+  schoolYears = schoolYears.reverse();
 
   const printSingleTranscriptEntry = (array: any[]): string => {
     return (
