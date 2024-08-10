@@ -242,7 +242,7 @@ const Page = () => {
         showsVerticalScrollIndicator={false}
       >
         <TouchableOpacity onPress={router.back} style={styles.close_button}>
-          <Ionicons name="close-sharp" size={24} color="white" />
+          <Ionicons name="close-sharp" size={32} color="white" />
         </TouchableOpacity>
         <Image
           source={{ uri: currentClub?.imageURL }}
@@ -326,7 +326,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   close_button: {
-    alignSelf: "flex-end",
+    alignSelf: "flex-start",
+    width: 50, // Adjust width as needed
+    height: 50, // Adjust height as needed
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10, // Adjust padding as needed
   },
   image: {
     width: "100%",
