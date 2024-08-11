@@ -17,6 +17,7 @@ import { FIREBASE_AUTH } from "@/FirebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
 import * as SecureStore from "expo-secure-store";
 import { useFocusEffect } from "@react-navigation/native";
+import HACNeededScreen from "./HACNeededScreen";
 
 interface Props {
   category: string;
@@ -140,6 +141,7 @@ const GradesContent = ({ category }: Props) => {
           <Transcript
             transcriptData={transcriptData}
             schoolYears={schoolYears}
+            user={user}
           />
         </View>
       );
@@ -156,17 +158,17 @@ const Grades = () => {
 };
 
 const Calculator = () => {
-  return (
-    <Text style={styles.comingSoonText}>Calculator Coming Soon</Text>
-  );
+  return <Text style={styles.comingSoonText}>Calculator Coming Soon</Text>;
 };
 
 const Transcript = ({
   transcriptData,
   schoolYears,
+  user,
 }: {
   transcriptData: any;
   schoolYears: any[];
+  user: any;
 }) => {
   const [yearItem, setYearItem] = useState<any>(null);
   const [showingTranscriptDetails, setShowingDetails] =
@@ -238,8 +240,8 @@ const Transcript = ({
 
   const listRef = useRef<FlatList>(null);
 
-  return transcriptData !== undefined ? (
-    <View>
+  return user && transcriptData !== undefined ? (
+    <View style={{ paddingTop: 30 }}>
       {!showingTranscriptDetails && (
         <View>
           <View
@@ -325,9 +327,7 @@ const Transcript = ({
       )}
     </View>
   ) : (
-    <View>
-      <Text style={{ color: "white" }}>HAC Info is Incorrect</Text>
-    </View>
+    <HACNeededScreen />
   );
 };
 
@@ -346,8 +346,8 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 24,
     fontWeight: "bold",
-    textAlign: "center", 
-    marginVertical: 20, 
+    textAlign: "center",
+    marginVertical: 60,
   },
 });
 

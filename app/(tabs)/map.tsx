@@ -28,6 +28,7 @@ import { User, onAuthStateChanged } from "firebase/auth";
 import * as SecureStore from "expo-secure-store";
 import Numbers from "@/constants/Numbers";
 import { Ionicons } from "@expo/vector-icons";
+import HACNeededScreen from "@/components/HACNeededScreen";
 
 const Map = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -496,39 +497,7 @@ const Map = () => {
       </ScrollView>
     </View>
   ) : (
-    <View style={{ backgroundColor: "#121212", height: "100%", width: "100%" }}>
-      <Text
-        style={{
-          marginTop: 150,
-          color: "#ff6600",
-          textAlign: "center",
-          fontSize: 30,
-          fontWeight: "bold",
-          paddingHorizontal: 15,
-          paddingBottom: 75,
-        }}
-      >
-        You must be signed into your BHS Home Access Center account to access
-        the map!
-      </Text>
-      <AwesomeButton
-        style={styles.profile_button}
-        backgroundColor={"#ff9100"}
-        backgroundDarker={"#c26e00"}
-        height={100}
-        width={320}
-        raiseLevel={20}
-        onPressOut={() => router.push("(screens)/profile")}
-      >
-        <Ionicons
-          name="person-circle-sharp"
-          size={50}
-          color="#422500"
-          style={{ alignSelf: "center", marginRight: 15 }}
-        />
-        <Text style={styles.profile_text}>Profile</Text>
-      </AwesomeButton>
-    </View>
+    <HACNeededScreen />
   );
 };
 
@@ -592,17 +561,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginVertical: 30,
     color: "#ffffff",
-  },
-  profile_button: {
-    marginVertical: 25,
-    alignContent: "center",
-    alignSelf: "center",
-  },
-  profile_text: {
-    fontSize: Numbers.loginTextFontSize,
-    color: "#422500",
-    textAlign: "center",
-    fontWeight: "bold",
   },
 });
 

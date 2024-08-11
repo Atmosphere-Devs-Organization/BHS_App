@@ -98,7 +98,7 @@ const ClubsHeader = ({ onCategoryChanged }: Props) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.headerBGColor,
-    height: 180,
+    height: 230,
   },
   topRow: {
     flexDirection: "row",
