@@ -123,7 +123,7 @@ const NormalCalendar = ({ user }: { user: User }) => {
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {/* Title Section */}
       <View style={styles.titleContainer}>
         <Text style={styles.title}>My Calendar</Text>
@@ -217,7 +217,7 @@ const NormalCalendar = ({ user }: { user: User }) => {
         {/*</ScrollView>*/}
         
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    marginBottom: 675,
+    //marginBottom: 675,
   },
   calendarContainer: {
     marginTop: 20,
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
-    height: 210,
+    //height: 210,
   },
   upcomingEventsHeader: {
     fontSize: 26,
