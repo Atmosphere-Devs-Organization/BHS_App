@@ -114,6 +114,22 @@ const GridMap = ({ startPos, endPos, floor, paddingHorizontal }: Props) => {
     findPath(startPos.Col, startPos.Row, endPos.Col, endPos.Row);
   }, [floor, startPos, endPos]);
 
+  const getImageSource = (imagePath: any) => {
+    switch (imagePath) {
+      case "assets/images/Floor_1.jpg":
+        return require("assets/images/Floor_1.jpg");
+      case "assets/images/Floor_2.jpg":
+        return require("assets/images/Floor_2.jpg");
+      case "assets/images/Floor_3.jpg":
+        return require("assets/images/Floor_3.jpg");
+      case "assets/images/Floor_4.jpg":
+        return require("assets/images/Floor_4.jpg");
+      // Add more cases as needed
+      default:
+        return require("assets/images/adaptive-icon.png");
+    }
+  };
+
   return (
     <ImageBackground
       style={{
@@ -125,7 +141,11 @@ const GridMap = ({ startPos, endPos, floor, paddingHorizontal }: Props) => {
         borderColor: Colors.mapBorder,
         marginHorizontal: paddingHorizontal / 1.5,
       }}
-      source={{ uri: floorItem?.imageURL }}
+      source={
+        floorItem
+          ? getImageSource(floorItem.imageURL)
+          : require("assets/images/adaptive-icon.png")
+      }
       resizeMode="contain"
     >
       <Svg height={GRID_HEIGHT * CELL_SIZE} width={GRID_WIDTH * CELL_SIZE}>

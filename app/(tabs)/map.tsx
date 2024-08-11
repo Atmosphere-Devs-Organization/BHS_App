@@ -34,9 +34,11 @@ const Map = () => {
   const [username, setUsername] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
   useEffect(() => {
-    onAuthStateChanged(FIREBASE_AUTH, (user) => {
+    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
       setUser(user);
     });
+
+    return () => unsubscribe();
   }, []);
 
   useFocusEffect(
@@ -308,6 +310,8 @@ const Map = () => {
     "4324",
     "lgi",
     "4125",
+    "pb",
+    "pb ",
   ];
   // List of valid room numbers
 
@@ -368,7 +372,7 @@ const Map = () => {
     setLoading(false);
   };
 
-  return loadingInfo ? (
+  return loadingInfo && user ? (
     <View style={{ backgroundColor: "#121212", height: "100%", width: "100%" }}>
       <ActivityIndicator
         size="large"
@@ -376,7 +380,7 @@ const Map = () => {
         style={{ alignSelf: "center", marginTop: 300 }}
       />
     </View>
-  ) : hasAccess ? (
+  ) : hasAccess && user ? (
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={{ marginTop: 50, paddingBottom: 100 }}
@@ -535,7 +539,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#121212",
   },
   card: {
-    backgroundColor: "white",
+    backgroundColor: "#121212",
     borderRadius: 10,
     padding: 20,
     marginHorizontal: 20,
@@ -586,7 +590,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: 30,
+    marginVertical: 30,
     color: "#ffffff",
   },
   profile_button: {

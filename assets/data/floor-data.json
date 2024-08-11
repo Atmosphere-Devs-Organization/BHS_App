@@ -195,7 +195,7 @@
       { "Col": 16, "Row": 7 },
       { "Col": 13, "Row": 7 }
     ],
-    "imageURL": "https://i.ibb.co/88YzyLF/Floor-1.jpg"
+    "imageURL": "assets/images/Floor_1.jpg"
   },
   {
     "id": 2,
@@ -370,7 +370,7 @@
       { "Col": 16, "Row": 7 },
       { "Col": 13, "Row": 7 }
     ],
-    "imageURL": "https://i.ibb.co/7Jnjgdc/Floor-2.jpg"
+    "imageURL": "assets/images/Floor_2.jpg"
   },
   {
     "id": 3,
@@ -513,7 +513,7 @@
       { "Col": 16, "Row": 7 },
       { "Col": 13, "Row": 7 }
     ],
-    "imageURL": "https://i.ibb.co/5TrQT9Q/Floor-3.jpg"
+    "imageURL": "assets/images/Floor_3.jpg"
   },
   {
     "id": 4,
@@ -656,6 +656,6 @@
       { "Col": 16, "Row": 7 },
       { "Col": 13, "Row": 7 }
     ],
-    "imageURL": "https://i.ibb.co/2gGtxW6/Floor-4.jpg"
+    "imageURL": "assets/images/Floor_4.jpg"
   }
 ]
