@@ -12,7 +12,7 @@ import {
   ScrollView,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { Club } from "@/interfaces/Club";
+import { Club } from "@/interfaces/club";
 import { Ionicons } from "@expo/vector-icons";
 import {
   doc,
@@ -114,68 +114,66 @@ const Page = () => {
   const fetchUpcomingDates = async () => {
     try {
       if (id) {
-        const datesRef = collection(FIREBASE_DB, "clubs", id, "dates");
-        const datesQuery = query(datesRef, orderBy("date"));
-        const datesSnapshot = await getDocs(datesQuery);
-
-        if (datesSnapshot.empty) return;
-
+        const clubDocRef = doc(FIREBASE_DB, "clubs", id);
+        const clubDocSnapshot = await getDoc(clubDocRef);
+  
+        if (!clubDocSnapshot.exists()) return;
+  
+        const clubData = clubDocSnapshot.data();
+        const dateNames: string[] = clubData.dateNames || [];
+        const dateDates: Timestamp[] = clubData.dateDates || [];
+  
         const now = new Date();
-
-        const datesList = datesSnapshot.docs
-          .map((doc) => {
-            const data = doc.data();
-            const eventTime =
-              data.date instanceof Timestamp
-                ? data.date.toDate()
-                : new Date(data.date.seconds * 1000);
-            return {
-              name: doc.id,
-              time: eventTime,
-            };
-          })
-          .filter(
-            (date) =>
-              date.time !== null &&
-              !isNaN(date.time.getTime()) &&
-              date.time >= now
-          );
-
+        const datesList = dateNames.map((name, index) => {
+          const eventTime = dateDates[index]?.toDate() || new Date(0);
+  
+          return {
+            name,
+            time: eventTime,
+          };
+        }).filter(
+          (date) =>
+            date.time !== null &&
+            !isNaN(date.time.getTime()) &&
+            date.time >= now
+        );
+  
         setUpcomingDates(datesList);
       }
     } catch (error) {
       console.error("Error fetching upcoming dates: ", error);
     }
   };
-
   const fetchPastEvents = async () => {
     try {
       if (id) {
-        const pastEventsRef = collection(
-          FIREBASE_DB,
-          "clubs",
-          id,
-          "pastEvents"
-        );
-        const pastEventsSnapshot = await getDocs(pastEventsRef);
-
-        if (pastEventsSnapshot.empty) return;
-
-        const pastEventsList = pastEventsSnapshot.docs.map((doc) => {
-          const data = doc.data();
+        const clubDocRef = doc(FIREBASE_DB, "clubs", id);
+        const clubDocSnapshot = await getDoc(clubDocRef);
+  
+        if (!clubDocSnapshot.exists()) return;
+  
+        const clubData = clubDocSnapshot.data();
+        const pastEventNames: string[] = clubData.pastEventNames || [];
+        const pastEventDescriptions: string[] = clubData.pastEventDescriptions || [];
+        const pastEventURLs: string[] = clubData.pastEventURLs || [];
+  
+        const pastEventsList = pastEventNames.map((name, index) => {
           return {
-            name: doc.id,
-            imageURL: data.imageURL || "",
-            description: data.description || "",
+            name,
+            description: pastEventDescriptions[index] || "",
+            imageURL: pastEventURLs[index] || "",
           };
         });
-
+  
         setPastEvents(pastEventsList);
       }
     } catch (error) {
       console.error("Error fetching past events: ", error);
     }
   };
+  
+
+  
 
   const checkIfClubInCalendar = async (userId: string) => {
     try {
@@ -253,6 +251,7 @@ const Page = () => {
         <Text style={styles.name}>{currentClub?.name}</Text>
         <View style={styles.divider} />
         <Text style={styles.description}>{currentClub?.longDescription}</Text>
+        
         <View style={styles.divider} />
         <Pressable
           onPress={() => {
@@ -267,17 +266,8 @@ const Page = () => {
         </Pressable>
 
         <View style={styles.divider} />
-        <Text style={styles.title}>Upcoming Dates</Text>
-        {upcomingDates.length > 0 ? (
-          upcomingDates.map((date, index) => (
-            <View key={index} style={styles.dateContainer}>
-              <Text style={styles.dateName}>{date.name}</Text>
-              <Text style={styles.dateTime}>{date.time.toLocaleString()}</Text>
-            </View>
-          ))
-        ) : (
-          <Text style={styles.noDates}>No upcoming dates.</Text>
-        )}
+
+
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={[
@@ -291,6 +281,20 @@ const Page = () => {
             </Text>
           </TouchableOpacity>
         </View>
+
+        <View style={styles.divider} />
+        <Text style={styles.title}>Upcoming Dates</Text>
+        {upcomingDates.length > 0 ? (
+          upcomingDates.map((date, index) => (
+            <View key={index} style={styles.dateContainer}>
+              <Text style={styles.dateName}>{date.name}</Text>
+              <Text style={styles.dateTime}>{date.time.toLocaleString()}</Text>
+            </View>
+          ))
+        ) : (
+          <Text style={styles.noDates}>No upcoming dates.</Text>
+        )}
+        
         <View style={styles.divider} />
         <Text style={styles.title}>Past Events</Text>
         {pastEvents.length > 0 ? (
