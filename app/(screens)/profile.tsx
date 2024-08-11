@@ -67,11 +67,11 @@ const LoggedOutProfile = () => {
         </Text>
         <AwesomeButton
           style={styles.login_button}
-          backgroundColor={Colors.AmarButton}
+          backgroundColor={"#2176ff"}
           backgroundDarker={"orange"}
           height={Numbers.loginButtonHeight}
           width={Numbers.loginButtonWidth}
-          raiseLevel={10}
+          raiseLevel={0}
           onPressOut={() => router.push("(modals)/login")}
         >
           <Entypo
@@ -171,13 +171,25 @@ const NormalProfile = ({
   };
 
   const handlePress = (clubName: string) => {
-    const matchedClub = clubsData.find((club) => club.name === clubName);
-
-    if (true) {
-      router.replace(`/clubPage/${clubName}`);
-    } else {
-      console.log("No matching club found");
-    }
+    //const matchedClub = clubsData.find((club) => club.name === clubName);
+    Alert.alert(
+      "Confirm Action",
+      "Are you sure you want to go to "+ clubName +"?",
+      [
+        {
+          text: "Stay",
+          onPress: () => console.log("Action cancelled"),
+          style: "cancel",
+        },
+        {
+          text: "Confirm",
+          onPress: () => router.replace(`/clubPage/${clubName}`),
+          style: "destructive",
+        },
+      ],
+      { cancelable: true }
+    )
+    
   };
 
   return (
@@ -315,11 +327,11 @@ const NormalProfile = ({
                     backgroundColor={"#1E1E1E"}
                     backgroundDarker={"orange"}
                     height={screenWidth * 0.2}
-                    width={(screenWidth - 40 - 20) / 3}
+                    width={(screenWidth - 40 - 20)}
                     raiseLevel={0}
                     onPress={() => handlePress(club)}
                   >
-                    <Text style={styles.club_button_text}>{club}</Text>
+                    <Text style={styles.club_button_text}  numberOfLines={2}>{club}</Text>
                   </AwesomeButton>
                 ))}
               </View>
@@ -397,7 +409,8 @@ const styles = StyleSheet.create({
   need_signin_text: {
     alignSelf: "center",
     marginTop: 100,
-    marginHorizontal: 10,
+    marginHorizontal: 20,
+    marginBottom: 20,
     fontWeight: "bold",
     fontSize: Numbers.needSignInFontSize,
     color: "white",
@@ -463,7 +476,7 @@ const styles = StyleSheet.create({
   clubContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-around",
+    justifyContent: "center",
     marginVertical: 10,
     marginHorizontal: 20,
   },
@@ -473,7 +486,7 @@ const styles = StyleSheet.create({
   club_button_text: {
     color: "#FF8500",
     fontWeight: "bold",
-    fontSize: 15,
+    fontSize: 20,
     textAlign: "center",
   },
   logout_button: {
