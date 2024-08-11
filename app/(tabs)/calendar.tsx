@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { collection, doc, getDocs, onSnapshot } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, onSnapshot } from "firebase/firestore";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for arrow icons
@@ -57,30 +57,41 @@ const NormalCalendar = ({ user }: { user: User }) => {
       "SchoolDates",
       "dates"
     );
-
+  
     const unsubscribe = onSnapshot(userDocRef, async (userDocSnap) => {
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
         const clubs = userData.clubs || [];
-
-        const fetchedEvents: { date: string; title: string; club: string }[] =
-          [];
-
+  
+        const fetchedEvents: { date: string; title: string; club: string }[] = [];
+  
         // Fetch club events
         for (const club of clubs) {
           const clubDocRef = doc(FIREBASE_DB, "clubs", club);
-          const datesCollectionRef = collection(clubDocRef, "dates");
-          const datesSnapshot = await getDocs(datesCollectionRef);
-
-          datesSnapshot.forEach((doc) => {
-            const dateData = doc.data();
-            const eventDate = new Date(dateData.date.toDate())
-              .toISOString()
-              .split("T")[0];
-            fetchedEvents.push({ date: eventDate, title: doc.id, club });
-          });
+          const clubDocSnap = await getDoc(clubDocRef);
+  
+          if (clubDocSnap.exists()) {
+            const clubData = clubDocSnap.data();
+            const dateDates = clubData.dateDates || [];
+            const dateNames = clubData.dateNames || [];
+  
+            // Ensure the lengths of the arrays match
+            if (dateDates.length === dateNames.length) {
+              dateDates.forEach((dateTimestamp: any, index: number) => {
+                const eventDate = new Date(dateTimestamp.toDate())
+                  .toISOString()
+                  .split("T")[0];
+                const eventName = dateNames[index];
+                fetchedEvents.push({ date: eventDate, title: eventName, club });
+              });
+            } else {
+              console.error(
+                `Mismatched lengths for dateDates and dateNames in club: ${club}`
+              );
+            }
+          }
         }
-
+  
         // Fetch schoolwide events
         const schoolEventsSnapshot = await getDocs(schoolEventsRef);
         schoolEventsSnapshot.forEach((doc) => {
@@ -94,13 +105,14 @@ const NormalCalendar = ({ user }: { user: User }) => {
             club: "Schoolwide",
           });
         });
-
+  
         setEvents(fetchedEvents);
       }
     });
-
+  
     return () => unsubscribe();
   }, [user]);
+  
 
   const daysInMonth = (year: number, month: number) =>
     new Date(year, month + 1, 0).getDate();
