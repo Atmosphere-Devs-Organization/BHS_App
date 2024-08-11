@@ -12,6 +12,8 @@ import { collection, doc, getDoc, getDocs, onSnapshot } from "firebase/firestore
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for arrow icons
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 const Calendar = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -41,6 +43,8 @@ const LoggedOutCalendar = () => {
   );
 };
 
+
+
 const NormalCalendar = ({ user }: { user: User }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<
@@ -49,68 +53,96 @@ const NormalCalendar = ({ user }: { user: User }) => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [eventTitle, setEventTitle] = useState<string>("");
 
+  const CACHE_KEY = `calendar_events_${user.uid}`;
+
   useEffect(() => {
-    const userDocRef = doc(FIREBASE_DB, "users", user.uid);
-    const schoolEventsRef = collection(
-      FIREBASE_DB,
-      "admin",
-      "SchoolDates",
-      "dates"
-    );
+    const fetchData = async () => {
+      try {
+        // Try to load cached events
+        const cachedEvents = await AsyncStorage.getItem(CACHE_KEY);
   
-    const unsubscribe = onSnapshot(userDocRef, async (userDocSnap) => {
-      if (userDocSnap.exists()) {
-        const userData = userDocSnap.data();
-        const clubs = userData.clubs || [];
+        if (cachedEvents) {
+          // If cached events exist, use them
+          setEvents(JSON.parse(cachedEvents));
+        } else {
+          // If no cached data, fetch from Firebase
+          const userDocRef = doc(FIREBASE_DB, "users", user.uid);
+          const schoolEventsRef = collection(
+            FIREBASE_DB,
+            "admin",
+            "SchoolDates",
+            "dates"
+          );
   
-        const fetchedEvents: { date: string; title: string; club: string }[] = [];
+          const unsubscribe = onSnapshot(userDocRef, async (userDocSnap) => {
+            if (userDocSnap.exists()) {
+              const userData = userDocSnap.data();
+              const clubs = userData.clubs || [];
   
-        // Fetch club events
-        for (const club of clubs) {
-          const clubDocRef = doc(FIREBASE_DB, "clubs", club);
-          const clubDocSnap = await getDoc(clubDocRef);
+              const fetchedEvents: { date: string; title: string; club: string }[] =
+                [];
   
-          if (clubDocSnap.exists()) {
-            const clubData = clubDocSnap.data();
-            const dateDates = clubData.dateDates || [];
-            const dateNames = clubData.dateNames || [];
+              // Fetch club events
+              for (const club of clubs) {
+                const clubDocRef = doc(FIREBASE_DB, "clubs", club);
+                const clubDocSnap = await getDoc(clubDocRef);
   
-            // Ensure the lengths of the arrays match
-            if (dateDates.length === dateNames.length) {
-              dateDates.forEach((dateTimestamp: any, index: number) => {
-                const eventDate = new Date(dateTimestamp.toDate())
+                if (clubDocSnap.exists()) {
+                  const clubData = clubDocSnap.data();
+                  const dateDates = clubData.dateDates || [];
+                  const dateNames = clubData.dateNames || [];
+  
+                  // Ensure the lengths of the arrays match
+                  if (dateDates.length === dateNames.length) {
+                    dateDates.forEach((dateTimestamp: any, index: number) => {
+                      const eventDate = new Date(dateTimestamp.toDate())
+                        .toISOString()
+                        .split("T")[0];
+                      const eventName = dateNames[index];
+                      fetchedEvents.push({
+                        date: eventDate,
+                        title: eventName,
+                        club,
+                      });
+                    });
+                  } else {
+                    console.error(
+                      `Mismatched lengths for dateDates and dateNames in club: ${club}`
+                    );
+                  }
+                }
+              }
+  
+              // Fetch schoolwide events
+              const schoolEventsSnapshot = await getDocs(schoolEventsRef);
+              schoolEventsSnapshot.forEach((doc) => {
+                const dateData = doc.data();
+                const eventDate = new Date(dateData.date.toDate())
                   .toISOString()
                   .split("T")[0];
-                const eventName = dateNames[index];
-                fetchedEvents.push({ date: eventDate, title: eventName, club });
+                fetchedEvents.push({
+                  date: eventDate,
+                  title: doc.id,
+                  club: "Schoolwide",
+                });
               });
-            } else {
-              console.error(
-                `Mismatched lengths for dateDates and dateNames in club: ${club}`
-              );
+  
+              // Set the events to state
+              setEvents(fetchedEvents);
+  
+              // Cache the events
+              await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(fetchedEvents));
             }
-          }
-        }
-  
-        // Fetch schoolwide events
-        const schoolEventsSnapshot = await getDocs(schoolEventsRef);
-        schoolEventsSnapshot.forEach((doc) => {
-          const dateData = doc.data();
-          const eventDate = new Date(dateData.date.toDate())
-            .toISOString()
-            .split("T")[0];
-          fetchedEvents.push({
-            date: eventDate,
-            title: doc.id,
-            club: "Schoolwide",
           });
-        });
   
-        setEvents(fetchedEvents);
+          return () => unsubscribe();
+        }
+      } catch (error) {
+        console.error("Error loading cached data:", error);
       }
-    });
+    };
   
-    return () => unsubscribe();
+    fetchData();
   }, [user]);
   
 

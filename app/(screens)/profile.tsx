@@ -225,7 +225,7 @@ const NormalProfile = ({
                   <TextInput
                     style={styles.infoInput}
                     placeholder="Enter your name"
-                    placeholderTextColor={"darkGrey"}
+                    placeholderTextColor={"grey"}
                     value={username}
                     onChangeText={setUsername}
                     editable={isEditingName}
@@ -275,7 +275,7 @@ const NormalProfile = ({
                     <TextInput
                       style={styles.infoInput}
                       placeholder="Enter your HAC password"
-                      placeholderTextColor={"darkGrey"}
+                      placeholderTextColor={"grey"}
                       value={HACpassword}
                       onChangeText={setHACPassword}
                       secureTextEntry={!showPassword}

@@ -265,6 +265,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     paddingVertical: 10,
     paddingHorizontal: 20,
+    marginVertical: -20, 
     alignItems: 'center',
     justifyContent: 'center',
   },
