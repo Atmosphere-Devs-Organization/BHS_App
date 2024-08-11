@@ -76,10 +76,10 @@ export default {
 
   autoCompleteBG: "#ffffff72",
 
-  mapSubmitButton: "#3700b8",
-  mapSubmitButtonDark: "#270082",
+  mapSubmitButton: "#ff4d00",
+  mapSubmitButtonDark: "#cc3d00",
 
-  elevatorNeededButton: "#ffffff",
+  elevatorNeededButton: "#ff4d00",
 
   mapTitleBorderColor: "#929292",
 

@@ -154,7 +154,7 @@ const App = () => {
           <TouchableOpacity onPress={router.back} style={styles.close_button}>
             <Ionicons name="close-sharp" size={24} color="white" />
           </TouchableOpacity>
-          <Text style={styles.welcomeText}>Welcome To The Bridgeland App</Text>
+          <Text style={styles.welcomeText}>Welcome To The Bear Den</Text>
 
           {isResettingPassword ? (
             <View style={styles.form}>
@@ -170,19 +170,14 @@ const App = () => {
                 />
                 <AwesomeButton
                   style={styles.login_button}
-                  backgroundColor={Colors.loginButtonBG}
-                  backgroundDarker={Colors.loginButtonDarkerBG}
+                  backgroundColor={"#2176ff"}
+                  //backgroundDarker={"#2176ff"}
                   height={screenWidth * 0.15}
                   width={Numbers.loginButtonWidth}
-                  raiseLevel={1}
+                  raiseLevel={0}
                   onPress={handleResetPassword}
                 >
-                  <Entypo
-                    name="login"
-                    size={16}
-                    color="white" // Reverted to original
-                    style={{ alignSelf: "center", marginRight: 15 }}
-                  />
+                  
                   <Text style={styles.buttonText}>
                     Send Password Reset Email
                   </Text>
@@ -232,8 +227,8 @@ const App = () => {
                 </View>
                 <AwesomeButton
                   style={styles.login_button}
-                  backgroundColor={Colors.loginButtonBG}
-                  backgroundDarker={Colors.loginButtonDarkerBG}
+                  backgroundColor={"#2176ff"}
+                  backgroundDarker={"#2176ff"}
                   height={screenWidth * 0.15}
                   width={Numbers.loginButtonWidth}
                   raiseLevel={1}
@@ -242,7 +237,7 @@ const App = () => {
                   <Entypo
                     name="login"
                     size={16}
-                    color={Colors.loginIcon}
+                    color={"white"}
                     style={{ alignSelf: "center", marginRight: 15 }}
                   />
                   <Text style={styles.buttonText}>Create Account</Text>
@@ -284,7 +279,7 @@ const App = () => {
                 </View>
                 <AwesomeButton
                   style={styles.login_button}
-                  backgroundColor={Colors.loginButtonBG} // Reverted to original
+                  backgroundColor={"#2176ff"}// Reverted to original
                   backgroundDarker={Colors.loginButtonDarkerBG} // Reverted to original
                   height={screenWidth * 0.15}
                   width={Numbers.loginButtonWidth}
@@ -319,13 +314,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 16,
-    backgroundColor: Colors.overallBackground,
+    backgroundColor: "#121212",
   },
   icon: {
     width: "200%", // Double the width as a percentage of the screen width
     height: "20%", // Double the height as a percentage of the screen height
     alignSelf: "center",
     resizeMode: "contain", // Maintain aspect ratio
+    color: "white",
   },
   login_button: {
     marginVertical: 25,
@@ -350,7 +346,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   box: {
-    backgroundColor: "navy",
+    backgroundColor: "#1e1e1e",
     borderColor: "orange",
     borderWidth: 2,
     borderRadius: 8,
@@ -360,20 +356,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "orange",
+    color: "white",
     textAlign: "center",
     marginBottom: 16,
   },
   welcomeText: {
     fontSize: 40,
     fontWeight: "bold",
-    color: "orange",
+    color: "white",
     textAlign: "center",
     marginBottom: 16,
     marginTop: "15%", // Maintain the top margin
   },
   pressableText: {
-    color: "orange",
+    color: "white",
     textAlign: "center",
     paddingVertical: 10,
   },
@@ -395,7 +391,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 20,
-    color: "orange",
+    color: "white",
+    fontWeight: "bold",
     textAlign: "center",
     paddingVertical: 10,
   },

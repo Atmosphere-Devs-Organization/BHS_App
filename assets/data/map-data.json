@@ -130,7 +130,7 @@
     "coords": { "Col": 22, "Row": 11 }
   },
   {
-    "roomId": ["portables", "portable"],
+    "roomId": ["portables", "portable", "pb", "pb "],
     "floor": 1,
     "coords": { "Col": 22, "Row": 8 }
   },

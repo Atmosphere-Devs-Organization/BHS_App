@@ -7,8 +7,6 @@ import {
 } from "react-native";
 import React from "react";
 import { router, useLocalSearchParams } from "expo-router";
-import roomData from "@/assets/data/map-data.json";
-import { Room } from "@/interfaces/Room";
 import { ReactNativeZoomableView } from "@openspacelabs/react-native-zoomable-view";
 import { Ionicons } from "@expo/vector-icons";
 import GridMap from "@/components/GridMap";

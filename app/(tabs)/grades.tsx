@@ -9,14 +9,12 @@ const Grades = () => {
   const [category, setCategory] = useState("Grades");
   return (
     <View style={styles.BG_Color}>
-      <View style={{ flex: 1, marginTop: 190 }}>
-        <Stack.Screen
-          options={{
-            header: () => (
-              <CustomGradesHeader onCategoryChanged={setCategory} />
-            ),
-          }}
-        />
+      <Stack.Screen
+        options={{
+          header: () => <CustomGradesHeader onCategoryChanged={setCategory} />,
+        }}
+      />
+      <View style={{ flex: 1, marginTop: 210 }}>
         <GradesContent category={category} />
       </View>
     </View>
