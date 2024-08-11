@@ -119,12 +119,14 @@ const NormalProfile = ({
           setUsername(userData.name || "");
           const clubsCollection = collection(FIREBASE_DB, "clubs");
           const querySnapshot = await getDocs(clubsCollection);
-          const existingClubs = querySnapshot.docs.map(doc => doc.id);
+          const existingClubs = querySnapshot.docs.map((doc) => doc.id);
 
           const allClubs = userData.clubs || [];
 
           // Filter user's clubs to only include those that exist in Firestore
-          const validClubs = allClubs.filter((club: string) => existingClubs.includes(club));
+          const validClubs = allClubs.filter((club: string) =>
+            existingClubs.includes(club)
+          );
           setClubs(validClubs);
           setSid(
             (await SecureStore.getItemAsync(userId + "HACusername")) || ""
@@ -144,10 +146,10 @@ const NormalProfile = ({
   useEffect(() => {
     if (isEditingName && !isEditingHAC) {
       usernameInputRef.current?.focus();
-      scrollRef.current?.scrollTo({ x: 0, y: 80, animated: true });
+      scrollRef.current?.scrollTo({ x: 0, y: 280, animated: true });
     } else if (!isEditingName && isEditingHAC) {
       sidInputRef.current?.focus();
-      scrollRef.current?.scrollTo({ x: 0, y: 80, animated: true });
+      scrollRef.current?.scrollTo({ x: 0, y: 280, animated: true });
     }
   }, [isEditingName, isEditingHAC]);
 
@@ -174,7 +176,7 @@ const NormalProfile = ({
     //const matchedClub = clubsData.find((club) => club.name === clubName);
     Alert.alert(
       "Confirm Action",
-      "Are you sure you want to go to "+ clubName +"?",
+      "Are you sure you want to go to " + clubName + "?",
       [
         {
           text: "Stay",
@@ -188,8 +190,7 @@ const NormalProfile = ({
         },
       ],
       { cancelable: true }
-    )
-    
+    );
   };
 
   return (
@@ -212,9 +213,8 @@ const NormalProfile = ({
               </View>
               <Text style={styles.title}>Profile</Text>
 
-  
               <View style={styles.cardContainer}>
-              <Text style={styles.sectionTitle}>User Information</Text>
+                <Text style={styles.sectionTitle}>User Information</Text>
                 <View style={styles.infoContainer}>
                   <Text style={styles.infoLabel}>Email</Text>
                   <Text style={styles.infoText}>{email}</Text>
@@ -233,29 +233,29 @@ const NormalProfile = ({
                   />
                 </View>
                 <TouchableOpacity
-                    onPress={() => {
-                      if (isEditingName) {
-                        setIsEditingName(false);
-                        updateUser("name");
-                      } else {
-                        if (isEditingHAC) {
-                          updateUser("HACusername");
-                          updateUser("HACpassword");
-                        }
-                        setIsEditingHAC(false);
-                        setIsEditingName(true);
+                  onPress={() => {
+                    if (isEditingName) {
+                      setIsEditingName(false);
+                      updateUser("name");
+                    } else {
+                      if (isEditingHAC) {
+                        updateUser("HACusername");
+                        updateUser("HACpassword");
                       }
-                    }}
-                    style={styles.edit_button}
-                  >
-                    <Text style={styles.edit_button_text}>
-                      {isEditingName ? "Save" : "Edit"}
-                    </Text>
-                  </TouchableOpacity>
+                      setIsEditingHAC(false);
+                      setIsEditingName(true);
+                    }
+                  }}
+                  style={styles.edit_button}
+                >
+                  <Text style={styles.edit_button_text}>
+                    {isEditingName ? "Save" : "Edit"}
+                  </Text>
+                </TouchableOpacity>
               </View>
-              
+
               <View style={styles.cardContainer}>
-              <Text style={styles.sectionTitle}>HAC Information</Text>
+                <Text style={styles.sectionTitle}>HAC Information</Text>
                 <View style={styles.infoContainer}>
                   <Text style={styles.infoLabel}>SID (include S)</Text>
                   <TextInput
@@ -316,9 +316,9 @@ const NormalProfile = ({
                   </Text>
                 </TouchableOpacity>
               </View>
-  
+
               <Text style={styles.clubTitle}>Your Clubs</Text>
-  
+
               <View style={styles.clubContainer}>
                 {clubs.map((club, index) => (
                   <AwesomeButton
@@ -327,15 +327,17 @@ const NormalProfile = ({
                     backgroundColor={"#1E1E1E"}
                     backgroundDarker={"orange"}
                     height={screenWidth * 0.2}
-                    width={(screenWidth - 40 - 20)}
+                    width={screenWidth - 40 - 20}
                     raiseLevel={0}
                     onPress={() => handlePress(club)}
                   >
-                    <Text style={styles.club_button_text}  numberOfLines={2}>{club}</Text>
+                    <Text style={styles.club_button_text} numberOfLines={2}>
+                      {club}
+                    </Text>
                   </AwesomeButton>
                 ))}
               </View>
-  
+
               <AwesomeButton
                 style={styles.logout_button}
                 backgroundColor={"#2176ff"}
@@ -370,7 +372,6 @@ const NormalProfile = ({
                 />
                 <Text style={styles.logout_text}>Logout</Text>
               </AwesomeButton>
-  
             </SafeAreaView>
           </TouchableWithoutFeedback>
         </ScrollView>
@@ -404,7 +405,6 @@ const styles = StyleSheet.create({
     marginHorizontal: "17%",
     color: "#ffffff",
     textAlign: "center",
-
   },
   need_signin_text: {
     alignSelf: "center",
