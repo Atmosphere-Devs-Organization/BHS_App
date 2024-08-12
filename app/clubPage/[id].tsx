@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Pressable,
   View,
@@ -30,12 +30,14 @@ import {
 } from "firebase/firestore";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
+import { useClubContext } from "@/components/ClubContext"; // Make sure this path is correct
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
 const Page = () => {
   const { id } = useLocalSearchParams<{ id?: string }>();
+  const { clubsCache, setClubsCache } = useClubContext(); // Use the custom hook
 
   const [currentClub, setCurrentClub] = useState<Club | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
@@ -52,9 +54,20 @@ const Page = () => {
 
   useEffect(() => {
     const updateAndFetch = async () => {
-      await updateClubIds();
       if (id) {
-        fetchClubData();
+        // Find the cached club by its name (id)
+        const cachedClub = clubsCache.find((club) => club.name === id);
+        
+        if (cachedClub) {
+          // Data is in cache, use it
+          setCurrentClub(cachedClub);
+          fetchUpcomingDates(cachedClub);
+          fetchPastEvents(cachedClub);
+        } else {
+          // Data is not in cache, fetch from Firebase
+          await fetchClubData();
+        }
+  
         const unsubscribe = onAuthStateChanged(
           FIREBASE_AUTH,
           (user: User | null) => {
@@ -66,114 +79,103 @@ const Page = () => {
             }
           }
         );
-
+  
         return () => unsubscribe();
       }
     };
-
+  
     updateAndFetch();
-  }, [id]);
-
-  const updateClubIds = async () => {
-    try {
-      const clubsRef = collection(FIREBASE_DB, "clubs");
-      const clubsSnapshot = await getDocs(clubsRef);
-
-      if (clubsSnapshot.empty) return;
-
-      const batch = writeBatch(FIREBASE_DB);
-      let index = 0; // Counter to ensure unique IDs
-
-      clubsSnapshot.forEach((docSnap: QueryDocumentSnapshot) => {
-        const docRef = doc(FIREBASE_DB, "clubs", docSnap.id);
-        batch.update(docRef, { id: index++ });
-      });
-
-      await batch.commit();
-    } catch (error) {
-      console.error("Error updating club IDs: ", error);
-    }
-  };
+  }, [id, clubsCache]);
+  
 
   const fetchClubData = async () => {
     if (!id) return;
-
+  
     try {
-      const clubDocRef = doc(FIREBASE_DB, "clubs", id);
-      const clubDocSnap = await getDoc(clubDocRef);
-      if (clubDocSnap.exists()) {
-        setCurrentClub(clubDocSnap.data() as Club);
-        fetchUpcomingDates();
-        fetchPastEvents();
+      const adminCacheRef = doc(FIREBASE_DB, "admin", "CachedClubs");
+      const adminCacheSnap = await getDoc(adminCacheRef);
+      const cachedClubsData = adminCacheSnap.data()?.clubs || [];
+  
+      // Check if the club is already in the cache
+      const cachedClub = cachedClubsData.find((club: Club) => club.name === id);
+  
+      if (cachedClub) {
+        // Data is in cache, use it
+        setCurrentClub(cachedClub);
+        fetchUpcomingDates(cachedClub);
+        fetchPastEvents(cachedClub);
+      } else {
+        // Data is not in cache, fetch from Firebase
+        const clubDocRef = doc(FIREBASE_DB, "clubs", id);
+        const clubDocSnap = await getDoc(clubDocRef);
+  
+        if (clubDocSnap.exists()) {
+          const clubData = clubDocSnap.data() as Club;
+          setCurrentClub(clubData);
+  
+          // Update the cache
+          const updatedCachedClubsData = [...cachedClubsData, clubData];
+          await updateDoc(adminCacheRef, { clubs: updatedCachedClubsData });
+  
+          // Update local cache
+          setClubsCache(updatedCachedClubsData);
+  
+          fetchUpcomingDates(clubData);
+          fetchPastEvents(clubData);
+        }
       }
     } catch (error) {
       console.error("Error fetching club data: ", error);
     }
   };
+  
+  
 
-  const fetchUpcomingDates = async () => {
+  const fetchUpcomingDates = (clubData: Club) => {
     try {
-      if (id) {
-        const clubDocRef = doc(FIREBASE_DB, "clubs", id);
-        const clubDocSnapshot = await getDoc(clubDocRef);
-  
-        if (!clubDocSnapshot.exists()) return;
-  
-        const clubData = clubDocSnapshot.data();
-        const dateNames: string[] = clubData.dateNames || [];
-        const dateDates: Timestamp[] = clubData.dateDates || [];
-  
-        const now = new Date();
-        const datesList = dateNames.map((name, index) => {
-          const eventTime = dateDates[index]?.toDate() || new Date(0);
-  
-          return {
-            name,
-            time: eventTime,
-          };
-        }).filter(
-          (date) =>
-            date.time !== null &&
-            !isNaN(date.time.getTime()) &&
-            date.time >= now
-        );
-  
-        setUpcomingDates(datesList);
-      }
+      const dateNames: string[] = clubData.dateNames || [];
+      const dateDates: Timestamp[] = clubData.dateDates || [];
+
+      const now = new Date();
+      const datesList = dateNames.map((name, index) => {
+        const eventTime = dateDates[index]?.toDate() || new Date(0);
+
+        return {
+          name,
+          time: eventTime,
+        };
+      }).filter(
+        (date) =>
+          date.time !== null &&
+          !isNaN(date.time.getTime()) &&
+          date.time >= now
+      );
+
+      setUpcomingDates(datesList);
     } catch (error) {
       console.error("Error fetching upcoming dates: ", error);
     }
   };
-  const fetchPastEvents = async () => {
+
+  const fetchPastEvents = (clubData: Club) => {
     try {
-      if (id) {
-        const clubDocRef = doc(FIREBASE_DB, "clubs", id);
-        const clubDocSnapshot = await getDoc(clubDocRef);
-  
-        if (!clubDocSnapshot.exists()) return;
-  
-        const clubData = clubDocSnapshot.data();
-        const pastEventNames: string[] = clubData.pastEventNames || [];
-        const pastEventDescriptions: string[] = clubData.pastEventDescriptions || [];
-        const pastEventURLs: string[] = clubData.pastEventURLs || [];
-  
-        const pastEventsList = pastEventNames.map((name, index) => {
-          return {
-            name,
-            description: pastEventDescriptions[index] || "",
-            imageURL: pastEventURLs[index] || "",
-          };
-        });
-  
-        setPastEvents(pastEventsList);
-      }
+      const pastEventNames: string[] = clubData.pastEventNames || [];
+      const pastEventDescriptions: string[] = clubData.pastEventDescriptions || [];
+      const pastEventURLs: string[] = clubData.pastEventURLs || [];
+
+      const pastEventsList = pastEventNames.map((name, index) => {
+        return {
+          name,
+          description: pastEventDescriptions[index] || "",
+          imageURL: pastEventURLs[index] || "",
+        };
+      });
+
+      setPastEvents(pastEventsList);
     } catch (error) {
       console.error("Error fetching past events: ", error);
     }
   };
-  
-
-  
 
   const checkIfClubInCalendar = async (userId: string) => {
     try {
@@ -300,27 +302,29 @@ const Page = () => {
         {pastEvents.length > 0 ? (
           pastEvents.map((event, index) => (
             <View key={index} style={styles.pastEventContainer}>
-              <Image
-                source={{ uri: event.imageURL }}
-                style={styles.pastEventImage}
-              />
-              <View style={styles.pastEventDetails}>
-                <Text style={styles.pastEventName}>{event.name}</Text>
-                <Text style={styles.pastEventDescription}>
-                  {event.description}
-                </Text>
-              </View>
+              <Image source={{ uri: event.imageURL }} style={styles.pastEventImage} />
+              <Text style={styles.pastEventName}>{event.name}</Text>
+              <Text style={styles.pastEventDescription}>{event.description}</Text>
             </View>
           ))
         ) : (
-          <Text style={styles.noDates}>No past events.</Text>
+          <Text style={styles.noEvents}>No past events.</Text>
         )}
       </ScrollView>
     </View>
   );
 };
 
+
+
+
 const styles = StyleSheet.create({
+  noEvents: {
+    fontSize: 16,
+    color: "#888", // Light gray color for a subtle look
+    textAlign: "center",
+    marginVertical: 20,
+  },
   container: {
     flex: 1,
     padding: 16,

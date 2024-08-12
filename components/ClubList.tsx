@@ -14,6 +14,7 @@ import { Link } from "expo-router";
 import Colors from "@/constants/Colors";
 import { FIREBASE_DB } from "@/FirebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
+import { useClubContext } from "@/components/ClubContext"; // Import the custom hook
 
 interface Props {
   category: string;
@@ -23,13 +24,13 @@ const ClubList = ({ category }: Props) => {
   const listRef = useRef<FlatList>(null);
   const [filteredClubs, setFilteredClubs] = useState<Club[]>([]);
   const [loading, setLoading] = useState(true);
-  const clubsCacheRef = useRef<Club[]>([]); // Cache for clubs data
+  const { clubsCache, setClubsCache } = useClubContext(); // Use context
 
   useEffect(() => {
     const fetchClubs = async () => {
-      if (clubsCacheRef.current.length > 0) {
+      if (clubsCache.length > 0) {
         // Use cached data if available
-        const filtered = clubsCacheRef.current.filter((club) =>
+        const filtered = clubsCache.filter((club) =>
           club.categories.includes(category)
         );
         setFilteredClubs(filtered);
@@ -38,38 +39,34 @@ const ClubList = ({ category }: Props) => {
       }
 
       try {
-        // Fetch the array of club document names
-        const clubListRef = doc(FIREBASE_DB, "admin", "Club_list");
-        const clubListSnap = await getDoc(clubListRef);
-        const clubNames = clubListSnap.data()?.club_arr || [];
+        // Fetch cached clubs data from Firestore
+        const adminCacheRef = doc(FIREBASE_DB, "admin", "CachedClubs");
+        const adminCacheSnap = await getDoc(adminCacheRef);
+        const cachedClubsData = adminCacheSnap.data()?.clubs || [];
 
-        // Fetch each club document based on the names in the array
-        const clubsData: Club[] = [];
-        for (const name of clubNames) {
-          const clubRef = doc(FIREBASE_DB, "clubs", name);
-          const clubSnap = await getDoc(clubRef);
-          if (clubSnap.exists()) {
-            const club = clubSnap.data() as Club;
-            clubsData.push(club);
-          }
+        if (cachedClubsData.length === 0) {
+          setLoading(false);
+          return;
         }
 
-        // Cache the fetched clubs data
-        clubsCacheRef.current = clubsData;
+        // Cache the fetched clubs data in the context
+        setClubsCache(cachedClubsData);
 
         // Filter clubs by category
-        const filtered = clubsData.filter((club) =>
+        const filtered = cachedClubsData.filter((club: Club) =>
           club.categories.includes(category)
         );
         setFilteredClubs(filtered);
       } catch (error) {
+        // Handle error
+        console.error("Error fetching cached clubs:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchClubs();
-  }, [category]);
+  }, [category, clubsCache, setClubsCache]);
 
   const renderRow: ListRenderItem<Club> = ({ item }) => (
     <Link
