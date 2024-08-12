@@ -57,7 +57,7 @@ const Page = () => {
       if (id) {
         // Find the cached club by its name (id)
         const cachedClub = clubsCache.find((club) => club.name === id);
-        
+
         if (cachedClub) {
           // Data is in cache, use it
           setCurrentClub(cachedClub);
@@ -67,7 +67,7 @@ const Page = () => {
           // Data is not in cache, fetch from Firebase
           await fetchClubData();
         }
-  
+
         const unsubscribe = onAuthStateChanged(
           FIREBASE_AUTH,
           (user: User | null) => {
@@ -79,26 +79,25 @@ const Page = () => {
             }
           }
         );
-  
+
         return () => unsubscribe();
       }
     };
-  
+
     updateAndFetch();
   }, [id, clubsCache]);
-  
 
   const fetchClubData = async () => {
     if (!id) return;
-  
+
     try {
       const adminCacheRef = doc(FIREBASE_DB, "admin", "CachedClubs");
       const adminCacheSnap = await getDoc(adminCacheRef);
       const cachedClubsData = adminCacheSnap.data()?.clubs || [];
-  
+
       // Check if the club is already in the cache
       const cachedClub = cachedClubsData.find((club: Club) => club.name === id);
-  
+
       if (cachedClub) {
         // Data is in cache, use it
         setCurrentClub(cachedClub);
@@ -108,18 +107,18 @@ const Page = () => {
         // Data is not in cache, fetch from Firebase
         const clubDocRef = doc(FIREBASE_DB, "clubs", id);
         const clubDocSnap = await getDoc(clubDocRef);
-  
+
         if (clubDocSnap.exists()) {
           const clubData = clubDocSnap.data() as Club;
           setCurrentClub(clubData);
-  
+
           // Update the cache
           const updatedCachedClubsData = [...cachedClubsData, clubData];
           await updateDoc(adminCacheRef, { clubs: updatedCachedClubsData });
-  
+
           // Update local cache
           setClubsCache(updatedCachedClubsData);
-  
+
           fetchUpcomingDates(clubData);
           fetchPastEvents(clubData);
         }
@@ -128,8 +127,6 @@ const Page = () => {
       console.error("Error fetching club data: ", error);
     }
   };
-  
-  
 
   const fetchUpcomingDates = (clubData: Club) => {
     try {
@@ -137,19 +134,21 @@ const Page = () => {
       const dateDates: Timestamp[] = clubData.dateDates || [];
 
       const now = new Date();
-      const datesList = dateNames.map((name, index) => {
-        const eventTime = dateDates[index]?.toDate() || new Date(0);
+      const datesList = dateNames
+        .map((name, index) => {
+          const eventTime = dateDates[index]?.toDate() || new Date(0);
 
-        return {
-          name,
-          time: eventTime,
-        };
-      }).filter(
-        (date) =>
-          date.time !== null &&
-          !isNaN(date.time.getTime()) &&
-          date.time >= now
-      );
+          return {
+            name,
+            time: eventTime,
+          };
+        })
+        .filter(
+          (date) =>
+            date.time !== null &&
+            !isNaN(date.time.getTime()) &&
+            date.time >= now
+        );
 
       setUpcomingDates(datesList);
     } catch (error) {
@@ -160,7 +159,8 @@ const Page = () => {
   const fetchPastEvents = (clubData: Club) => {
     try {
       const pastEventNames: string[] = clubData.pastEventNames || [];
-      const pastEventDescriptions: string[] = clubData.pastEventDescriptions || [];
+      const pastEventDescriptions: string[] =
+        clubData.pastEventDescriptions || [];
       const pastEventURLs: string[] = clubData.pastEventURLs || [];
 
       const pastEventsList = pastEventNames.map((name, index) => {
@@ -253,7 +253,7 @@ const Page = () => {
         <Text style={styles.name}>{currentClub?.name}</Text>
         <View style={styles.divider} />
         <Text style={styles.description}>{currentClub?.longDescription}</Text>
-        
+
         <View style={styles.divider} />
         <Pressable
           onPress={() => {
@@ -268,7 +268,6 @@ const Page = () => {
         </Pressable>
 
         <View style={styles.divider} />
-
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity
@@ -296,15 +295,22 @@ const Page = () => {
         ) : (
           <Text style={styles.noDates}>No upcoming dates.</Text>
         )}
-        
+
         <View style={styles.divider} />
         <Text style={styles.title}>Past Events</Text>
         {pastEvents.length > 0 ? (
           pastEvents.map((event, index) => (
             <View key={index} style={styles.pastEventContainer}>
-              <Image source={{ uri: event.imageURL }} style={styles.pastEventImage} />
-              <Text style={styles.pastEventName}>{event.name}</Text>
-              <Text style={styles.pastEventDescription}>{event.description}</Text>
+              <Image
+                source={{ uri: event.imageURL }}
+                style={styles.pastEventImage}
+              />
+              <View style={{ flexDirection: "column" }}>
+                <Text style={styles.pastEventName}>{event.name}</Text>
+                <Text style={styles.pastEventDescription}>
+                  {event.description}
+                </Text>
+              </View>
             </View>
           ))
         ) : (
@@ -314,9 +320,6 @@ const Page = () => {
     </View>
   );
 };
-
-
-
 
 const styles = StyleSheet.create({
   noEvents: {
@@ -423,6 +426,7 @@ const styles = StyleSheet.create({
   pastEventDescription: {
     fontSize: 16,
     color: "grey",
+    marginRight: 110,
   },
   buttonContainer: {
     alignItems: "center",
