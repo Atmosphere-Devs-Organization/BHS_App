@@ -51,7 +51,6 @@ const App = () => {
       Alert.alert("Success", "Logged in successfully.");
       router.back();
     } catch (error: any) {
-      console.log(error);
       if (
         error instanceof Error &&
         error.message === "Firebase: Error (auth/invalid-credential)."
@@ -91,7 +90,6 @@ const App = () => {
 
       signIn();
     } catch (error: any) {
-      console.log(error.message);
       if (
         error.message ===
         "Firebase: Password should be at least 6 characters (auth/weak-password)."
@@ -119,7 +117,6 @@ const App = () => {
       );
       setIsResettingPassword(false);
     } catch (error) {
-      console.error("Error sending password reset email:", error);
       Alert.alert(
         "Error",
         "Failed to send password reset email. Please check the email address and try again."
@@ -177,7 +174,6 @@ const App = () => {
                   raiseLevel={0}
                   onPress={handleResetPassword}
                 >
-                  
                   <Text style={styles.buttonText}>
                     Send Password Reset Email
                   </Text>
@@ -279,7 +275,7 @@ const App = () => {
                 </View>
                 <AwesomeButton
                   style={styles.login_button}
-                  backgroundColor={"#2176ff"}// Reverted to original
+                  backgroundColor={"#2176ff"} // Reverted to original
                   backgroundDarker={Colors.loginButtonDarkerBG} // Reverted to original
                   height={screenWidth * 0.15}
                   width={Numbers.loginButtonWidth}
@@ -376,13 +372,12 @@ const styles = StyleSheet.create({
   passwordContainer: {
     flexDirection: "row",
     alignItems: "center",
-    borderColor: 'gray', // Reverted to original
+    borderColor: "gray", // Reverted to original
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
     marginBottom: 15,
-    
   },
   passwordInput: {
     flex: 1,

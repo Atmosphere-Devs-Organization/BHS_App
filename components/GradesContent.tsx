@@ -86,7 +86,6 @@ const GradesContent = ({ category }: Props) => {
       async function fetchAPI() {
         let response = await fetchStudentInfo("transcript");
         //let response2 = await fetchStudentInfo("averages");
-        console.log(response);
         setTData(response);
         //setGData(response2);
         const schoolYearArray = Object.keys(response)

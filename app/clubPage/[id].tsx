@@ -123,9 +123,7 @@ const Page = () => {
           fetchPastEvents(clubData);
         }
       }
-    } catch (error) {
-      console.error("Error fetching club data: ", error);
-    }
+    } catch (error) {}
   };
 
   const fetchUpcomingDates = (clubData: Club) => {
@@ -151,9 +149,7 @@ const Page = () => {
         );
 
       setUpcomingDates(datesList);
-    } catch (error) {
-      console.error("Error fetching upcoming dates: ", error);
-    }
+    } catch (error) {}
   };
 
   const fetchPastEvents = (clubData: Club) => {
@@ -172,9 +168,7 @@ const Page = () => {
       });
 
       setPastEvents(pastEventsList);
-    } catch (error) {
-      console.error("Error fetching past events: ", error);
-    }
+    } catch (error) {}
   };
 
   const checkIfClubInCalendar = async (userId: string) => {
@@ -187,9 +181,7 @@ const Page = () => {
           setIsClubInCalendar(true);
         }
       }
-    } catch (error) {
-      console.error("Error checking club in calendar: ", error);
-    }
+    } catch (error) {}
   };
 
   const handleAddOrRemoveClub = async () => {
@@ -216,7 +208,6 @@ const Page = () => {
         alert("Club added to calendar!");
       }
     } catch (error) {
-      console.error("Error managing club in calendar: ", error);
       alert("Failed to manage club in calendar.");
     }
   };

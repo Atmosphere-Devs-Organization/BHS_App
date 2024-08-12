@@ -1,13 +1,23 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, SafeAreaView, StyleSheet, TextInput, TouchableOpacity, Alert, Image } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  SafeAreaView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  Image,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import * as MailComposer from 'expo-mail-composer';
-import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker
+import * as MailComposer from "expo-mail-composer";
+import * as ImagePicker from "expo-image-picker"; // Import ImagePicker
 import Colors from "constants/Colors";
 
 const PrivacyPolicyPage = () => {
-  const [issueDescription, setIssueDescription] = useState('');
+  const [issueDescription, setIssueDescription] = useState("");
   const [images, setImages] = useState<string[]>([]); // Declare type as an array of strings
 
   const removeImage = (indexToRemove: number) => {
@@ -30,29 +40,34 @@ const PrivacyPolicyPage = () => {
   };
 
   const handleReportIssue = async () => {
-    if (issueDescription.trim() === '' && images.length === 0) {
-      Alert.alert('Error', 'Please provide a description of the issue or attach an image.');
+    if (issueDescription.trim() === "" && images.length === 0) {
+      Alert.alert(
+        "Error",
+        "Please provide a description of the issue or attach an image."
+      );
       return;
     }
-  
+
     try {
-      const emailBody = issueDescription !== '' ? issueDescription + "\n\n" : '';
+      const emailBody =
+        issueDescription !== "" ? issueDescription + "\n\n" : "";
       await MailComposer.composeAsync({
-        recipients: ['bridgelandapp@gmail.com'],
-        subject: 'Reported Issue',
+        recipients: ["bridgelandapp@gmail.com"],
+        subject: "Reported Issue",
         body: emailBody,
         isHtml: false,
         attachments: images, // Attach images directly
       });
-      Alert.alert('Success', 'Issue reported successfully.');
-      setIssueDescription('');
+      Alert.alert("Success", "Issue reported successfully.");
+      setIssueDescription("");
       setImages([]);
     } catch (error) {
-      Alert.alert('Error', 'An error occurred while reporting the issue. Please try again later.');
-      console.error(error);
+      Alert.alert(
+        "Error",
+        "An error occurred while reporting the issue. Please try again later."
+      );
     }
   };
-  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -74,11 +89,13 @@ const PrivacyPolicyPage = () => {
             onChangeText={setIssueDescription}
           />
 
-          
           {images.map((image, index) => (
             <View key={index} style={styles.imageContainer}>
               <Image source={{ uri: image }} style={styles.image} />
-              <TouchableOpacity onPress={() => removeImage(index)} style={styles.removeButton}>
+              <TouchableOpacity
+                onPress={() => removeImage(index)}
+                style={styles.removeButton}
+              >
                 <Ionicons name="close-circle-outline" size={24} color="white" />
               </TouchableOpacity>
             </View>
@@ -89,7 +106,10 @@ const PrivacyPolicyPage = () => {
           </TouchableOpacity>
 
           {/* Report Issue Button */}
-          <TouchableOpacity style={styles.reportButton} onPress={handleReportIssue}>
+          <TouchableOpacity
+            style={styles.reportButton}
+            onPress={handleReportIssue}
+          >
             <Text style={styles.reportButtonText}>Report Issue</Text>
           </TouchableOpacity>
         </View>
@@ -108,10 +128,10 @@ const styles = StyleSheet.create({
     fontFamily: "mon-b",
     fontSize: 32,
     fontWeight: "bold",
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 25,
     marginBottom: 35,
-    color: 'white',
+    color: "white",
   },
   input: {
     height: 200, // Initial height
@@ -124,27 +144,27 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
     textAlignVertical: "top",
-    color: 'white', // Text color
+    color: "white", // Text color
   },
   uploadButton: {
     backgroundColor: "white", // Custom color
     padding: 12,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginVertical: 10,
     borderColor: "black", // Add black border color
     borderWidth: 1, // Add border width
     marginHorizontal: 10,
   },
   uploadButtonText: {
-    color: 'black',
+    color: "black",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   image: {
-    width: '100%',
+    width: "100%",
     height: 200,
-    resizeMode: 'cover',
+    resizeMode: "cover",
     marginBottom: 10,
     borderRadius: 10,
   },
@@ -152,31 +172,30 @@ const styles = StyleSheet.create({
     backgroundColor: "#2176ff",
     padding: 12,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginHorizontal: 10,
   },
   reportButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   backButton: {
     top: 32,
     left: 16,
     zIndex: 1,
-    position: 'absolute',
-    color: 'white',
+    position: "absolute",
+    color: "white",
   },
   imageContainer: {
-    position: 'relative',
+    position: "relative",
   },
   removeButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 5,
     right: 5,
     zIndex: 1, // Ensure the remove button is above the image
   },
 });
-
 
 export default PrivacyPolicyPage;
