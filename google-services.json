@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "539479021506",
+    "project_id": "bhs-application-94a8b",
+    "storage_bucket": "bhs-application-94a8b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:539479021506:android:625cff037f306cbca6e85b",
+        "android_client_info": {
+          "package_name": "com.pagecow.bridgelandapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCblQO4c1t8Ml3FSFWBVBwVHnZlID-7Ev0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
