@@ -14,7 +14,7 @@ import {
   Alert,
   ListRenderItem,
 } from "react-native";
-import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
+import { FIREBASE_AUTH } from "@/FirebaseConfig";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Entypo, Ionicons } from "@expo/vector-icons";
@@ -40,11 +40,7 @@ const App = () => {
   }, []);
 
   return user ? (
-    <NormalProfile
-      email={user.email}
-      userName={user.displayName}
-      userId={user.uid}
-    />
+    <NormalProfile email={user.email} userId={user.uid} />
   ) : (
     <LoggedOutProfile />
   );
@@ -89,20 +85,16 @@ const LoggedOutProfile = () => {
 
 const NormalProfile = ({
   email,
-  userName,
   userId,
 }: {
   email: string | null;
-  userName: string | null;
   userId: string;
 }) => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingHAC, setIsEditingHAC] = useState(false);
 
-  const [username, setUsername] = useState(userName || "");
   const [sid, setSid] = useState("");
   const [HACpassword, setHACPassword] = useState("");
-  const [clubs, setClubs] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState(false);
 
   const usernameInputRef = useRef<TextInput>(null);
@@ -112,32 +104,10 @@ const NormalProfile = ({
 
   useEffect(() => {
     const fetchUserData = async () => {
-      try {
-        const userDoc = await getDoc(doc(FIREBASE_DB, "users", userId));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          setUsername(userData.name || "");
-          const clubsCollection = collection(FIREBASE_DB, "clubs");
-          const querySnapshot = await getDocs(clubsCollection);
-          const existingClubs = querySnapshot.docs.map((doc) => doc.id);
-
-          const allClubs = userData.clubs || [];
-
-          // Filter user's clubs to only include those that exist in Firestore
-          const validClubs = allClubs.filter((club: string) =>
-            existingClubs.includes(club)
-          );
-          setClubs(validClubs);
-          setSid(
-            (await SecureStore.getItemAsync(userId + "HACusername")) || ""
-          );
-          setHACPassword(
-            (await SecureStore.getItemAsync(userId + "HACpassword")) || ""
-          );
-        }
-      } catch (error) {
-        console.error("Error fetching user data: ", error);
-      }
+      setSid((await SecureStore.getItemAsync(userId + "HACusername")) || "");
+      setHACPassword(
+        (await SecureStore.getItemAsync(userId + "HACpassword")) || ""
+      );
     };
 
     fetchUserData();
@@ -146,21 +116,16 @@ const NormalProfile = ({
   useEffect(() => {
     if (isEditingName && !isEditingHAC) {
       usernameInputRef.current?.focus();
-      scrollRef.current?.scrollTo({ x: 0, y: 280, animated: true });
+      scrollRef.current?.scrollToEnd({ animated: true });
     } else if (!isEditingName && isEditingHAC) {
       sidInputRef.current?.focus();
-      scrollRef.current?.scrollTo({ x: 0, y: 280, animated: true });
+      scrollRef.current?.scrollToEnd({ animated: true });
     }
   }, [isEditingName, isEditingHAC]);
 
   const updateUser = async (field: "name" | "HACusername" | "HACpassword") => {
     try {
-      const userDoc = doc(FIREBASE_DB, "users", userId);
-
-      if (field === "name") {
-        await setDoc(userDoc, { name: username }, { merge: true });
-        Alert.alert("Success", "Name updated");
-      } else if (field === "HACusername") {
+      if (field === "HACusername") {
         await SecureStore.setItemAsync(userId + "HACusername", sid);
         Alert.alert("Success", "S-id updated");
       } else if (field === "HACpassword") {
@@ -170,27 +135,6 @@ const NormalProfile = ({
     } catch (error) {
       console.error("Error updating user information: ", error);
     }
-  };
-
-  const handlePress = (clubName: string) => {
-    //const matchedClub = clubsData.find((club) => club.name === clubName);
-    Alert.alert(
-      "Confirm Action",
-      "Are you sure you want to go to " + clubName + "?",
-      [
-        {
-          text: "Stay",
-          onPress: () => console.log("Action cancelled"),
-          style: "cancel",
-        },
-        {
-          text: "Confirm",
-          onPress: () => router.replace(`/clubPage/${clubName}`),
-          style: "destructive",
-        },
-      ],
-      { cancelable: true }
-    );
   };
 
   return (
@@ -219,39 +163,6 @@ const NormalProfile = ({
                   <Text style={styles.infoLabel}>Email</Text>
                   <Text style={styles.infoText}>{email}</Text>
                 </View>
-
-                <View style={styles.infoContainer}>
-                  <Text style={styles.infoLabel}>Name</Text>
-                  <TextInput
-                    style={styles.infoInput}
-                    placeholder="Enter your name"
-                    placeholderTextColor={"grey"}
-                    value={username}
-                    onChangeText={setUsername}
-                    editable={isEditingName}
-                    ref={usernameInputRef}
-                  />
-                </View>
-                <TouchableOpacity
-                  onPress={() => {
-                    if (isEditingName) {
-                      setIsEditingName(false);
-                      updateUser("name");
-                    } else {
-                      if (isEditingHAC) {
-                        updateUser("HACusername");
-                        updateUser("HACpassword");
-                      }
-                      setIsEditingHAC(false);
-                      setIsEditingName(true);
-                    }
-                  }}
-                  style={styles.edit_button}
-                >
-                  <Text style={styles.edit_button_text}>
-                    {isEditingName ? "Save" : "Edit"}
-                  </Text>
-                </TouchableOpacity>
               </View>
 
               <View style={styles.cardContainer}>
@@ -315,27 +226,6 @@ const NormalProfile = ({
                     {isEditingHAC ? "Save" : "Edit"}
                   </Text>
                 </TouchableOpacity>
-              </View>
-
-              <Text style={styles.clubTitle}>Your Clubs</Text>
-
-              <View style={styles.clubContainer}>
-                {clubs.map((club, index) => (
-                  <AwesomeButton
-                    key={index}
-                    style={styles.club_button}
-                    backgroundColor={"#1E1E1E"}
-                    backgroundDarker={"orange"}
-                    height={screenWidth * 0.2}
-                    width={screenWidth - 40 - 20}
-                    raiseLevel={0}
-                    onPress={() => handlePress(club)}
-                  >
-                    <Text style={styles.club_button_text} numberOfLines={2}>
-                      {club}
-                    </Text>
-                  </AwesomeButton>
-                ))}
               </View>
 
               <AwesomeButton
@@ -490,9 +380,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   logout_button: {
-    marginVertical: 40,
+    marginTop: 40,
     alignContent: "center",
     alignSelf: "center",
+    marginBottom: 120,
   },
   passwordContainer: {
     flexDirection: "row",
