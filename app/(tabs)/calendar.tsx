@@ -5,13 +5,15 @@ import {
   TouchableOpacity,
   TextInput,
   FlatList,
-  ScrollView,
+  //ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { collection, doc, getDoc, getDocs, onSnapshot } from "firebase/firestore";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for arrow icons
+import { ScrollView } from 'react-native-virtualized-view';
+
 
 const Calendar = () => {
   const [user, setUser] = useState<User | null>(null);
