@@ -5,14 +5,14 @@ import {
   TouchableOpacity,
   TextInput,
   FlatList,
-  ScrollView,
+  //ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { collection, doc, getDoc, getDocs, onSnapshot } from "firebase/firestore";
 import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for arrow icons
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ScrollView } from 'react-native-virtualized-view';
 
 
 const Calendar = () => {
@@ -53,96 +53,68 @@ const NormalCalendar = ({ user }: { user: User }) => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [eventTitle, setEventTitle] = useState<string>("");
 
-  const CACHE_KEY = `calendar_events_${user.uid}`;
-
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Try to load cached events
-        const cachedEvents = await AsyncStorage.getItem(CACHE_KEY);
+    const userDocRef = doc(FIREBASE_DB, "users", user.uid);
+    const schoolEventsRef = collection(
+      FIREBASE_DB,
+      "admin",
+      "SchoolDates",
+      "dates"
+    );
   
-        if (cachedEvents) {
-          // If cached events exist, use them
-          setEvents(JSON.parse(cachedEvents));
-        } else {
-          // If no cached data, fetch from Firebase
-          const userDocRef = doc(FIREBASE_DB, "users", user.uid);
-          const schoolEventsRef = collection(
-            FIREBASE_DB,
-            "admin",
-            "SchoolDates",
-            "dates"
-          );
+    const unsubscribe = onSnapshot(userDocRef, async (userDocSnap) => {
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        const clubs = userData.clubs || [];
   
-          const unsubscribe = onSnapshot(userDocRef, async (userDocSnap) => {
-            if (userDocSnap.exists()) {
-              const userData = userDocSnap.data();
-              const clubs = userData.clubs || [];
+        const fetchedEvents: { date: string; title: string; club: string }[] = [];
   
-              const fetchedEvents: { date: string; title: string; club: string }[] =
-                [];
+        // Fetch club events
+        for (const club of clubs) {
+          const clubDocRef = doc(FIREBASE_DB, "clubs", club);
+          const clubDocSnap = await getDoc(clubDocRef);
   
-              // Fetch club events
-              for (const club of clubs) {
-                const clubDocRef = doc(FIREBASE_DB, "clubs", club);
-                const clubDocSnap = await getDoc(clubDocRef);
+          if (clubDocSnap.exists()) {
+            const clubData = clubDocSnap.data();
+            const dateDates = clubData.dateDates || [];
+            const dateNames = clubData.dateNames || [];
   
-                if (clubDocSnap.exists()) {
-                  const clubData = clubDocSnap.data();
-                  const dateDates = clubData.dateDates || [];
-                  const dateNames = clubData.dateNames || [];
-  
-                  // Ensure the lengths of the arrays match
-                  if (dateDates.length === dateNames.length) {
-                    dateDates.forEach((dateTimestamp: any, index: number) => {
-                      const eventDate = new Date(dateTimestamp.toDate())
-                        .toISOString()
-                        .split("T")[0];
-                      const eventName = dateNames[index];
-                      fetchedEvents.push({
-                        date: eventDate,
-                        title: eventName,
-                        club,
-                      });
-                    });
-                  } else {
-                    console.error(
-                      `Mismatched lengths for dateDates and dateNames in club: ${club}`
-                    );
-                  }
-                }
-              }
-  
-              // Fetch schoolwide events
-              const schoolEventsSnapshot = await getDocs(schoolEventsRef);
-              schoolEventsSnapshot.forEach((doc) => {
-                const dateData = doc.data();
-                const eventDate = new Date(dateData.date.toDate())
+            // Ensure the lengths of the arrays match
+            if (dateDates.length === dateNames.length) {
+              dateDates.forEach((dateTimestamp: any, index: number) => {
+                const eventDate = new Date(dateTimestamp.toDate())
                   .toISOString()
                   .split("T")[0];
-                fetchedEvents.push({
-                  date: eventDate,
-                  title: doc.id,
-                  club: "Schoolwide",
-                });
+                const eventName = dateNames[index];
+                fetchedEvents.push({ date: eventDate, title: eventName, club });
               });
-  
-              // Set the events to state
-              setEvents(fetchedEvents);
-  
-              // Cache the events
-              await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(fetchedEvents));
+            } else {
+              console.error(
+                `Mismatched lengths for dateDates and dateNames in club: ${club}`
+              );
             }
-          });
-  
-          return () => unsubscribe();
+          }
         }
-      } catch (error) {
-        console.error("Error loading cached data:", error);
-      }
-    };
   
-    fetchData();
+        // Fetch schoolwide events
+        const schoolEventsSnapshot = await getDocs(schoolEventsRef);
+        schoolEventsSnapshot.forEach((doc) => {
+          const dateData = doc.data();
+          const eventDate = new Date(dateData.date.toDate())
+            .toISOString()
+            .split("T")[0];
+          fetchedEvents.push({
+            date: eventDate,
+            title: doc.id,
+            club: "Schoolwide",
+          });
+        });
+  
+        setEvents(fetchedEvents);
+      }
+    });
+  
+    return () => unsubscribe();
   }, [user]);
   
 
@@ -328,6 +300,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: "#121212",
+    paddingBottom: 90,
   },
   scrollView: {
     flex: 1,
