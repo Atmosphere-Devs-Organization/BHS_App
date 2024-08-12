@@ -86,7 +86,7 @@ const Map = () => {
   };
 
   const [hasAccess, setAccess] = useState<boolean>(false);
-  const [loadingInfo, setLoadingInfo] = useState<boolean>(true);
+  const [loadingInfo, setLoadingInfo] = useState<boolean>(false);
 
   useEffect(() => {
     if (username && password) {
@@ -497,7 +497,7 @@ const Map = () => {
       </ScrollView>
     </View>
   ) : (
-    <HACNeededScreen />
+    <HACNeededScreen paddingTop={0} />
   );
 };
 

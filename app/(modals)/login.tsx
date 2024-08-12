@@ -149,9 +149,23 @@ const App = () => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View>
           <TouchableOpacity onPress={router.back} style={styles.close_button}>
-            <Ionicons name="close-sharp" size={24} color="white" />
+            <Ionicons name="close-sharp" size={35} color="white" />
           </TouchableOpacity>
-          <Text style={styles.welcomeText}>Welcome To The Bear Den</Text>
+          <Text style={styles.welcomeText}>Welcome To: The Bear Den</Text>
+          <Text
+            style={{
+              color: "#bfbfbf",
+              alignSelf: "center",
+              textAlign: "center",
+              paddingHorizontal: 10,
+              paddingTop: 3,
+              fontSize: 12,
+              lineHeight: 18,
+            }}
+          >
+            Brought to you by:{"\n"}Jack Chambard, Amar Nangia, & Sri Harsha
+            Potta
+          </Text>
 
           {isResettingPassword ? (
             <View style={styles.form}>
@@ -363,6 +377,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 16,
     marginTop: "15%", // Maintain the top margin
+    paddingHorizontal: 50,
   },
   pressableText: {
     color: "white",

@@ -276,11 +276,26 @@ const Transcript = ({
               style={{ marginTop: 30, marginBottom: 350 }}
             />
           ) : (
-            <ActivityIndicator
-              size="large"
-              color="#ff4d00"
-              style={{ alignSelf: "center", marginTop: 100 }}
-            />
+            <View>
+              <ActivityIndicator
+                size="large"
+                color="#ff4d00"
+                style={{ alignSelf: "center", marginTop: 100 }}
+              />
+              <Text
+                style={{
+                  color: "#ff4d00",
+                  alignSelf: "center",
+                  paddingVertical: 40,
+                  textAlign: "center",
+                  paddingHorizontal: 20,
+                  fontSize: 16,
+                }}
+              >
+                If transcript isn't loading, check that you've entered your HAC
+                info correctly on profile
+              </Text>
+            </View>
           )}
         </View>
       )}
@@ -326,7 +341,7 @@ const Transcript = ({
       )}
     </View>
   ) : (
-    <HACNeededScreen />
+    <HACNeededScreen paddingTop={0} />
   );
 };
 

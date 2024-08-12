@@ -13,31 +13,10 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import * as MailComposer from "expo-mail-composer";
-import * as ImagePicker from "expo-image-picker"; // Import ImagePicker
-import Colors from "constants/Colors";
 
 const PrivacyPolicyPage = () => {
   const [issueDescription, setIssueDescription] = useState("");
   const [images, setImages] = useState<string[]>([]); // Declare type as an array of strings
-
-  const removeImage = (indexToRemove: number) => {
-    setImages(images.filter((_, index) => index !== indexToRemove));
-  };
-
-  // Function to handle image selection
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const selectedImage = result.assets[0].uri; // Using assets array to access selected image
-      setImages([...images, selectedImage]);
-    }
-  };
 
   const handleReportIssue = async () => {
     if (issueDescription.trim() === "" && images.length === 0) {
@@ -88,22 +67,6 @@ const PrivacyPolicyPage = () => {
             value={issueDescription}
             onChangeText={setIssueDescription}
           />
-
-          {images.map((image, index) => (
-            <View key={index} style={styles.imageContainer}>
-              <Image source={{ uri: image }} style={styles.image} />
-              <TouchableOpacity
-                onPress={() => removeImage(index)}
-                style={styles.removeButton}
-              >
-                <Ionicons name="close-circle-outline" size={24} color="white" />
-              </TouchableOpacity>
-            </View>
-          ))}
-          {/* Image Upload */}
-          <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-            <Text style={styles.uploadButtonText}>Upload Image</Text>
-          </TouchableOpacity>
 
           {/* Report Issue Button */}
           <TouchableOpacity

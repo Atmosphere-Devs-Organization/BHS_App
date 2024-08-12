@@ -4,9 +4,16 @@ import { router } from "expo-router";
 import { View, StyleSheet, Text } from "react-native";
 import AwesomeButton from "react-native-really-awesome-button";
 
-const HACNeededScreen = () => {
+const HACNeededScreen = ({ paddingTop }: { paddingTop: number }) => {
   return (
-    <View style={{ backgroundColor: "#121212", height: "100%", width: "100%" }}>
+    <View
+      style={{
+        backgroundColor: "#121212",
+        height: "100%",
+        width: "100%",
+        paddingTop: paddingTop,
+      }}
+    >
       <Text
         style={{
           marginTop: 100,

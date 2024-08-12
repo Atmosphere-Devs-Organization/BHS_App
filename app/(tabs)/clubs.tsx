@@ -17,6 +17,7 @@ import { User, onAuthStateChanged } from "firebase/auth";
 import AwesomeButton from "react-native-really-awesome-button";
 import { Ionicons } from "@expo/vector-icons";
 import Numbers from "@/constants/Numbers";
+import HACNeededScreen from "@/components/HACNeededScreen";
 
 const Clubs = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -74,7 +75,7 @@ const Clubs = () => {
   };
 
   const [hasAccess, setAccess] = useState<boolean>(false);
-  const [loadingInfo, setLoadingInfo] = useState<boolean>(true);
+  const [loadingInfo, setLoadingInfo] = useState<boolean>(false);
 
   useEffect(() => {
     if (username && password) {
@@ -101,6 +102,11 @@ const Clubs = () => {
   };
   return loadingInfo && user ? (
     <View style={{ backgroundColor: "#121212", height: "100%", width: "100%" }}>
+      <Stack.Screen
+        options={{
+          header: () => <ClubsHeader onCategoryChanged={onCategoryChanged} />,
+        }}
+      />
       <ActivityIndicator
         size="large"
         color="#ff4d00"
@@ -119,38 +125,13 @@ const Clubs = () => {
       </View>
     </View>
   ) : (
-    <View style={{ backgroundColor: "#121212", height: "100%", width: "100%" }}>
-      <Text
-        style={{
-          marginTop: 250,
-          color: "#ff6600",
-          textAlign: "center",
-          fontSize: 30,
-          fontWeight: "bold",
-          paddingHorizontal: 15,
-          paddingBottom: 75,
+    <View>
+      <Stack.Screen
+        options={{
+          header: () => <ClubsHeader onCategoryChanged={onCategoryChanged} />,
         }}
-      >
-        You must be signed into your BHS Home Access Center account to access
-        clubs!
-      </Text>
-      <AwesomeButton
-        style={styles.profile_button}
-        backgroundColor={"#ff9100"}
-        backgroundDarker={"#c26e00"}
-        height={100}
-        width={320}
-        raiseLevel={20}
-        onPressOut={() => router.push("(screens)/profile")}
-      >
-        <Ionicons
-          name="person-circle-sharp"
-          size={50}
-          color="#422500"
-          style={{ alignSelf: "center", marginRight: 15 }}
-        />
-        <Text style={styles.profile_text}>Profile</Text>
-      </AwesomeButton>
+      />
+      <HACNeededScreen paddingTop={200} />
     </View>
   );
 };

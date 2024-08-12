@@ -19,6 +19,7 @@ import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for arrow icons
 import { ScrollView } from "react-native-virtualized-view";
+import HACNeededScreen from "@/components/HACNeededScreen";
 
 const Calendar = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -39,13 +40,7 @@ const Calendar = () => {
 };
 
 const LoggedOutCalendar = () => {
-  return (
-    <View style={styles.centered}>
-      <Text style={styles.text}>
-        You need to be signed in to access the calendar
-      </Text>
-    </View>
-  );
+  return <HACNeededScreen paddingTop={0} />;
 };
 
 const NormalCalendar = ({ user }: { user: User }) => {
