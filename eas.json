@@ -13,6 +13,12 @@
     "production": {}
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "himikag@gmail.com",
+        "ascAppId": "6630367027",
+        "appleTeamId": "9F3V8DB5Y7"
+      }
+    }
   }
 }
