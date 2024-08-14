@@ -58,7 +58,24 @@ const GradesContent = ({ category }: Props) => {
 
   const HAC_Link = "https://home-access.cfisd.net";
 
+  let specCharsMap = new Map<string | undefined, string>();
+  specCharsMap.set(" ", "%20");
+  specCharsMap.set("#", "%23");
+  specCharsMap.set("&", "%26");
+  specCharsMap.set("/", "%2F");
+  specCharsMap.set("?", "%3F");
+  specCharsMap.set("!", "%21");
+  specCharsMap.set("$", "%24");
+  specCharsMap.set("@", "%40");
+
   const fetchStudentInfo = async (apiSection: string): Promise<any> => {
+    let tempPassword = "";
+    for (let i = 0; i < (password ? password.length : 0); i++) {
+      tempPassword += specCharsMap.has(password?.substring(i, i + 1))
+        ? specCharsMap.get(password?.substring(i, i + 1))
+        : password?.substring(i, i + 1);
+    }
+
     try {
       const response = await axios.get(
         "https://home-access-center-ap-iv2-sooty.vercel.app/api/" +
@@ -68,7 +85,7 @@ const GradesContent = ({ category }: Props) => {
           "/&user=" +
           username +
           "&pass=" +
-          password
+          tempPassword
       );
       return response.data;
     } catch (error) {
