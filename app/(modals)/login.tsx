@@ -26,6 +26,7 @@ import { router } from "expo-router";
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import Numbers from "@/constants/Numbers";
 import Colors from "@/constants/Colors";
+import { ScrollView } from "react-native-virtualized-view";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -146,175 +147,177 @@ const App = () => {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View>
-          <TouchableOpacity onPress={router.back} style={styles.close_button}>
-            <Ionicons name="close-sharp" size={35} color="white" />
-          </TouchableOpacity>
-          <Text style={styles.welcomeText}>Welcome To: The Bear Den</Text>
-          <Text
-            style={{
-              color: "#bfbfbf",
-              alignSelf: "center",
-              textAlign: "center",
-              paddingHorizontal: 10,
-              paddingTop: 3,
-              fontSize: 12,
-              lineHeight: 18,
-            }}
-          >
-            Brought to you by:{"\n"}Jack Chambard, Amar Nangia, & Sri Harsha
-            Potta
-          </Text>
+      <ScrollView style={{ backgroundColor: "#121212" }}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View>
+            <TouchableOpacity onPress={router.back} style={styles.close_button}>
+              <Ionicons name="close-sharp" size={35} color="white" />
+            </TouchableOpacity>
+            <Text style={styles.welcomeText}>Welcome To: The Bear Den</Text>
 
-          {isResettingPassword ? (
-            <View style={styles.form}>
-              <View style={styles.box}>
-                <Text style={styles.title}>Reset Password</Text>
-                <TextInput
-                  placeholder="Enter your email"
-                  value={resetEmail}
-                  onChangeText={setResetEmail}
-                  style={styles.input}
-                  placeholderTextColor="white"
-                  textContentType="oneTimeCode"
-                />
-                <AwesomeButton
-                  style={styles.login_button}
-                  backgroundColor={"#2176ff"}
-                  //backgroundDarker={"#2176ff"}
-                  height={screenWidth * 0.15}
-                  width={Numbers.loginButtonWidth}
-                  raiseLevel={0}
-                  onPress={handleResetPassword}
-                >
-                  <Text style={styles.buttonText}>
-                    Send Password Reset Email
-                  </Text>
-                </AwesomeButton>
-              </View>
-              <Pressable onPress={handleSwitchToLogin}>
-                <Text style={styles.pressableText}>Back to Login</Text>
-              </Pressable>
-            </View>
-          ) : isCreatingAccount ? (
-            <View style={styles.form}>
-              <View style={styles.box}>
-                <Text style={styles.title}>Create Account</Text>
-                <TextInput
-                  placeholder="Name"
-                  value={name}
-                  onChangeText={setName}
-                  style={styles.input}
-                  placeholderTextColor="white"
-                  textContentType="oneTimeCode"
-                />
-                <TextInput
-                  placeholder="Email"
-                  value={email}
-                  onChangeText={setEmail}
-                  style={styles.input}
-                  placeholderTextColor="white"
-                  textContentType="oneTimeCode"
-                />
-                <View style={styles.passwordContainer}>
+            {isResettingPassword ? (
+              <View style={styles.form}>
+                <View style={styles.box}>
+                  <Text style={styles.title}>Reset Password</Text>
                   <TextInput
-                    placeholder="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!isPasswordVisible} // Password hidden by default
-                    style={styles.passwordInput}
+                    placeholder="Enter your email"
+                    value={resetEmail}
+                    onChangeText={setResetEmail}
+                    style={styles.input}
                     placeholderTextColor="white"
                     textContentType="oneTimeCode"
                   />
-                  <TouchableOpacity onPress={togglePasswordVisibility}>
-                    <Ionicons
-                      name={isPasswordVisible ? "eye" : "eye-off"} // Show eye-off when password is hidden
-                      size={24}
-                      color="white"
-                    />
-                  </TouchableOpacity>
+                  <AwesomeButton
+                    style={styles.login_button}
+                    backgroundColor={"#2176ff"}
+                    //backgroundDarker={"#2176ff"}
+                    height={screenWidth * 0.15}
+                    width={Numbers.loginButtonWidth}
+                    raiseLevel={0}
+                    onPress={handleResetPassword}
+                  >
+                    <Text style={styles.buttonText}>
+                      Send Password Reset Email
+                    </Text>
+                  </AwesomeButton>
                 </View>
-                <AwesomeButton
-                  style={styles.login_button}
-                  backgroundColor={"#2176ff"}
-                  backgroundDarker={"#2176ff"}
-                  height={screenWidth * 0.15}
-                  width={Numbers.loginButtonWidth}
-                  raiseLevel={1}
-                  onPress={signUp}
-                >
-                  <Entypo
-                    name="login"
-                    size={16}
-                    color={"white"}
-                    style={{ alignSelf: "center", marginRight: 15 }}
-                  />
-                  <Text style={styles.buttonText}>Create Account</Text>
-                </AwesomeButton>
+                <Pressable onPress={handleSwitchToLogin}>
+                  <Text style={styles.pressableText}>Back to Login</Text>
+                </Pressable>
               </View>
-              <Pressable onPress={handleSwitchToLogin}>
-                <Text style={styles.pressableText}>Back to Login</Text>
-              </Pressable>
-            </View>
-          ) : (
-            <View style={styles.form}>
-              <View style={styles.box}>
-                <Text style={styles.title}>Login</Text>
-                <TextInput
-                  placeholder="Email"
-                  value={email}
-                  onChangeText={setEmail}
-                  style={styles.input}
-                  placeholderTextColor="white"
-                  textContentType="oneTimeCode"
-                />
-                <View style={styles.passwordContainer}>
+            ) : isCreatingAccount ? (
+              <View style={styles.form}>
+                <View style={styles.box}>
+                  <Text style={styles.title}>Create Account</Text>
                   <TextInput
-                    placeholder="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!isPasswordVisible} // Password hidden by default
-                    style={styles.passwordInput}
+                    placeholder="Name"
+                    value={name}
+                    onChangeText={setName}
+                    style={styles.input}
                     placeholderTextColor="white"
                     textContentType="oneTimeCode"
                   />
-                  <TouchableOpacity onPress={togglePasswordVisibility}>
-                    <Ionicons
-                      name={isPasswordVisible ? "eye" : "eye-off"} // Show eye-off when password is hidden
-                      size={24}
-                      color="white"
-                    />
-                  </TouchableOpacity>
-                </View>
-                <AwesomeButton
-                  style={styles.login_button}
-                  backgroundColor={"#2176ff"} // Reverted to original
-                  backgroundDarker={Colors.loginButtonDarkerBG} // Reverted to original
-                  height={screenWidth * 0.15}
-                  width={Numbers.loginButtonWidth}
-                  raiseLevel={1}
-                  onPress={signIn}
-                >
-                  <Entypo
-                    name="login"
-                    size={16}
-                    color="white" // Reverted to original
-                    style={{ alignSelf: "center", marginRight: 15 }}
+                  <TextInput
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    style={styles.input}
+                    placeholderTextColor="white"
+                    textContentType="oneTimeCode"
                   />
-                  <Text style={styles.buttonText}>Login</Text>
-                </AwesomeButton>
+                  <View style={styles.passwordContainer}>
+                    <TextInput
+                      placeholder="Password"
+                      value={password}
+                      onChangeText={setPassword}
+                      secureTextEntry={!isPasswordVisible} // Password hidden by default
+                      style={styles.passwordInput}
+                      placeholderTextColor="white"
+                      textContentType="oneTimeCode"
+                    />
+                    <TouchableOpacity onPress={togglePasswordVisibility}>
+                      <Ionicons
+                        name={isPasswordVisible ? "eye" : "eye-off"} // Show eye-off when password is hidden
+                        size={24}
+                        color="white"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <AwesomeButton
+                    style={styles.login_button}
+                    backgroundColor={"#2176ff"}
+                    backgroundDarker={"#2176ff"}
+                    height={screenWidth * 0.15}
+                    width={Numbers.loginButtonWidth}
+                    raiseLevel={1}
+                    onPress={signUp}
+                  >
+                    <Entypo
+                      name="login"
+                      size={16}
+                      color={"white"}
+                      style={{ alignSelf: "center", marginRight: 15 }}
+                    />
+                    <Text style={styles.buttonText}>Create Account</Text>
+                  </AwesomeButton>
+                </View>
+                <Pressable onPress={handleSwitchToLogin}>
+                  <Text style={styles.pressableText}>Back to Login</Text>
+                </Pressable>
               </View>
-              <Pressable onPress={handleSwitchToCreateAccount}>
-                <Text style={styles.pressableText}>Create Account</Text>
-              </Pressable>
-              <Pressable onPress={handleForgotPassword}>
-                <Text style={styles.pressableText}>Forgot Password?</Text>
-              </Pressable>
-            </View>
-          )}
-        </View>
-      </TouchableWithoutFeedback>
+            ) : (
+              <View style={styles.form}>
+                <View style={styles.box}>
+                  <Text style={styles.title}>Login</Text>
+                  <TextInput
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    style={styles.input}
+                    placeholderTextColor="white"
+                    textContentType="oneTimeCode"
+                  />
+                  <View style={styles.passwordContainer}>
+                    <TextInput
+                      placeholder="Password"
+                      value={password}
+                      onChangeText={setPassword}
+                      secureTextEntry={!isPasswordVisible} // Password hidden by default
+                      style={styles.passwordInput}
+                      placeholderTextColor="white"
+                      textContentType="oneTimeCode"
+                    />
+                    <TouchableOpacity onPress={togglePasswordVisibility}>
+                      <Ionicons
+                        name={isPasswordVisible ? "eye" : "eye-off"} // Show eye-off when password is hidden
+                        size={24}
+                        color="white"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <AwesomeButton
+                    style={styles.login_button}
+                    backgroundColor={"#2176ff"} // Reverted to original
+                    backgroundDarker={Colors.loginButtonDarkerBG} // Reverted to original
+                    height={screenWidth * 0.15}
+                    width={Numbers.loginButtonWidth}
+                    raiseLevel={1}
+                    onPress={signIn}
+                  >
+                    <Entypo
+                      name="login"
+                      size={16}
+                      color="white" // Reverted to original
+                      style={{ alignSelf: "center", marginRight: 15 }}
+                    />
+                    <Text style={styles.buttonText}>Login</Text>
+                  </AwesomeButton>
+                </View>
+                <Pressable onPress={handleSwitchToCreateAccount}>
+                  <Text style={styles.pressableText}>Create Account</Text>
+                </Pressable>
+                <Pressable onPress={handleForgotPassword}>
+                  <Text style={styles.pressableText}>Forgot Password?</Text>
+                </Pressable>
+              </View>
+            )}
+            <Text
+              style={{
+                color: "#bfbfbf",
+                alignSelf: "center",
+                textAlign: "center",
+                paddingHorizontal: 10,
+                paddingTop: 20,
+                fontSize: 12,
+                lineHeight: 18,
+              }}
+            >
+              Brought to you by:{"\n"}Jack Chambard, Amar Nangia, & Sri Harsha
+              Potta
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
