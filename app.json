@@ -52,6 +52,12 @@
             "useFrameworks": "static"
           }
         }
+      ],
+      [
+        "expo-updates",
+        {
+          "username": "bridgelandapp"
+        }
       ]
     ],
     "experiments": {
@@ -65,6 +71,12 @@
       "eas": {
         "projectId": "fc753097-0742-4daf-9dae-971c34525af3"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/fc753097-0742-4daf-9dae-971c34525af3"
     }
   }
 }
