@@ -68,6 +68,8 @@ const GradesContent = ({ category }: Props) => {
   specCharsMap.set("$", "%24");
   specCharsMap.set("@", "%40");
 
+  const [HACBroken, setHACBroken] = useState<boolean>(false);
+
   const fetchStudentInfo = async (apiSection: string): Promise<any> => {
     let tempPassword = "";
     for (let i = 0; i < (password ? password.length : 0); i++) {
@@ -76,19 +78,22 @@ const GradesContent = ({ category }: Props) => {
         : password?.substring(i, i + 1);
     }
 
+    const apiLink =
+      "https://home-access-center-ap-iv2-sooty.vercel.app/api/" +
+      apiSection +
+      "?link=" +
+      HAC_Link +
+      "/&user=" +
+      username +
+      "&pass=" +
+      tempPassword;
+
     try {
-      const response = await axios.get(
-        "https://home-access-center-ap-iv2-sooty.vercel.app/api/" +
-          apiSection +
-          "?link=" +
-          HAC_Link +
-          "/&user=" +
-          username +
-          "&pass=" +
-          tempPassword
-      );
+      const response = await axios.get(apiLink);
+      setHACBroken(false);
       return response.data;
     } catch (error) {
+      setHACBroken(error == "AxiosError: Request failed with status code 500");
       return undefined;
     }
   };
@@ -158,6 +163,7 @@ const GradesContent = ({ category }: Props) => {
             transcriptData={transcriptData}
             schoolYears={schoolYears}
             user={user}
+            hacBroken={HACBroken}
           />
         </View>
       );
@@ -181,10 +187,12 @@ const Transcript = ({
   transcriptData,
   schoolYears,
   user,
+  hacBroken,
 }: {
   transcriptData: any;
   schoolYears: any[];
   user: any;
+  hacBroken: boolean;
 }) => {
   const [yearItem, setYearItem] = useState<any>(null);
   const [showingTranscriptDetails, setShowingDetails] =
@@ -358,7 +366,7 @@ const Transcript = ({
       )}
     </View>
   ) : (
-    <HACNeededScreen paddingTop={0} />
+    <HACNeededScreen paddingTop={0} hacDown={hacBroken} />
   );
 };
 
