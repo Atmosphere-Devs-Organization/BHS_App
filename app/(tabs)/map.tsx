@@ -403,7 +403,7 @@ const MapPage = () => {
         style={{ alignSelf: "center", marginTop: 300 }}
       />
     </View>
-  ) : hasAccess && user ? (
+  ) : true && user ? (
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={{ marginTop: 50, paddingBottom: 100 }}

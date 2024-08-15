@@ -57,10 +57,7 @@ const App = () => {
         error instanceof Error &&
         error.message === "Firebase: Error (auth/invalid-credential)."
       ) {
-        Alert.alert(
-          "Sign in failed",
-          "Incorrect Password or you need to create an account."
-        );
+        Alert.alert("Sign in failed", "New users must create an account");
       } else {
         Alert.alert("Error", "Please enter a valid email and password.");
       }
@@ -84,10 +81,7 @@ const App = () => {
       await setDoc(userDoc, {
         name: name,
         email: user.email,
-        clubs: [
-          "Computer Science Club",
-          "Future Business leaders of America (FBLA)",
-        ],
+        clubs: [],
       });
 
       signIn();
@@ -198,7 +192,7 @@ const App = () => {
                   textContentType="oneTimeCode"
                 />
                 <TextInput
-                  placeholder="Email"
+                  placeholder="Email (Personal)"
                   value={email}
                   onChangeText={setEmail}
                   style={styles.input}

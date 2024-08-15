@@ -135,7 +135,7 @@ const Clubs = () => {
         style={{ alignSelf: "center", marginTop: 300 }}
       />
     </View>
-  ) : hasAccess && user ? (
+  ) : true && user ? (
     <View style={styles.BG_Color}>
       <View style={{ flex: 1, marginTop: 190 }}>
         <Stack.Screen
