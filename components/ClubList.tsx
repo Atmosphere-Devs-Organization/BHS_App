@@ -13,7 +13,7 @@ import { Club } from "@/interfaces/club";
 import { Link } from "expo-router";
 import Colors from "@/constants/Colors";
 import { FIREBASE_DB } from "@/FirebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useClubContext } from "@/components/ClubContext"; // Import the custom hook
 
 interface Props {
@@ -27,7 +27,7 @@ const ClubList = ({ category }: Props) => {
   const { clubsCache, setClubsCache } = useClubContext(); // Use context
 
   useEffect(() => {
-    const fetchClubs = async () => {
+    const fetchAndUpdateClubs = async () => {
       if (clubsCache.length > 0) {
         // Use cached data if available
         const filtered = clubsCache.filter((club) =>
@@ -49,23 +49,59 @@ const ClubList = ({ category }: Props) => {
           return;
         }
 
-        // Cache the fetched clubs data in the context
-        setClubsCache(cachedClubsData);
+        // Update each club document in Firestore
+        const updatedClubs = await Promise.all(
+          cachedClubsData.map(async (cachedClub: Club) => {
+            const clubDocRef = doc(FIREBASE_DB, "clubs", cachedClub.name);
+            const clubDocSnap = await getDoc(clubDocRef);
+
+            if (clubDocSnap.exists()) {
+              const clubData = clubDocSnap.data();
+
+              // Create an object to hold the update values
+              const updatedClubData = {
+                name: cachedClub.name,
+                imageURL: cachedClub.imageURL || "",
+                id: cachedClub.id,
+                longDescription: cachedClub.longDescription || "",
+                sponsorEmail: cachedClub.sponsorEmail || "",
+                categories: cachedClub.categories || [],
+                dateDates: cachedClub.dateDates || [],
+                dateNames: cachedClub.dateNames || [],
+                pastEventDescriptions: cachedClub.pastEventDescriptions || [],
+                pastEventNames: cachedClub.pastEventNames || [],
+                pastEventURLs: cachedClub.pastEventURLs || [],
+              };
+
+              // Update the document in Firestore
+              await updateDoc(clubDocRef, updatedClubData);
+
+              // Return the updated club object
+              return { ...clubData, ...updatedClubData };
+            } else {
+              // If the club document doesn't exist, return the cached club data
+              return cachedClub;
+            }
+          })
+        );
+
+        // Cache the fetched and updated clubs data in the context
+        setClubsCache(updatedClubs);
 
         // Filter clubs by category
-        const filtered = cachedClubsData.filter((club: Club) =>
+        const filtered = updatedClubs.filter((club) =>
           club.categories.includes(category)
         );
         setFilteredClubs(filtered);
       } catch (error) {
         // Handle error
-        console.error("Error fetching cached clubs:", error);
+        console.error("Error fetching or updating clubs:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchClubs();
+    fetchAndUpdateClubs();
   }, [category, clubsCache, setClubsCache]);
 
   const renderRow: ListRenderItem<Club> = ({ item }) => (
