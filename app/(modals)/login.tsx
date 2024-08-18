@@ -26,8 +26,6 @@ import { router } from "expo-router";
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import Numbers from "@/constants/Numbers";
 import Colors from "@/constants/Colors";
-import { ScrollView } from "react-native-virtualized-view";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -53,11 +51,28 @@ const App = () => {
       Alert.alert("Success", "Logged in successfully.");
       router.back();
     } catch (error: any) {
+      console.log(error);
       if (
         error instanceof Error &&
         error.message === "Firebase: Error (auth/invalid-credential)."
       ) {
-        Alert.alert("Sign in failed", "New users must create an account");
+        Alert.alert(
+          "Sign in Failed",
+          "Check your username and password, or create an account",
+          [
+            {
+              text: "Ok",
+              onPress: () => {},
+              style: "cancel",
+            },
+            {
+              text: "Create an Account",
+              onPress: () => handleSwitchToCreateAccount(),
+              style: "default",
+            },
+          ],
+          { cancelable: true }
+        );
       } else {
         Alert.alert("Error", "Please enter a valid email and password.");
       }
@@ -81,11 +96,11 @@ const App = () => {
       await setDoc(userDoc, {
         name: name,
         email: user.email,
-        clubs: [],
       });
 
       signIn();
     } catch (error: any) {
+      console.log(error.message);
       if (
         error.message ===
         "Firebase: Password should be at least 6 characters (auth/weak-password)."
@@ -113,6 +128,7 @@ const App = () => {
       );
       setIsResettingPassword(false);
     } catch (error) {
+      console.error("Error sending password reset email:", error);
       Alert.alert(
         "Error",
         "Failed to send password reset email. Please check the email address and try again."
@@ -143,11 +159,11 @@ const App = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <SafeAreaView>
+        <View>
           <TouchableOpacity onPress={router.back} style={styles.close_button}>
-            <Ionicons name="close-sharp" size={35} color="white" />
+            <Ionicons name="close-sharp" size={24} color="white" />
           </TouchableOpacity>
-          <Text style={styles.welcomeText}>Welcome To: The Bear Den</Text>
+          <Text style={styles.welcomeText}>Welcome To The Bear Den</Text>
 
           {isResettingPassword ? (
             <View style={styles.form}>
@@ -175,9 +191,9 @@ const App = () => {
                   </Text>
                 </AwesomeButton>
               </View>
-              <Pressable onPress={handleSwitchToLogin}>
+              <TouchableOpacity onPress={handleSwitchToLogin}>
                 <Text style={styles.pressableText}>Back to Login</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           ) : isCreatingAccount ? (
             <View style={styles.form}>
@@ -192,7 +208,7 @@ const App = () => {
                   textContentType="oneTimeCode"
                 />
                 <TextInput
-                  placeholder="Email (Personal)"
+                  placeholder="Email"
                   value={email}
                   onChangeText={setEmail}
                   style={styles.input}
@@ -235,12 +251,22 @@ const App = () => {
                   <Text style={styles.buttonText}>Create Account</Text>
                 </AwesomeButton>
               </View>
-              <Pressable onPress={handleSwitchToLogin}>
+              <TouchableOpacity onPress={handleSwitchToLogin}>
                 <Text style={styles.pressableText}>Back to Login</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           ) : (
             <View style={styles.form}>
+              <Text
+                style={{
+                  color: "white",
+                  paddingBottom: 10,
+                  fontSize: 16,
+                  alignSelf: "center",
+                }}
+              >
+                New users must create an account below
+              </Text>
               <View style={styles.box}>
                 <Text style={styles.title}>Login</Text>
                 <TextInput
@@ -287,29 +313,15 @@ const App = () => {
                   <Text style={styles.buttonText}>Login</Text>
                 </AwesomeButton>
               </View>
-              <Pressable onPress={handleSwitchToCreateAccount}>
+              <TouchableOpacity onPress={handleSwitchToCreateAccount}>
                 <Text style={styles.pressableText}>Create Account</Text>
-              </Pressable>
-              <Pressable onPress={handleForgotPassword}>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleForgotPassword}>
                 <Text style={styles.pressableText}>Forgot Password?</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           )}
-          <Text
-            style={{
-              color: "#bfbfbf",
-              alignSelf: "center",
-              textAlign: "center",
-              paddingHorizontal: 10,
-              paddingTop: 20,
-              fontSize: 12,
-              lineHeight: 18,
-            }}
-          >
-            Brought to you by:{"\n"}Jack Chambard, Amar Nangia, & Sri Harsha
-            Potta
-          </Text>
-        </SafeAreaView>
+        </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
@@ -336,7 +348,7 @@ const styles = StyleSheet.create({
   },
   form: {
     width: "100%",
-    marginTop: "5%",
+    marginTop: "20%",
   },
   input: {
     height: 41,
@@ -371,13 +383,19 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
     textAlign: "center",
-    marginBottom: 16,
-    paddingHorizontal: 50,
+    marginBottom: 0,
+    marginTop: "5%", // Maintain the top margin
   },
   pressableText: {
-    color: "white",
+    color: Colors.loginPressableText,
     textAlign: "center",
     paddingVertical: 10,
+    fontSize: 20,
+    fontWeight: "bold",
+    borderWidth: 1,
+    borderColor: "white",
+    borderRadius: 15,
+    marginBottom: 10,
   },
   passwordContainer: {
     flexDirection: "row",
@@ -401,7 +419,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingVertical: 10,
   },
-  close_button: { paddingHorizontal: 10 },
+  close_button: { padding: 10 },
 });
 
 export default App;
