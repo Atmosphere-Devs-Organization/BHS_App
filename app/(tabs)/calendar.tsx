@@ -14,6 +14,7 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for arrow icons
 import { ScrollView } from 'react-native-virtualized-view';
 
+import { useClubContext } from "@/components/ClubContext"; // Make sure this path is correct
 
 const Calendar = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -52,70 +53,55 @@ const NormalCalendar = ({ user }: { user: User }) => {
   >([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [eventTitle, setEventTitle] = useState<string>("");
+  
+  const { clubsCache } = useClubContext();
 
   useEffect(() => {
-    const userDocRef = doc(FIREBASE_DB, "users", user.uid);
-    const schoolEventsRef = collection(
-      FIREBASE_DB,
-      "admin",
-      "SchoolDates",
-      "dates"
-    );
-  
-    const unsubscribe = onSnapshot(userDocRef, async (userDocSnap) => {
-      if (userDocSnap.exists()) {
-        const userData = userDocSnap.data();
-        const clubs = userData.clubs || [];
-  
-        const fetchedEvents: { date: string; title: string; club: string }[] = [];
-  
-        // Fetch club events
-        for (const club of clubs) {
-          const clubDocRef = doc(FIREBASE_DB, "clubs", club);
-          const clubDocSnap = await getDoc(clubDocRef);
-  
-          if (clubDocSnap.exists()) {
-            const clubData = clubDocSnap.data();
-            const dateDates = clubData.dateDates || [];
-            const dateNames = clubData.dateNames || [];
-  
-            // Ensure the lengths of the arrays match
-            if (dateDates.length === dateNames.length) {
-              dateDates.forEach((dateTimestamp: any, index: number) => {
-                const eventDate = new Date(dateTimestamp.toDate())
-                  .toISOString()
-                  .split("T")[0];
-                const eventName = dateNames[index];
-                fetchedEvents.push({ date: eventDate, title: eventName, club });
-              });
-            } else {
-              console.error(
-                `Mismatched lengths for dateDates and dateNames in club: ${club}`
-              );
-            }
-          }
+    const fetchEvents = () => {
+      const fetchedEvents: { date: string; title: string; club: string }[] = [];
+
+      // Fetch club events from cache
+      clubsCache.forEach((club) => {
+        const dateDates = club.dateDates || [];
+        const dateNames = club.dateNames || [];
+
+        // Ensure the lengths of the arrays match
+        if (dateDates.length === dateNames.length) {
+          dateDates.forEach((dateTimestamp: any, index: number) => {
+            const eventDate = new Date(dateTimestamp.toDate())
+              .toISOString()
+              .split("T")[0];
+            const eventName = dateNames[index];
+            fetchedEvents.push({ date: eventDate, title: eventName, club: club.name });
+          });
+        } else {
+          console.error(
+            `Mismatched lengths for dateDates and dateNames in club: ${club.name}`
+          );
         }
-  
-        // Fetch schoolwide events
-        const schoolEventsSnapshot = await getDocs(schoolEventsRef);
-        schoolEventsSnapshot.forEach((doc) => {
-          const dateData = doc.data();
-          const eventDate = new Date(dateData.date.toDate())
+      });
+
+      // Fetch schoolwide events from context
+      const schoolEvents = clubsCache.filter((club) => club.name === "Schoolwide");
+      schoolEvents.forEach((schoolEvent) => {
+        const dateDates = schoolEvent.dateDates || [];
+        dateDates.forEach((dateTimestamp: any) => {
+          const eventDate = new Date(dateTimestamp.toDate())
             .toISOString()
             .split("T")[0];
           fetchedEvents.push({
             date: eventDate,
-            title: doc.id,
+            title: schoolEvent.name,
             club: "Schoolwide",
           });
         });
-  
-        setEvents(fetchedEvents);
-      }
-    });
-  
-    return () => unsubscribe();
-  }, [user]);
+      });
+
+      setEvents(fetchedEvents);
+    };
+
+    fetchEvents();
+  }, [clubsCache]);
   
 
   const daysInMonth = (year: number, month: number) =>
