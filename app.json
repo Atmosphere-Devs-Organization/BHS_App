@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "BHS_App",
+    "name": "The Bear Den",
     "slug": "BHS_App",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/splash.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -17,13 +17,17 @@
       "config": {
         "usesNonExemptEncryption": false
       },
-      "bundleIdentifier": "com.pagecow.bridgelandapp"
+      "bundleIdentifier": "com.pagecow.bridgelandapp",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "buildNumber": "3"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "googleServicesFile": "./google-services.json",
+      "package": "com.pagecow.bridgelandapp"
     },
     "web": {
       "bundler": "metro",
@@ -31,6 +35,8 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
       "expo-router",
       "expo-secure-store",
       [
@@ -38,11 +44,39 @@
         {
           "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ],
+      [
+        "expo-updates",
+        {
+          "username": "bridgelandapp"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "tsconfigPaths": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "fc753097-0742-4daf-9dae-971c34525af3"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/fc753097-0742-4daf-9dae-971c34525af3"
     }
   }
 }

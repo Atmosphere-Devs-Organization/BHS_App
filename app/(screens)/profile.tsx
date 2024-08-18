@@ -132,9 +132,7 @@ const NormalProfile = ({
         await SecureStore.setItemAsync(userId + "HACpassword", HACpassword);
         Alert.alert("Success", "HAC password updated");
       }
-    } catch (error) {
-      console.error("Error updating user information: ", error);
-    }
+    } catch (error) {}
   };
 
   return (
@@ -241,7 +239,7 @@ const NormalProfile = ({
                     [
                       {
                         text: "Cancel",
-                        onPress: () => console.log("Logout cancelled"),
+                        onPress: () => {},
                         style: "cancel",
                       },
                       {

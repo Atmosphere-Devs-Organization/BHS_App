@@ -1,28 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
-import { doc, getDoc } from 'firebase/firestore';
-import { FIREBASE_DB } from '@/FirebaseConfig'; // Update with your Firebase config import
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
+import { doc, getDoc } from "firebase/firestore";
+import { FIREBASE_DB } from "@/FirebaseConfig"; // Update with your Firebase config import
 
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 
 const Announcements = () => {
   const [announcements, setAnnouncements] = useState<string[]>([]);
-  
+
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const announcementsDocRef = doc(FIREBASE_DB, 'admin', 'announcements');
+        const announcementsDocRef = doc(FIREBASE_DB, "admin", "announcements");
         const announcementsDocSnap = await getDoc(announcementsDocRef);
         if (announcementsDocSnap.exists()) {
           const data = announcementsDocSnap.data();
           const announcementsArr = data?.announcementsArr || [];
           setAnnouncements(announcementsArr.reverse()); // Reverse the array
         } else {
-          console.error('Announcements document not found');
         }
-      } catch (error) {
-        console.error('Error fetching announcements:', error);
-      }
+      } catch (error) {}
     };
 
     fetchAnnouncements();
@@ -46,19 +43,19 @@ const Announcements = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: 16,
   },
   announcementBox: {
-    backgroundColor: 'orange',
+    backgroundColor: "orange",
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
     width: screenWidth * 0.9, // Adjust width as needed
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   announcementText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
   },
 });

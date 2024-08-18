@@ -1,7 +1,6 @@
-import { Text, SafeAreaView, View, StyleSheet } from "react-native";
-import React, { useEffect, useState } from "react";
+import { View, StyleSheet } from "react-native";
+import React, { useState } from "react";
 import { Stack } from "expo-router";
-import Colors from "@/constants/Colors";
 import CustomGradesHeader from "@/components/CustomGradesHeader";
 import GradesContent from "@/components/GradesContent";
 

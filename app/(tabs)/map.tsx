@@ -30,7 +30,7 @@ import Numbers from "@/constants/Numbers";
 import { Ionicons } from "@expo/vector-icons";
 import HACNeededScreen from "@/components/HACNeededScreen";
 
-const Map = () => {
+const MapPage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
@@ -67,26 +67,48 @@ const Map = () => {
 
   const HAC_Link = "https://home-access.cfisd.net";
 
+  let specCharsMap = new Map<string | undefined, string>();
+  specCharsMap.set(" ", "%20");
+  specCharsMap.set("#", "%23");
+  specCharsMap.set("&", "%26");
+  specCharsMap.set("/", "%2F");
+  specCharsMap.set("?", "%3F");
+  specCharsMap.set("!", "%21");
+  specCharsMap.set("$", "%24");
+  specCharsMap.set("@", "%40");
+
+  const [HACBroken, setHACBroken] = useState<boolean>(false);
+
   const fetchStudentInfo = async (apiSection: string): Promise<any> => {
+    let tempPassword = "";
+    for (let i = 0; i < (password ? password.length : 0); i++) {
+      tempPassword += specCharsMap.has(password?.substring(i, i + 1))
+        ? specCharsMap.get(password?.substring(i, i + 1))
+        : password?.substring(i, i + 1);
+    }
+
+    const apiLink =
+      "https://home-access-center-ap-iv2-sooty.vercel.app/api/" +
+      apiSection +
+      "?link=" +
+      HAC_Link +
+      "/&user=" +
+      username +
+      "&pass=" +
+      tempPassword;
+
     try {
-      const response = await axios.get(
-        "https://home-access-center-ap-iv2-sooty.vercel.app/api/" +
-          apiSection +
-          "?link=" +
-          HAC_Link +
-          "/&user=" +
-          username +
-          "&pass=" +
-          password
-      );
+      const response = await axios.get(apiLink);
+      setHACBroken(false);
       return response.data;
     } catch (error) {
+      setHACBroken(error == "AxiosError: Request failed with status code 500");
       return undefined;
     }
   };
 
   const [hasAccess, setAccess] = useState<boolean>(false);
-  const [loadingInfo, setLoadingInfo] = useState<boolean>(true);
+  const [loadingInfo, setLoadingInfo] = useState<boolean>(false);
 
   useEffect(() => {
     if (username && password) {
@@ -497,7 +519,7 @@ const Map = () => {
       </ScrollView>
     </View>
   ) : (
-    <HACNeededScreen />
+    <HACNeededScreen paddingTop={0} hacDown={HACBroken} />
   );
 };
 
@@ -564,4 +586,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Map;
+export default MapPage;

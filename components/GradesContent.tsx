@@ -58,20 +58,42 @@ const GradesContent = ({ category }: Props) => {
 
   const HAC_Link = "https://home-access.cfisd.net";
 
+  let specCharsMap = new Map<string | undefined, string>();
+  specCharsMap.set(" ", "%20");
+  specCharsMap.set("#", "%23");
+  specCharsMap.set("&", "%26");
+  specCharsMap.set("/", "%2F");
+  specCharsMap.set("?", "%3F");
+  specCharsMap.set("!", "%21");
+  specCharsMap.set("$", "%24");
+  specCharsMap.set("@", "%40");
+
+  const [HACBroken, setHACBroken] = useState<boolean>(false);
+
   const fetchStudentInfo = async (apiSection: string): Promise<any> => {
+    let tempPassword = "";
+    for (let i = 0; i < (password ? password.length : 0); i++) {
+      tempPassword += specCharsMap.has(password?.substring(i, i + 1))
+        ? specCharsMap.get(password?.substring(i, i + 1))
+        : password?.substring(i, i + 1);
+    }
+
+    const apiLink =
+      "https://home-access-center-ap-iv2-sooty.vercel.app/api/" +
+      apiSection +
+      "?link=" +
+      HAC_Link +
+      "/&user=" +
+      username +
+      "&pass=" +
+      tempPassword;
+
     try {
-      const response = await axios.get(
-        "https://home-access-center-ap-iv2-sooty.vercel.app/api/" +
-          apiSection +
-          "?link=" +
-          HAC_Link +
-          "/&user=" +
-          username +
-          "&pass=" +
-          password
-      );
+      const response = await axios.get(apiLink);
+      setHACBroken(false);
       return response.data;
     } catch (error) {
+      setHACBroken(error == "AxiosError: Request failed with status code 500");
       return undefined;
     }
   };
@@ -86,7 +108,6 @@ const GradesContent = ({ category }: Props) => {
       async function fetchAPI() {
         let response = await fetchStudentInfo("transcript");
         //let response2 = await fetchStudentInfo("averages");
-        console.log(response);
         setTData(response);
         //setGData(response2);
         const schoolYearArray = Object.keys(response)
@@ -142,6 +163,7 @@ const GradesContent = ({ category }: Props) => {
             transcriptData={transcriptData}
             schoolYears={schoolYears}
             user={user}
+            hacBroken={HACBroken}
           />
         </View>
       );
@@ -165,10 +187,12 @@ const Transcript = ({
   transcriptData,
   schoolYears,
   user,
+  hacBroken,
 }: {
   transcriptData: any;
   schoolYears: any[];
   user: any;
+  hacBroken: boolean;
 }) => {
   const [yearItem, setYearItem] = useState<any>(null);
   const [showingTranscriptDetails, setShowingDetails] =
@@ -277,11 +301,26 @@ const Transcript = ({
               style={{ marginTop: 30, marginBottom: 350 }}
             />
           ) : (
-            <ActivityIndicator
-              size="large"
-              color="#ff4d00"
-              style={{ alignSelf: "center", marginTop: 100 }}
-            />
+            <View>
+              <ActivityIndicator
+                size="large"
+                color="#ff4d00"
+                style={{ alignSelf: "center", marginTop: 100 }}
+              />
+              <Text
+                style={{
+                  color: "#ff4d00",
+                  alignSelf: "center",
+                  paddingVertical: 40,
+                  textAlign: "center",
+                  paddingHorizontal: 20,
+                  fontSize: 16,
+                }}
+              >
+                If transcript isn't loading, check that you've entered your HAC
+                info correctly on profile
+              </Text>
+            </View>
           )}
         </View>
       )}
@@ -327,7 +366,7 @@ const Transcript = ({
       )}
     </View>
   ) : (
-    <HACNeededScreen />
+    <HACNeededScreen paddingTop={0} hacDown={hacBroken} />
   );
 };
 

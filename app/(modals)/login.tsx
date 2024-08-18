@@ -57,8 +57,21 @@ const App = () => {
         error.message === "Firebase: Error (auth/invalid-credential)."
       ) {
         Alert.alert(
-          "Sign in failed",
-          "Incorrect Password or you need to create an account."
+          "Sign in Failed",
+          "Check your username and password, or create an account",
+          [
+            {
+              text: "Ok",
+              onPress: () => {},
+              style: "cancel",
+            },
+            {
+              text: "Create an Account",
+              onPress: () => handleSwitchToCreateAccount(),
+              style: "default",
+            },
+          ],
+          { cancelable: true }
         );
       } else {
         Alert.alert("Error", "Please enter a valid email and password.");
@@ -83,10 +96,6 @@ const App = () => {
       await setDoc(userDoc, {
         name: name,
         email: user.email,
-        clubs: [
-          "Computer Science Club",
-          "Future Business leaders of America (FBLA)",
-        ],
       });
 
       signIn();
@@ -177,15 +186,14 @@ const App = () => {
                   raiseLevel={0}
                   onPress={handleResetPassword}
                 >
-                  
                   <Text style={styles.buttonText}>
                     Send Password Reset Email
                   </Text>
                 </AwesomeButton>
               </View>
-              <Pressable onPress={handleSwitchToLogin}>
+              <TouchableOpacity onPress={handleSwitchToLogin}>
                 <Text style={styles.pressableText}>Back to Login</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           ) : isCreatingAccount ? (
             <View style={styles.form}>
@@ -243,12 +251,22 @@ const App = () => {
                   <Text style={styles.buttonText}>Create Account</Text>
                 </AwesomeButton>
               </View>
-              <Pressable onPress={handleSwitchToLogin}>
+              <TouchableOpacity onPress={handleSwitchToLogin}>
                 <Text style={styles.pressableText}>Back to Login</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           ) : (
             <View style={styles.form}>
+              <Text
+                style={{
+                  color: "white",
+                  paddingBottom: 10,
+                  fontSize: 16,
+                  alignSelf: "center",
+                }}
+              >
+                New users must create an account below
+              </Text>
               <View style={styles.box}>
                 <Text style={styles.title}>Login</Text>
                 <TextInput
@@ -279,7 +297,7 @@ const App = () => {
                 </View>
                 <AwesomeButton
                   style={styles.login_button}
-                  backgroundColor={"#2176ff"}// Reverted to original
+                  backgroundColor={"#2176ff"} // Reverted to original
                   backgroundDarker={Colors.loginButtonDarkerBG} // Reverted to original
                   height={screenWidth * 0.15}
                   width={Numbers.loginButtonWidth}
@@ -295,12 +313,12 @@ const App = () => {
                   <Text style={styles.buttonText}>Login</Text>
                 </AwesomeButton>
               </View>
-              <Pressable onPress={handleSwitchToCreateAccount}>
+              <TouchableOpacity onPress={handleSwitchToCreateAccount}>
                 <Text style={styles.pressableText}>Create Account</Text>
-              </Pressable>
-              <Pressable onPress={handleForgotPassword}>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleForgotPassword}>
                 <Text style={styles.pressableText}>Forgot Password?</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           )}
         </View>
@@ -330,7 +348,7 @@ const styles = StyleSheet.create({
   },
   form: {
     width: "100%",
-    marginTop: "25%",
+    marginTop: "20%",
   },
   input: {
     height: 41,
@@ -365,24 +383,29 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
     textAlign: "center",
-    marginBottom: 16,
-    marginTop: "15%", // Maintain the top margin
+    marginBottom: 0,
+    marginTop: "5%", // Maintain the top margin
   },
   pressableText: {
-    color: "white",
+    color: Colors.loginPressableText,
     textAlign: "center",
     paddingVertical: 10,
+    fontSize: 20,
+    fontWeight: "bold",
+    borderWidth: 1,
+    borderColor: "white",
+    borderRadius: 15,
+    marginBottom: 10,
   },
   passwordContainer: {
     flexDirection: "row",
     alignItems: "center",
-    borderColor: 'gray', // Reverted to original
+    borderColor: "gray", // Reverted to original
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
     marginBottom: 15,
-    
   },
   passwordInput: {
     flex: 1,

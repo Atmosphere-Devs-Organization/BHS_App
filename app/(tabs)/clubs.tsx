@@ -17,6 +17,7 @@ import { User, onAuthStateChanged } from "firebase/auth";
 import AwesomeButton from "react-native-really-awesome-button";
 import { Ionicons } from "@expo/vector-icons";
 import Numbers from "@/constants/Numbers";
+import HACNeededScreen from "@/components/HACNeededScreen";
 
 const Clubs = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -55,26 +56,48 @@ const Clubs = () => {
 
   const HAC_Link = "https://home-access.cfisd.net";
 
+  let specCharsMap = new Map<string | undefined, string>();
+  specCharsMap.set(" ", "%20");
+  specCharsMap.set("#", "%23");
+  specCharsMap.set("&", "%26");
+  specCharsMap.set("/", "%2F");
+  specCharsMap.set("?", "%3F");
+  specCharsMap.set("!", "%21");
+  specCharsMap.set("$", "%24");
+  specCharsMap.set("@", "%40");
+
+  const [HACBroken, setHACBroken] = useState<boolean>(false);
+
   const fetchStudentInfo = async (apiSection: string): Promise<any> => {
+    let tempPassword = "";
+    for (let i = 0; i < (password ? password.length : 0); i++) {
+      tempPassword += specCharsMap.has(password?.substring(i, i + 1))
+        ? specCharsMap.get(password?.substring(i, i + 1))
+        : password?.substring(i, i + 1);
+    }
+
+    const apiLink =
+      "https://home-access-center-ap-iv2-sooty.vercel.app/api/" +
+      apiSection +
+      "?link=" +
+      HAC_Link +
+      "/&user=" +
+      username +
+      "&pass=" +
+      tempPassword;
+
     try {
-      const response = await axios.get(
-        "https://home-access-center-ap-iv2-sooty.vercel.app/api/" +
-          apiSection +
-          "?link=" +
-          HAC_Link +
-          "/&user=" +
-          username +
-          "&pass=" +
-          password
-      );
+      const response = await axios.get(apiLink);
+      setHACBroken(false);
       return response.data;
     } catch (error) {
+      setHACBroken(error == "AxiosError: Request failed with status code 500");
       return undefined;
     }
   };
 
   const [hasAccess, setAccess] = useState<boolean>(false);
-  const [loadingInfo, setLoadingInfo] = useState<boolean>(true);
+  const [loadingInfo, setLoadingInfo] = useState<boolean>(false);
 
   useEffect(() => {
     if (username && password) {
@@ -101,6 +124,11 @@ const Clubs = () => {
   };
   return loadingInfo && user ? (
     <View style={{ backgroundColor: "#121212", height: "100%", width: "100%" }}>
+      <Stack.Screen
+        options={{
+          header: () => <ClubsHeader onCategoryChanged={onCategoryChanged} />,
+        }}
+      />
       <ActivityIndicator
         size="large"
         color="#ff4d00"
@@ -119,38 +147,13 @@ const Clubs = () => {
       </View>
     </View>
   ) : (
-    <View style={{ backgroundColor: "#121212", height: "100%", width: "100%" }}>
-      <Text
-        style={{
-          marginTop: 250,
-          color: "#ff6600",
-          textAlign: "center",
-          fontSize: 30,
-          fontWeight: "bold",
-          paddingHorizontal: 15,
-          paddingBottom: 75,
+    <View>
+      <Stack.Screen
+        options={{
+          header: () => <ClubsHeader onCategoryChanged={onCategoryChanged} />,
         }}
-      >
-        You must be signed into your BHS Home Access Center account to access
-        clubs!
-      </Text>
-      <AwesomeButton
-        style={styles.profile_button}
-        backgroundColor={"#ff9100"}
-        backgroundDarker={"#c26e00"}
-        height={100}
-        width={320}
-        raiseLevel={20}
-        onPressOut={() => router.push("(screens)/profile")}
-      >
-        <Ionicons
-          name="person-circle-sharp"
-          size={50}
-          color="#422500"
-          style={{ alignSelf: "center", marginRight: 15 }}
-        />
-        <Text style={styles.profile_text}>Profile</Text>
-      </AwesomeButton>
+      />
+      <HACNeededScreen paddingTop={200} hacDown={HACBroken} />
     </View>
   );
 };

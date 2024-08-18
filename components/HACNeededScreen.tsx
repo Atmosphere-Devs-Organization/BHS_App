@@ -4,9 +4,22 @@ import { router } from "expo-router";
 import { View, StyleSheet, Text } from "react-native";
 import AwesomeButton from "react-native-really-awesome-button";
 
-const HACNeededScreen = () => {
+const HACNeededScreen = ({
+  paddingTop,
+  hacDown,
+}: {
+  paddingTop: number;
+  hacDown: boolean;
+}) => {
   return (
-    <View style={{ backgroundColor: "#121212", height: "100%", width: "100%" }}>
+    <View
+      style={{
+        backgroundColor: "#121212",
+        height: "100%",
+        width: "100%",
+        paddingTop: paddingTop,
+      }}
+    >
       <Text
         style={{
           marginTop: 100,
@@ -18,26 +31,29 @@ const HACNeededScreen = () => {
           paddingBottom: 75,
         }}
       >
-        You must be signed into your BHS Home Access Center account to access
-        the map!
+        {hacDown
+          ? "HAC is not working right now. We cannot verify your login."
+          : "You must be signed into your BHS Home Access Center account to access this part of the app!"}
       </Text>
-      <AwesomeButton
-        style={styles.profile_button}
-        backgroundColor={"#ff9100"}
-        backgroundDarker={"#c26e00"}
-        height={100}
-        width={320}
-        raiseLevel={20}
-        onPressOut={() => router.push("(screens)/profile")}
-      >
-        <Ionicons
-          name="person-circle-sharp"
-          size={50}
-          color="#422500"
-          style={{ alignSelf: "center", marginRight: 15 }}
-        />
-        <Text style={styles.profile_text}>Profile</Text>
-      </AwesomeButton>
+      {!hacDown && (
+        <AwesomeButton
+          style={styles.profile_button}
+          backgroundColor={"#ff9100"}
+          backgroundDarker={"#c26e00"}
+          height={100}
+          width={320}
+          raiseLevel={20}
+          onPressOut={() => router.push("(screens)/profile")}
+        >
+          <Ionicons
+            name="person-circle-sharp"
+            size={50}
+            color="#422500"
+            style={{ alignSelf: "center", marginRight: 15 }}
+          />
+          <Text style={styles.profile_text}>Profile</Text>
+        </AwesomeButton>
+      )}
     </View>
   );
 };

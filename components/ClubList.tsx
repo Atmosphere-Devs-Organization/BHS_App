@@ -59,7 +59,6 @@ const ClubList = ({ category }: Props) => {
         setFilteredClubs(filtered);
       } catch (error) {
         // Handle error
-        console.error("Error fetching cached clubs:", error);
       } finally {
         setLoading(false);
       }
