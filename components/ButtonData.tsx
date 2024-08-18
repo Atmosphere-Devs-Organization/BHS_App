@@ -34,7 +34,7 @@ export const buttons: Button[] = [
   {
     title: "VOE",
     categories: ["All", "Students"],
-    link: "https://bridgeland.cfisd.net/parents-students/attendance/voe-verification-of-enrollment",
+    link: "https://docs.google.com/forms/d/e/1FAIpQLSdskJpSPeIpjN97G_1PyJ3iQvk-wEAy1cNGdiG1WeSylCUsMw/viewform",
   },
   {
     title: "Cafeteria Menu",
