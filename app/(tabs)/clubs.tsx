@@ -20,26 +20,14 @@ import Numbers from "@/constants/Numbers";
 import HACNeededScreen from "@/components/HACNeededScreen";
 
 const Clubs = () => {
-  const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
-      setUser(user);
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   useFocusEffect(
     React.useCallback(() => {
       const fetchCredentials = async () => {
-        const storedUsername = await SecureStore.getItemAsync(
-          user?.uid + "HACusername"
-        );
-        const storedPassword = await SecureStore.getItemAsync(
-          user?.uid + "HACpassword"
-        );
+        const storedUsername = await SecureStore.getItemAsync("HACusername");
+        const storedPassword = await SecureStore.getItemAsync("HACpassword");
 
         setUsername(storedUsername);
         setPassword(storedPassword);
@@ -51,7 +39,7 @@ const Clubs = () => {
         // Do something when the screen is unfocused
         // Useful for cleanup functions
       };
-    }, [user?.uid])
+    }, [])
   );
 
   const HAC_Link = "https://home-access.cfisd.net";
@@ -122,7 +110,7 @@ const Clubs = () => {
   const onCategoryChanged = (category: string) => {
     setCategory(category);
   };
-  return loadingInfo && user ? (
+  return loadingInfo ? (
     <View style={{ backgroundColor: "#121212", height: "100%", width: "100%" }}>
       <Stack.Screen
         options={{
@@ -135,7 +123,7 @@ const Clubs = () => {
         style={{ alignSelf: "center", marginTop: 300 }}
       />
     </View>
-  ) : hasAccess && user ? (
+  ) : hasAccess ? (
     <View style={styles.BG_Color}>
       <View style={{ flex: 1, marginTop: 190 }}>
         <Stack.Screen

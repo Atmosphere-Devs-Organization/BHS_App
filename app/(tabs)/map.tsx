@@ -31,26 +31,14 @@ import { Ionicons } from "@expo/vector-icons";
 import HACNeededScreen from "@/components/HACNeededScreen";
 
 const MapPage = () => {
-  const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
-      setUser(user);
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   useFocusEffect(
     React.useCallback(() => {
       const fetchCredentials = async () => {
-        const storedUsername = await SecureStore.getItemAsync(
-          user?.uid + "HACusername"
-        );
-        const storedPassword = await SecureStore.getItemAsync(
-          user?.uid + "HACpassword"
-        );
+        const storedUsername = await SecureStore.getItemAsync("HACusername");
+        const storedPassword = await SecureStore.getItemAsync("HACpassword");
 
         setUsername(storedUsername);
         setPassword(storedPassword);
@@ -62,7 +50,7 @@ const MapPage = () => {
         // Do something when the screen is unfocused
         // Useful for cleanup functions
       };
-    }, [user?.uid])
+    }, [])
   );
 
   const HAC_Link = "https://home-access.cfisd.net";
@@ -395,7 +383,7 @@ const MapPage = () => {
     setLoading(false);
   };
 
-  return loadingInfo && user ? (
+  return loadingInfo ? (
     <View style={{ backgroundColor: "#121212", height: "100%", width: "100%" }}>
       <ActivityIndicator
         size="large"
@@ -403,7 +391,7 @@ const MapPage = () => {
         style={{ alignSelf: "center", marginTop: 300 }}
       />
     </View>
-  ) : hasAccess && user ? (
+  ) : hasAccess ? (
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={{ marginTop: 50, paddingBottom: 100 }}

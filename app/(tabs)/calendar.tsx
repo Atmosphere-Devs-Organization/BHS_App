@@ -23,25 +23,7 @@ import HACNeededScreen from "@/components/HACNeededScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Calendar = () => {
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
-      setUser(user);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  return (
-    <View style={styles.mainContainer}>
-      { <NormalCalendar />}
-    </View>
-  );
-};
-
-const LoggedOutCalendar = () => {
-  return <HACNeededScreen paddingTop={0} />;
+  return <View style={styles.mainContainer}>{<NormalCalendar />}</View>;
 };
 
 const NormalCalendar = () => {
@@ -56,15 +38,20 @@ const NormalCalendar = () => {
     const fetchEvents = async () => {
       try {
         // Fetch user clubs from AsyncStorage
-        const storedClubs = await AsyncStorage.getItem('userClubs');
+        const storedClubs = await AsyncStorage.getItem("userClubs");
         const clubs = storedClubs ? JSON.parse(storedClubs) : [];
 
-        const fetchedEvents: { date: string; title: string; club: string }[] = [];
+        const fetchedEvents: { date: string; title: string; club: string }[] =
+          [];
 
         // Fetch club events from AsyncStorage
         for (const club of clubs) {
-          const clubEventsString = await AsyncStorage.getItem(`@clubEvents_${club}`);
-          const clubEvents = clubEventsString ? JSON.parse(clubEventsString) : [];
+          const clubEventsString = await AsyncStorage.getItem(
+            `@clubEvents_${club}`
+          );
+          const clubEvents = clubEventsString
+            ? JSON.parse(clubEventsString)
+            : [];
 
           clubEvents.forEach((event: { date: string; title: string }) => {
             fetchedEvents.push({ ...event, club });
@@ -99,7 +86,7 @@ const NormalCalendar = () => {
     };
 
     fetchEvents();
-  }, );
+  });
 
   const daysInMonth = (year: number, month: number) =>
     new Date(year, month + 1, 0).getDate();

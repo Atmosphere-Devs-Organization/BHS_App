@@ -28,11 +28,9 @@ import {
   QueryDocumentSnapshot,
   writeBatch,
 } from "firebase/firestore";
-import { FIREBASE_AUTH, FIREBASE_DB } from "@/FirebaseConfig";
-import { onAuthStateChanged, User } from "firebase/auth";
+import { FIREBASE_DB } from "@/FirebaseConfig";
 import { useClubContext } from "@/components/ClubContext"; // Make sure this path is correct
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
@@ -42,7 +40,6 @@ const Page = () => {
   const { clubsCache, setClubsCache } = useClubContext(); // Use the custom hook
 
   const [currentClub, setCurrentClub] = useState<Club | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
   const [isClubInCalendar, setIsClubInCalendar] = useState<boolean>(false);
   const [upcomingDates, setUpcomingDates] = useState<
     { name: string; time: Date }[]
@@ -70,19 +67,7 @@ const Page = () => {
           await fetchClubData();
         }
 
-        const unsubscribe = onAuthStateChanged(
-          FIREBASE_AUTH,
-          (user: User | null) => {
-            if (user) {
-              setUserId(user.uid);
-              checkIfClubInCalendar();
-            } else {
-              setUserId(null);
-            }
-          }
-        );
-
-        return () => unsubscribe();
+        checkIfClubInCalendar();
       }
     };
 
@@ -175,7 +160,7 @@ const Page = () => {
 
   const checkIfClubInCalendar = async () => {
     try {
-      const storedClubs = await AsyncStorage.getItem('userClubs');
+      const storedClubs = await AsyncStorage.getItem("userClubs");
       const clubsArray = storedClubs ? JSON.parse(storedClubs) : [];
       if (clubsArray.includes(id || "")) {
         setIsClubInCalendar(true);
@@ -184,29 +169,25 @@ const Page = () => {
       // Handle errors if needed
     }
   };
-  
 
   const handleAddOrRemoveClub = async () => {
-    if (!userId || !currentClub) {
-      alert("You must be logged in to manage clubs in your calendar.");
-      return;
-    }
-  
     try {
       // Fetch the current list of clubs from AsyncStorage
-      const storedClubs = await AsyncStorage.getItem('userClubs');
+      const storedClubs = await AsyncStorage.getItem("userClubs");
       const clubsArray = storedClubs ? JSON.parse(storedClubs) : [];
-  
+
       if (isClubInCalendar) {
         // Remove the club from the list
-        const updatedClubs = clubsArray.filter((clubId: string) => clubId !== id);
-        await AsyncStorage.setItem('userClubs', JSON.stringify(updatedClubs));
+        const updatedClubs = clubsArray.filter(
+          (clubId: string) => clubId !== id
+        );
+        await AsyncStorage.setItem("userClubs", JSON.stringify(updatedClubs));
         setIsClubInCalendar(false);
         alert("Club removed from calendar!");
       } else {
         // Add the club to the list
         clubsArray.push(id);
-        await AsyncStorage.setItem('userClubs', JSON.stringify(clubsArray));
+        await AsyncStorage.setItem("userClubs", JSON.stringify(clubsArray));
         setIsClubInCalendar(true);
         alert("Club added to calendar!");
         console.log("Stored clubs:", clubsArray);
@@ -215,7 +196,6 @@ const Page = () => {
       alert("Failed to manage club in calendar.");
     }
   };
-  
 
   const handleImageLoad = (event: {
     nativeEvent: { source: { width: number; height: number } };
