@@ -21,10 +21,27 @@ import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for arrow icon
 import { ScrollView } from "react-native-virtualized-view";
 import HACNeededScreen from "@/components/HACNeededScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useClubContext } from "@/components/ClubContext"; // Import the custom hook
 
 const Calendar = () => {
-  return <View style={styles.mainContainer}>{<NormalCalendar />}</View>;
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
+      setUser(user);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  return (
+    <View style={styles.mainContainer}>
+      { <NormalCalendar />}
+    </View>
+  );
 };
+
+
 
 const NormalCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -33,29 +50,62 @@ const NormalCalendar = () => {
   >([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [eventTitle, setEventTitle] = useState<string>("");
+  const { clubsCache, setClubsCache } = useClubContext(); // Use context
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         // Fetch user clubs from AsyncStorage
-        const storedClubs = await AsyncStorage.getItem("userClubs");
+        const storedClubs = await AsyncStorage.getItem('userClubs');
         const clubs = storedClubs ? JSON.parse(storedClubs) : [];
 
-        const fetchedEvents: { date: string; title: string; club: string }[] =
-          [];
+        const fetchedEvents: { date: string; title: string; club: string }[] = [];
+
+        if (clubsCache.length > 0) {
+        }
+          // Use cached data if available
+  
+        try {
+          // Fetch cached clubs data from Firestore
+          const adminCacheRef = doc(FIREBASE_DB, "admin", "CachedClubs");
+          const adminCacheSnap = await getDoc(adminCacheRef);
+          const cachedClubsData = adminCacheSnap.data()?.clubs || [];
+  
+          if (cachedClubsData.length === 0) {
+            return;
+          }
+  
+          // Cache the fetched clubs data in the context
+          setClubsCache(cachedClubsData);
+  
+          // Filter clubs by category
+       
+        } catch (error) {
+          // Handle error
+        } finally {
+        }
 
         // Fetch club events from AsyncStorage
-        for (const club of clubs) {
-          const clubEventsString = await AsyncStorage.getItem(
-            `@clubEvents_${club}`
-          );
-          const clubEvents = clubEventsString
-            ? JSON.parse(clubEventsString)
-            : [];
-
-          clubEvents.forEach((event: { date: string; title: string }) => {
-            fetchedEvents.push({ ...event, club });
-          });
+        for (const clubName of clubs) {
+          // Find the club in the cache by its name
+          const cachedClub = clubsCache.find((club) => club.name === clubName);
+        
+          if (cachedClub) {
+            // Get the events from the cache (dateNames and dateDates)
+            const { dateNames, dateDates } = cachedClub;
+            // Combine the event names with their corresponding dates and add them to fetchedEvents
+            dateNames.forEach((title, index) => {
+              const Dates = dateDates[index];
+              const eventDate = new Date(Dates.toDate())
+              .toISOString()
+              .split("T")[0];              
+              fetchedEvents.push({
+                date: eventDate,
+                title: title,
+                club: clubName,
+              });            
+            });
+          }
         }
 
         // Fetch schoolwide events from Firebase
@@ -86,7 +136,7 @@ const NormalCalendar = () => {
     };
 
     fetchEvents();
-  });
+  }, []);
 
   const daysInMonth = (year: number, month: number) =>
     new Date(year, month + 1, 0).getDate();
