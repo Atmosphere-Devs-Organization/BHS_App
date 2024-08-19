@@ -17,6 +17,7 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import Colors from '@/constants/Colors';
 import Numbers from '@/constants/Numbers';
 import { buttons, Button } from '@/components/ButtonData'; 
+import * as SecureStore from "expo-secure-store";
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -34,15 +35,12 @@ const Home: React.FC = () => {
   const [buttonPressTimeout, setButtonPressTimeout] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
-      if (!user) {
-        router.push('(modals)/login');
-      } else {
-        setUser(user);
-      }
-    });
+    
+    if (!SecureStore.getItemAsync("HACusername")) {
+      router.push('(modals)/login');
+    }
+   
 
-    return () => unsubscribe();
   }, [router]);
 
   useEffect(() => {
