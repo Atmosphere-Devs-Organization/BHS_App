@@ -26,131 +26,44 @@ import { router } from "expo-router";
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import Numbers from "@/constants/Numbers";
 import Colors from "@/constants/Colors";
+import * as SecureStore from "expo-secure-store";
 
 const screenWidth = Dimensions.get("window").width;
 
 const App = () => {
-  const [isCreatingAccount, setIsCreatingAccount] = useState(false);
-  const [isResettingPassword, setIsResettingPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [resetEmail, setResetEmail] = useState("");
+  const [sid, setSID] = useState("");
+  const [HACpassword, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false); // Default to false so the password is hidden initially
-  const auth = FIREBASE_AUTH;
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
+  const updateUser = async (field: "HACusername" | "HACpassword") => {
+    try {
+      if (field === "HACusername") {
+        await SecureStore.setItemAsync("HACusername", sid);
+      } else if (field === "HACpassword") {
+        await SecureStore.setItemAsync("HACpassword", HACpassword);
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const signIn = async () => {
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      Alert.alert("Success", "Logged in successfully.");
+      await updateUser("HACusername");
+      await updateUser("HACpassword");
+      Alert.alert("Logged In", "");
       router.back();
     } catch (error: any) {
       console.log(error);
-      if (
-        error instanceof Error &&
-        error.message === "Firebase: Error (auth/invalid-credential)."
-      ) {
-        Alert.alert(
-          "Sign in Failed",
-          "Check your username and password, or create an account",
-          [
-            {
-              text: "Ok",
-              onPress: () => {},
-              style: "cancel",
-            },
-            {
-              text: "Create an Account",
-              onPress: () => handleSwitchToCreateAccount(),
-              style: "default",
-            },
-          ],
-          { cancelable: true }
-        );
-      } else {
-        Alert.alert("Error", "Please enter a valid email and password.");
-      }
     } finally {
       setLoading(false);
     }
-  };
-
-  const signUp = async () => {
-    setLoading(true);
-    try {
-      const response = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = response.user;
-      const userCollection = collection(FIREBASE_DB, "users");
-      const userDoc = doc(userCollection, user?.uid);
-
-      await setDoc(userDoc, {
-        name: name,
-        email: user.email,
-      });
-
-      signIn();
-    } catch (error: any) {
-      console.log(error.message);
-      if (
-        error.message ===
-        "Firebase: Password should be at least 6 characters (auth/weak-password)."
-      ) {
-        Alert.alert("Error", "Password must be at least 6 characters.");
-      } else if (
-        error.message === "Firebase: Error (auth/email-already-in-use)."
-      ) {
-        Alert.alert("Error", "That email is already in use.");
-      } else {
-        Alert.alert("Error", "Please enter a valid email and password.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResetPassword = async () => {
-    setLoading(true);
-    try {
-      await sendPasswordResetEmail(auth, resetEmail);
-      Alert.alert(
-        "Success",
-        "Password reset email sent. Please check your inbox."
-      );
-      setIsResettingPassword(false);
-    } catch (error) {
-      console.error("Error sending password reset email:", error);
-      Alert.alert(
-        "Error",
-        "Failed to send password reset email. Please check the email address and try again."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSwitchToCreateAccount = () => {
-    setIsCreatingAccount(true);
-    setIsResettingPassword(false);
-  };
-
-  const handleSwitchToLogin = () => {
-    setIsCreatingAccount(false);
-    setIsResettingPassword(false);
-  };
-
-  const handleForgotPassword = () => {
-    setIsResettingPassword(true);
-    setIsCreatingAccount(false);
   };
 
   return (
@@ -164,163 +77,54 @@ const App = () => {
             <Ionicons name="close-sharp" size={24} color="white" />
           </TouchableOpacity>
           <Text style={styles.welcomeText}>Welcome To The Bear Den</Text>
-
-          {isResettingPassword ? (
-            <View style={styles.form}>
-              <View style={styles.box}>
-                <Text style={styles.title}>Reset Password</Text>
+          <View style={styles.form}>
+            <View style={styles.box}>
+              <Text style={styles.title}>Login</Text>
+              <TextInput
+                placeholder="SID: Include S"
+                value={sid}
+                onChangeText={setSID}
+                style={styles.input}
+                placeholderTextColor="white"
+                textContentType="oneTimeCode"
+              />
+              <View style={styles.passwordContainer}>
                 <TextInput
-                  placeholder="Enter your email"
-                  value={resetEmail}
-                  onChangeText={setResetEmail}
-                  style={styles.input}
+                  placeholder="Password"
+                  value={HACpassword}
+                  onChangeText={setPassword}
+                  secureTextEntry={!isPasswordVisible} // Password hidden by default
+                  style={styles.passwordInput}
                   placeholderTextColor="white"
                   textContentType="oneTimeCode"
                 />
-                <AwesomeButton
-                  style={styles.login_button}
-                  backgroundColor={"#2176ff"}
-                  //backgroundDarker={"#2176ff"}
-                  height={screenWidth * 0.15}
-                  width={Numbers.loginButtonWidth}
-                  raiseLevel={0}
-                  onPress={handleResetPassword}
-                >
-                  <Text style={styles.buttonText}>
-                    Send Password Reset Email
-                  </Text>
-                </AwesomeButton>
-              </View>
-              <TouchableOpacity onPress={handleSwitchToLogin}>
-                <Text style={styles.pressableText}>Back to Login</Text>
-              </TouchableOpacity>
-            </View>
-          ) : isCreatingAccount ? (
-            <View style={styles.form}>
-              <View style={styles.box}>
-                <Text style={styles.title}>Create Account</Text>
-                <TextInput
-                  placeholder="Name"
-                  value={name}
-                  onChangeText={setName}
-                  style={styles.input}
-                  placeholderTextColor="white"
-                  textContentType="oneTimeCode"
-                />
-                <TextInput
-                  placeholder="Email"
-                  value={email}
-                  onChangeText={setEmail}
-                  style={styles.input}
-                  placeholderTextColor="white"
-                  textContentType="oneTimeCode"
-                />
-                <View style={styles.passwordContainer}>
-                  <TextInput
-                    placeholder="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!isPasswordVisible} // Password hidden by default
-                    style={styles.passwordInput}
-                    placeholderTextColor="white"
-                    textContentType="oneTimeCode"
+                <TouchableOpacity onPress={togglePasswordVisibility}>
+                  <Ionicons
+                    name={isPasswordVisible ? "eye" : "eye-off"} // Show eye-off when password is hidden
+                    size={24}
+                    color="white"
                   />
-                  <TouchableOpacity onPress={togglePasswordVisibility}>
-                    <Ionicons
-                      name={isPasswordVisible ? "eye" : "eye-off"} // Show eye-off when password is hidden
-                      size={24}
-                      color="white"
-                    />
-                  </TouchableOpacity>
-                </View>
-                <AwesomeButton
-                  style={styles.login_button}
-                  backgroundColor={"#2176ff"}
-                  backgroundDarker={"#2176ff"}
-                  height={screenWidth * 0.15}
-                  width={Numbers.loginButtonWidth}
-                  raiseLevel={1}
-                  onPress={signUp}
-                >
-                  <Entypo
-                    name="login"
-                    size={16}
-                    color={"white"}
-                    style={{ alignSelf: "center", marginRight: 15 }}
-                  />
-                  <Text style={styles.buttonText}>Create Account</Text>
-                </AwesomeButton>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity onPress={handleSwitchToLogin}>
-                <Text style={styles.pressableText}>Back to Login</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.form}>
-              <Text
-                style={{
-                  color: "white",
-                  paddingBottom: 10,
-                  fontSize: 16,
-                  alignSelf: "center",
-                }}
+              <AwesomeButton
+                style={styles.login_button}
+                backgroundColor={"#2176ff"} // Reverted to original
+                backgroundDarker={Colors.loginButtonDarkerBG} // Reverted to original
+                height={screenWidth * 0.15}
+                width={Numbers.loginButtonWidth}
+                raiseLevel={1}
+                onPress={signIn}
               >
-                New users must create an account below
-              </Text>
-              <View style={styles.box}>
-                <Text style={styles.title}>Login</Text>
-                <TextInput
-                  placeholder="Email"
-                  value={email}
-                  onChangeText={setEmail}
-                  style={styles.input}
-                  placeholderTextColor="white"
-                  textContentType="oneTimeCode"
+                <Entypo
+                  name="login"
+                  size={16}
+                  color="white" // Reverted to original
+                  style={{ alignSelf: "center", marginRight: 15 }}
                 />
-                <View style={styles.passwordContainer}>
-                  <TextInput
-                    placeholder="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!isPasswordVisible} // Password hidden by default
-                    style={styles.passwordInput}
-                    placeholderTextColor="white"
-                    textContentType="oneTimeCode"
-                  />
-                  <TouchableOpacity onPress={togglePasswordVisibility}>
-                    <Ionicons
-                      name={isPasswordVisible ? "eye" : "eye-off"} // Show eye-off when password is hidden
-                      size={24}
-                      color="white"
-                    />
-                  </TouchableOpacity>
-                </View>
-                <AwesomeButton
-                  style={styles.login_button}
-                  backgroundColor={"#2176ff"} // Reverted to original
-                  backgroundDarker={Colors.loginButtonDarkerBG} // Reverted to original
-                  height={screenWidth * 0.15}
-                  width={Numbers.loginButtonWidth}
-                  raiseLevel={1}
-                  onPress={signIn}
-                >
-                  <Entypo
-                    name="login"
-                    size={16}
-                    color="white" // Reverted to original
-                    style={{ alignSelf: "center", marginRight: 15 }}
-                  />
-                  <Text style={styles.buttonText}>Login</Text>
-                </AwesomeButton>
-              </View>
-              <TouchableOpacity onPress={handleSwitchToCreateAccount}>
-                <Text style={styles.pressableText}>Create Account</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleForgotPassword}>
-                <Text style={styles.pressableText}>Forgot Password?</Text>
-              </TouchableOpacity>
+                <Text style={styles.buttonText}>Login</Text>
+              </AwesomeButton>
             </View>
-          )}
+          </View>
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
@@ -348,7 +152,8 @@ const styles = StyleSheet.create({
   },
   form: {
     width: "100%",
-    marginTop: "20%",
+    marginTop: "30%",
+    marginBottom: "15%",
   },
   input: {
     height: 41,

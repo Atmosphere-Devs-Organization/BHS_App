@@ -39,97 +39,43 @@ const App = () => {
     return () => unsubscribe();
   }, []);
 
-  return user ? (
-    <NormalProfile email={user.email} userId={user.uid} />
-  ) : (
-    <LoggedOutProfile />
-  );
+  return <NormalProfile />;
 };
 
-const LoggedOutProfile = () => {
-  return (
-    <View style={styles.BG_Color}>
-      <SafeAreaView style={styles.logged_out_profile_container}>
-        <TouchableOpacity onPress={router.back} style={styles.back_button}>
-          <Ionicons
-            name="arrow-back-sharp"
-            size={Numbers.backButtonSize}
-            color={Colors.backButton}
-          />
-        </TouchableOpacity>
-        <Text style={styles.title}>Profile</Text>
-        <Text style={styles.need_signin_text}>
-          You need to be signed in to access your profile
-        </Text>
-        <AwesomeButton
-          style={styles.login_button}
-          backgroundColor={"#2176ff"}
-          backgroundDarker={"orange"}
-          height={Numbers.loginButtonHeight}
-          width={Numbers.loginButtonWidth}
-          raiseLevel={0}
-          onPressOut={() => router.push("(modals)/login")}
-        >
-          <Entypo
-            name="login"
-            size={Numbers.loginIconSize}
-            color={Colors.loginIcon}
-            style={{ alignSelf: "center", marginRight: 15 }}
-          />
-          <Text style={styles.login_text}>Login</Text>
-        </AwesomeButton>
-      </SafeAreaView>
-    </View>
-  );
-};
-
-const NormalProfile = ({
-  email,
-  userId,
-}: {
-  email: string | null;
-  userId: string;
-}) => {
-  const [isEditingName, setIsEditingName] = useState(false);
+const NormalProfile = () => {
   const [isEditingHAC, setIsEditingHAC] = useState(false);
 
   const [sid, setSid] = useState("");
   const [HACpassword, setHACPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const usernameInputRef = useRef<TextInput>(null);
   const sidInputRef = useRef<TextInput>(null);
   const hacPasswordInputRef = useRef<TextInput>(null);
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      setSid((await SecureStore.getItemAsync(userId + "HACusername")) || "");
-      setHACPassword(
-        (await SecureStore.getItemAsync(userId + "HACpassword")) || ""
-      );
+      setSid((await SecureStore.getItemAsync("HACusername")) || "");
+      setHACPassword((await SecureStore.getItemAsync("HACpassword")) || "");
     };
 
     fetchUserData();
-  }, [userId]);
+  }, []);
 
   useEffect(() => {
-    if (isEditingName && !isEditingHAC) {
-      usernameInputRef.current?.focus();
-      scrollRef.current?.scrollToEnd({ animated: true });
-    } else if (!isEditingName && isEditingHAC) {
+    if (isEditingHAC) {
       sidInputRef.current?.focus();
       scrollRef.current?.scrollToEnd({ animated: true });
     }
-  }, [isEditingName, isEditingHAC]);
+  }, [isEditingHAC]);
 
-  const updateUser = async (field: "name" | "HACusername" | "HACpassword") => {
+  const updateUser = async (field: "HACusername" | "HACpassword") => {
     try {
       if (field === "HACusername") {
-        await SecureStore.setItemAsync(userId + "HACusername", sid);
+        await SecureStore.setItemAsync("HACusername", sid);
         Alert.alert("Success", "S-id updated");
       } else if (field === "HACpassword") {
-        await SecureStore.setItemAsync(userId + "HACpassword", HACpassword);
+        await SecureStore.setItemAsync("HACpassword", HACpassword);
         Alert.alert("Success", "HAC password updated");
       }
     } catch (error) {}
@@ -154,14 +100,6 @@ const NormalProfile = ({
                 </TouchableOpacity>
               </View>
               <Text style={styles.title}>Profile</Text>
-
-              <View style={styles.cardContainer}>
-                <Text style={styles.sectionTitle}>User Information</Text>
-                <View style={styles.infoContainer}>
-                  <Text style={styles.infoLabel}>Email</Text>
-                  <Text style={styles.infoText}>{email}</Text>
-                </View>
-              </View>
 
               <View style={styles.cardContainer}>
                 <Text style={styles.sectionTitle}>HAC Information</Text>
@@ -211,10 +149,6 @@ const NormalProfile = ({
                       updateUser("HACusername");
                       updateUser("HACpassword");
                     } else {
-                      if (isEditingName) {
-                        updateUser("name");
-                      }
-                      setIsEditingName(false);
                       setIsEditingHAC(true);
                     }
                   }}
@@ -225,41 +159,6 @@ const NormalProfile = ({
                   </Text>
                 </TouchableOpacity>
               </View>
-
-              <AwesomeButton
-                style={styles.logout_button}
-                backgroundColor={"#2176ff"}
-                height={screenWidth * 0.2}
-                width={screenWidth * 0.8}
-                raiseLevel={0}
-                onPressOut={() =>
-                  Alert.alert(
-                    "Confirm Logout",
-                    "Are you sure you want to log out?",
-                    [
-                      {
-                        text: "Cancel",
-                        onPress: () => {},
-                        style: "cancel",
-                      },
-                      {
-                        text: "Log Out",
-                        onPress: () => FIREBASE_AUTH.signOut(),
-                        style: "destructive",
-                      },
-                    ],
-                    { cancelable: true }
-                  )
-                }
-              >
-                <Entypo
-                  name="log-out"
-                  size={17}
-                  color={"white"}
-                  style={{ alignSelf: "center", marginRight: 15 }}
-                />
-                <Text style={styles.logout_text}>Logout</Text>
-              </AwesomeButton>
             </SafeAreaView>
           </TouchableWithoutFeedback>
         </ScrollView>
@@ -289,7 +188,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 50,
     fontWeight: "bold",
-    marginBottom: "5%",
+    marginBottom: "25%",
     marginHorizontal: "17%",
     color: "#ffffff",
     textAlign: "center",
