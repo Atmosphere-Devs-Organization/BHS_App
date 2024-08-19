@@ -43,6 +43,7 @@ const ClubList = ({ category }: Props) => {
         const adminCacheRef = doc(FIREBASE_DB, "admin", "CachedClubs");
         const adminCacheSnap = await getDoc(adminCacheRef);
         const cachedClubsData = adminCacheSnap.data()?.clubs || [];
+        console.log(cachedClubsData);
 
         if (cachedClubsData.length === 0) {
           setLoading(false);
@@ -51,7 +52,6 @@ const ClubList = ({ category }: Props) => {
 
         // Cache the fetched clubs data in the context
         setClubsCache(cachedClubsData);
-
         // Filter clubs by category
         const filtered = cachedClubsData.filter((club: Club) =>
           club.categories.includes(category)
