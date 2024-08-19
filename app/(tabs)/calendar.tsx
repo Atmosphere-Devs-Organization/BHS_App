@@ -20,6 +20,7 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for arrow icons
 import { ScrollView } from "react-native-virtualized-view";
 import HACNeededScreen from "@/components/HACNeededScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Calendar = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -34,7 +35,7 @@ const Calendar = () => {
 
   return (
     <View style={styles.mainContainer}>
-      {user ? <NormalCalendar user={user} /> : <LoggedOutCalendar />}
+      { <NormalCalendar />}
     </View>
   );
 };
@@ -43,7 +44,7 @@ const LoggedOutCalendar = () => {
   return <HACNeededScreen paddingTop={0} />;
 };
 
-const NormalCalendar = ({ user }: { user: User }) => {
+const NormalCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<
     { date: string; title: string; club: string }[]
@@ -52,47 +53,32 @@ const NormalCalendar = ({ user }: { user: User }) => {
   const [eventTitle, setEventTitle] = useState<string>("");
 
   useEffect(() => {
-    const userDocRef = doc(FIREBASE_DB, "users", user.uid);
-    const schoolEventsRef = collection(
-      FIREBASE_DB,
-      "admin",
-      "SchoolDates",
-      "dates"
-    );
+    const fetchEvents = async () => {
+      try {
+        // Fetch user clubs from AsyncStorage
+        const storedClubs = await AsyncStorage.getItem('userClubs');
+        const clubs = storedClubs ? JSON.parse(storedClubs) : [];
 
-    const unsubscribe = onSnapshot(userDocRef, async (userDocSnap) => {
-      if (userDocSnap.exists()) {
-        const userData = userDocSnap.data();
-        const clubs = userData.clubs || [];
+        const fetchedEvents: { date: string; title: string; club: string }[] = [];
 
-        const fetchedEvents: { date: string; title: string; club: string }[] =
-          [];
-
-        // Fetch club events
+        // Fetch club events from AsyncStorage
         for (const club of clubs) {
-          const clubDocRef = doc(FIREBASE_DB, "clubs", club);
-          const clubDocSnap = await getDoc(clubDocRef);
+          const clubEventsString = await AsyncStorage.getItem(`@clubEvents_${club}`);
+          const clubEvents = clubEventsString ? JSON.parse(clubEventsString) : [];
 
-          if (clubDocSnap.exists()) {
-            const clubData = clubDocSnap.data();
-            const dateDates = clubData.dateDates || [];
-            const dateNames = clubData.dateNames || [];
-
-            // Ensure the lengths of the arrays match
-            if (dateDates.length === dateNames.length) {
-              dateDates.forEach((dateTimestamp: any, index: number) => {
-                const eventDate = new Date(dateTimestamp.toDate())
-                  .toISOString()
-                  .split("T")[0];
-                const eventName = dateNames[index];
-                fetchedEvents.push({ date: eventDate, title: eventName, club });
-              });
-            } else {
-            }
-          }
+          clubEvents.forEach((event: { date: string; title: string }) => {
+            fetchedEvents.push({ ...event, club });
+          });
         }
 
-        // Fetch schoolwide events
+        // Fetch schoolwide events from Firebase
+        const schoolEventsRef = collection(
+          FIREBASE_DB,
+          "admin",
+          "SchoolDates",
+          "dates"
+        );
+
         const schoolEventsSnapshot = await getDocs(schoolEventsRef);
         schoolEventsSnapshot.forEach((doc) => {
           const dateData = doc.data();
@@ -107,11 +93,13 @@ const NormalCalendar = ({ user }: { user: User }) => {
         });
 
         setEvents(fetchedEvents);
+      } catch (error) {
+        console.error("Error fetching events: ", error);
       }
-    });
+    };
 
-    return () => unsubscribe();
-  }, [user]);
+    fetchEvents();
+  }, );
 
   const daysInMonth = (year: number, month: number) =>
     new Date(year, month + 1, 0).getDate();
