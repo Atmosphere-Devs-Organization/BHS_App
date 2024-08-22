@@ -34,17 +34,10 @@ const Calendar = () => {
     return () => unsubscribe();
   }, []);
 
-  return (
-    <View style={styles.mainContainer}>
-      { <NormalCalendar />}
-    </View>
-  );
+  return <View style={styles.mainContainer}>{<NormalCalendar />}</View>;
 };
 
-
-
 const NormalCalendar = () => {
-  const [userClubs, setUserClubs] = useState<string[]>([]); // State for user clubs
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<
     { date: string; title: string; club: string }[]
@@ -52,79 +45,64 @@ const NormalCalendar = () => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [eventTitle, setEventTitle] = useState<string>("");
   const { clubsCache, setClubsCache } = useClubContext(); // Use context
-  const [loading, setLoading] = useState(true); // Add a loading state
 
-  const clubCaching = async (): Promise<void> => {
-
-    if (clubsCache.length === 0) {
+  useEffect(() => {
+    const fetchEvents = async () => {
       try {
-        // Fetch cached clubs data from Firestore
-        const adminCacheRef = doc(FIREBASE_DB, "admin", "CachedClubs");
-        const adminCacheSnap = await getDoc(adminCacheRef);
-        const cachedClubsData = adminCacheSnap.data()?.clubs || [];
-        
+        // Fetch user clubs from AsyncStorage
+        const storedClubs = await AsyncStorage.getItem("userClubs");
+        const clubs = storedClubs ? JSON.parse(storedClubs) : [];
 
-        if (cachedClubsData.length === 0) {
-          return;
+        const fetchedEvents: { date: string; title: string; club: string }[] =
+          [];
+
+        if (clubsCache.length > 0) {
         }
-  
-        // Cache the fetched clubs data in the context
-        setClubsCache(cachedClubsData);
-  
-      } catch (error) {
-        console.log("error", error);
-      }
-    }
+        // Use cached data if available
 
-    
-  };
-  
+        try {
+          // Fetch cached clubs data from Firestore
+          const adminCacheRef = doc(FIREBASE_DB, "admin", "CachedClubs");
+          const adminCacheSnap = await getDoc(adminCacheRef);
+          const cachedClubsData = adminCacheSnap.data()?.clubs || [];
 
-  const fetchEvents = async () => {
-    setLoading(true); // Set loading to true at the beginning of fetching
+          if (cachedClubsData.length === 0) {
+            return;
+          }
 
-    try {
-      // Fetch user clubs from AsyncStorage
-      const storedClubs = await AsyncStorage.getItem('userClubs');
-      const clubs = storedClubs ? JSON.parse(storedClubs) : [];
-      setUserClubs(clubs); // Update state with user clubs
-      const fetchedEvents: { date: string; title: string; club: string }[] = [];
+          // Cache the fetched clubs data in the context
+          setClubsCache(cachedClubsData);
 
+          // Filter clubs by category
+        } catch (error) {
+          // Handle error
+        } finally {
+        }
 
-      
-      
-  
-      
+        // Fetch club events from AsyncStorage
+        for (const clubName of clubs) {
+          // Find the club in the cache by its name
+          const cachedClub = clubsCache.find((club) => club.name === clubName);
 
-      // Fetch club events from AsyncStorage
-      for (const clubName of clubs) {
-
-        const cachedClub = clubsCache.find((club) => club.name === clubName);
-    
-        if (cachedClub) {
-
-          const { dateNames, dateDates } = cachedClub;
-          dateNames.forEach((title, index) => {
-            const Dates = dateDates[index];
-            const eventDate = new Date(Dates.toDate())
-              .toISOString()
-              .split("T")[0];
-            fetchedEvents.push({
-              date: eventDate,
-              title: title,
-              club: clubName,
+          if (cachedClub) {
+            // Get the events from the cache (dateNames and dateDates)
+            const { dateNames, dateDates } = cachedClub;
+            // Combine the event names with their corresponding dates and add them to fetchedEvents
+            dateNames.forEach((title, index) => {
+              const Dates = dateDates[index];
+              const eventDate = new Date(Dates.toDate())
+                .toISOString()
+                .split("T")[0];
+              fetchedEvents.push({
+                date: eventDate,
+                title: title,
+                club: clubName,
+              });
             });
-          });
+          }
         }
-      }
 
-
-      // Fetch schoolwide events from AsyncStorage
-      const cachedSchoolEvents = await AsyncStorage.getItem('schoolEvents');
-      let schoolEvents = cachedSchoolEvents ? JSON.parse(cachedSchoolEvents) : [];
-
-      if (schoolEvents.length === 0) {
-        // Fetch schoolwide events from Firebase if not cached
+        // Fetch schoolwide events from Firebase
         const schoolEventsRef = collection(
           FIREBASE_DB,
           "admin",
@@ -138,34 +116,21 @@ const NormalCalendar = () => {
           const eventDate = new Date(dateData.date.toDate())
             .toISOString()
             .split("T")[0];
-          schoolEvents.push({
+          fetchedEvents.push({
             date: eventDate,
             title: doc.id,
             club: "Schoolwide",
           });
         });
 
-        // Cache the schoolwide events in AsyncStorage
-        await AsyncStorage.setItem('schoolEvents', JSON.stringify(schoolEvents));
+        setEvents(fetchedEvents);
+      } catch (error) {
+        console.error("Error fetching events: ", error);
       }
-
-      // Merge schoolwide events with other events
-      setEvents([...fetchedEvents, ...schoolEvents]);
-    } catch (error) {
-      console.error("Error fetching events: ", error);
-    }finally {
-      setLoading(false); // Set loading to false after fetching is done
-    }
-  };
-
-  useEffect(() => {
-    const loadData = async () => {
-      await clubCaching();
-      fetchEvents();
     };
-    console.log("here");
-    loadData();
-  },[clubsCache] );
+
+    fetchEvents();
+  }, []);
 
   const daysInMonth = (year: number, month: number) =>
     new Date(year, month + 1, 0).getDate();

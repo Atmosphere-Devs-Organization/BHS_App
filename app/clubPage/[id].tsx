@@ -183,13 +183,15 @@ const Page = () => {
         );
         await AsyncStorage.setItem("userClubs", JSON.stringify(updatedClubs));
         setIsClubInCalendar(false);
-        alert("Club removed from calendar! Reload app to see changes in calendar.");
+        alert(
+          "Club removed from calendar!\nReload app to see changes in calendar."
+        );
       } else {
         // Add the club to the list
         clubsArray.push(id);
         await AsyncStorage.setItem("userClubs", JSON.stringify(clubsArray));
         setIsClubInCalendar(true);
-        alert("Club added to calendar! Reload app to see changes in calendar");
+        alert("Club added to calendar!\nReload app to see changes in calendar");
         console.log("Stored clubs:", clubsArray);
       }
     } catch (error) {
