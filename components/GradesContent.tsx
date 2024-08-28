@@ -23,6 +23,24 @@ interface Props {
   category: string;
 }
 
+class Grade {
+  constructor(
+    public assignmentType: string,
+    public assignmentName: string,
+    public grade: number,
+    public date: Date
+  ) {}
+}
+
+// Class to represent a course
+class Course {
+  constructor(
+    public name: string,
+    public overallGrade: number,
+    public grades: Grade[]
+  ) {}
+}
+
 const GradesContent = ({ category }: Props) => {
   const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState<string | null>(null);
@@ -172,12 +190,90 @@ const GradesContent = ({ category }: Props) => {
 };
 
 const Grades = () => {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+
+  // Simulated data fetch - replace with actual API call
+  useEffect(() => {
+    const fetchCourses = async () => {
+      // Simulated API response
+      const coursesData: Course[] = [
+        new Course("Math", 92, [
+          new Grade("Homework", "Linear Equations", 95, new Date("2024-08-15")),
+          new Grade("Quiz", "Algebra Basics", 88, new Date("2024-08-20")),
+        ]),
+        new Course("Science", 89, [
+          new Grade("Lab Report", "Cell Structure", 91, new Date("2024-08-18")),
+          new Grade("Test", "Chemistry Fundamentals", 87, new Date("2024-08-25")),
+        ]),
+        new Course("Math", 92, [
+          new Grade("Homework", "Linear Equations", 95, new Date("2024-08-15")),
+          new Grade("Quiz", "Algebra Basics", 88, new Date("2024-08-20")),
+        ]),
+        new Course("Science", 89, [
+          new Grade("Lab Report", "Cell Structure", 91, new Date("2024-08-18")),
+          new Grade("Test", "Chemistry Fundamentals", 87, new Date("2024-08-25")),
+        ]),
+        
+        // Add more courses as needed
+      ];
+      setCourses(coursesData);
+    };
+
+    fetchCourses();
+  }, []);
+
+  const renderCourseItem = ({ item }: { item: Course }) => (
+    <TouchableOpacity
+      style={styles.courseItem}
+      onPress={() => setSelectedCourse(item)}
+    >
+      <Text style={styles.courseName}>{item.name}</Text>
+      <Text style={styles.courseGrade}>{item.overallGrade}%</Text>
+    </TouchableOpacity>
+  );
+
+  const renderGradeItem = ({ item }: { item: Grade }) => (
+    <View style={styles.gradeItem}>
+      <Text style={styles.assignmentName}>{item.assignmentName}</Text>
+      <Text style={styles.assignmentType}>{item.assignmentType}</Text>
+      <Text style={styles.grade}>{item.grade}%</Text>
+      <Text style={styles.date}>{item.date.toLocaleDateString()}</Text>
+    </View>
+  );
+
   return (
-    <View>
-      <Text style={styles.comingSoonText}>Grades Coming Soon</Text>
+    <View style={styles.container}>
+      {!selectedCourse ? (
+        <>
+          <Text style={styles.header}>Your Courses</Text>
+          <FlatList
+            data={courses}
+            renderItem={renderCourseItem}
+            keyExtractor={(item) => item.name}
+          />
+        </>
+      ) : (
+        <>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => setSelectedCourse(null)}
+          >
+            <Ionicons name="arrow-back" size={24} color="white" />
+            <Text style={styles.backButtonText}>Back to Courses</Text>
+          </TouchableOpacity>
+          <Text style={styles.header}>{selectedCourse.name} Grades</Text>
+          <FlatList
+            data={selectedCourse.grades}
+            renderItem={renderGradeItem}
+            keyExtractor={(item) => item.assignmentName}
+          />
+        </>
+      )}
     </View>
   );
 };
+
 
 const Calculator = () => {
   return <Text style={styles.comingSoonText}>Calculator Coming Soon</Text>;
@@ -388,6 +484,71 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginVertical: 60,
   },
+  container: {
+    padding: 20,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 20,
+  },
+  courseItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: Colors.transcriptBubblesBG,
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    height: 100,
+  },
+  courseName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  courseGrade: {
+    fontSize: 18,
+    color: 'white',
+  },
+  gradeItem: {
+    backgroundColor: Colors.transcriptBubblesBG,
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  assignmentName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  assignmentType: {
+    fontSize: 14,
+    color: 'white',
+    marginTop: 5,
+  },
+  grade: {
+    fontSize: 16,
+    color: 'white',
+    marginTop: 5,
+  },
+  date: {
+    fontSize: 14,
+    color: 'white',
+    marginTop: 5,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  backButtonText: {
+    color: 'white',
+    fontSize: 16,
+    marginLeft: 10,
+  },
+
 });
 
 export default GradesContent;
