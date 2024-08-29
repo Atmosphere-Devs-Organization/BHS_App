@@ -198,19 +198,24 @@ const Grades = () => {
     const fetchCourses = async () => {
       // Simulated API response
       const coursesData: Course[] = [
-        new Course("Math", 92, [
+        new Course("Physics C", 101, [
+          new Grade("Homework", "Linear Equations", 95, new Date("2024-08-15")),
+          new Grade("Relative Applications", "The Are You GAY Quiz", 99, new Date("2024-08-20")),
+          new Grade("Summatives", "All about the LGBTQ Community :(", 69, new Date("2024-08-15")),
+
+        ]),
+        new Course("AP Chem", 90, [
+          new Grade("Relative Applications", "Cell Structure", 91, new Date("2024-08-18")),
+          new Grade("Summatives", "Chemistry Fundamentals", 87, new Date("2024-08-25")),
+          new Grade("Homework", "AP Classroom", 97, new Date("2024-08-18")),
+          new Grade("Summatives", "Biology Fundamentals cause", 42, new Date("2024-08-25")),
+
+        ]),
+        new Course("Calculus III", 92, [
           new Grade("Homework", "Linear Equations", 95, new Date("2024-08-15")),
           new Grade("Quiz", "Algebra Basics", 88, new Date("2024-08-20")),
         ]),
-        new Course("Science", 89, [
-          new Grade("Lab Report", "Cell Structure", 91, new Date("2024-08-18")),
-          new Grade("Test", "Chemistry Fundamentals", 87, new Date("2024-08-25")),
-        ]),
-        new Course("Math", 92, [
-          new Grade("Homework", "Linear Equations", 95, new Date("2024-08-15")),
-          new Grade("Quiz", "Algebra Basics", 88, new Date("2024-08-20")),
-        ]),
-        new Course("Science", 89, [
+        new Course("Computer Science IV", 95, [
           new Grade("Lab Report", "Cell Structure", 91, new Date("2024-08-18")),
           new Grade("Test", "Chemistry Fundamentals", 87, new Date("2024-08-25")),
         ]),
@@ -509,8 +514,13 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   courseGrade: {
-    fontSize: 18,
-    color: 'white',
+    fontSize: 24,
+    color: Colors.tabActiveTint,
+    fontWeight: 'bold',
+    borderColor: "white",
+    borderWidth: 2,
+    borderRadius: 10,
+    padding: 10,
   },
   gradeItem: {
     backgroundColor: Colors.transcriptBubblesBG,
@@ -529,14 +539,15 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   grade: {
-    fontSize: 16,
-    color: 'white',
-    marginTop: 5,
-  },
+      fontSize: 24,
+      color: 'white',
+      textAlign: 'right',
+    },
   date: {
     fontSize: 14,
     color: 'white',
     marginTop: 5,
+    marginBottom: 10,
   },
   backButton: {
     flexDirection: 'row',
