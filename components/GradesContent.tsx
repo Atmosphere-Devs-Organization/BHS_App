@@ -13,8 +13,6 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
-import { FIREBASE_AUTH } from "@/FirebaseConfig";
-import { onAuthStateChanged, User } from "firebase/auth";
 import * as SecureStore from "expo-secure-store";
 import { useFocusEffect } from "@react-navigation/native";
 import HACNeededScreen from "./HACNeededScreen";
@@ -39,27 +37,21 @@ class Course {
     public overallGrade: number,
     public grades: Grade[]
   ) {}
+
+  addAssignment(assignment: Grade) {
+    this.grades[this.grades.length] = assignment;
+  }
 }
 
 const GradesContent = ({ category }: Props) => {
-  const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
-  useEffect(() => {
-    onAuthStateChanged(FIREBASE_AUTH, (user) => {
-      setUser(user);
-    });
-  }, []);
 
   useFocusEffect(
     React.useCallback(() => {
       const fetchCredentials = async () => {
-        const storedUsername = await SecureStore.getItemAsync(
-          user?.uid + "HACusername"
-        );
-        const storedPassword = await SecureStore.getItemAsync(
-          user?.uid + "HACpassword"
-        );
+        const storedUsername = await SecureStore.getItemAsync("HACusername");
+        const storedPassword = await SecureStore.getItemAsync("HACpassword");
 
         setUsername(storedUsername);
         setPassword(storedPassword);
@@ -71,7 +63,7 @@ const GradesContent = ({ category }: Props) => {
         // Do something when the screen is unfocused
         // Useful for cleanup functions
       };
-    }, [user?.uid])
+    }, [])
   );
 
   const HAC_Link = "https://home-access.cfisd.net";
@@ -117,17 +109,19 @@ const GradesContent = ({ category }: Props) => {
   };
 
   const [transcriptData, setTData] = useState<any>(null);
-  //const [gradesData, setGData] = useState<any>(null);
+  const [gradesData, setGData] = useState<any>(null);
   const [schoolYears, setSchoolYears] = useState<any>([]);
 
   useEffect(() => {
     setTData(null);
+    setGData(null);
     if (username && password) {
       async function fetchAPI() {
         let response = await fetchStudentInfo("transcript");
-        //let response2 = await fetchStudentInfo("averages");
+        let response2 = await fetchStudentInfo("averages");
         setTData(response);
-        //setGData(response2);
+        setGData(response2);
+
         const schoolYearArray = Object.keys(response)
           .filter((key) => key.includes("School Year"))
           .map((key) => ({
@@ -151,7 +145,7 @@ const GradesContent = ({ category }: Props) => {
             showHideTransition="slide"
             hidden={false}
           />
-          <Grades />
+          <Grades gradesData={gradesData} hacBroken={HACBroken} />
         </View>
       );
     }
@@ -180,7 +174,6 @@ const GradesContent = ({ category }: Props) => {
           <Transcript
             transcriptData={transcriptData}
             schoolYears={schoolYears}
-            user={user}
             hacBroken={HACBroken}
           />
         </View>
@@ -189,7 +182,13 @@ const GradesContent = ({ category }: Props) => {
   }
 };
 
-const Grades = () => {
+const Grades = ({
+  gradesData,
+  hacBroken,
+}: {
+  gradesData: any;
+  hacBroken: boolean;
+}) => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
@@ -197,31 +196,27 @@ const Grades = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       // Simulated API response
-      const coursesData: Course[] = [
-        new Course("Physics C", 101, [
-          new Grade("Homework", "Linear Equations", 95, new Date("2024-08-15")),
-          new Grade("Relative Applications", "The Are You GAY Quiz", 99, new Date("2024-08-20")),
-          new Grade("Summatives", "All about the LGBTQ Community :(", 69, new Date("2024-08-15")),
+      const coursesData: Course[] = [];
 
-        ]),
-        new Course("AP Chem", 90, [
-          new Grade("Relative Applications", "Cell Structure", 91, new Date("2024-08-18")),
-          new Grade("Summatives", "Chemistry Fundamentals", 87, new Date("2024-08-25")),
-          new Grade("Homework", "AP Classroom", 97, new Date("2024-08-18")),
-          new Grade("Summatives", "Biology Fundamentals cause", 42, new Date("2024-08-25")),
+      let i = 0;
+      const classesArray = Object.keys(gradesData);
+      classesArray.forEach(function (value) {
+        if (value.indexOf("dropped") == -1) {
+          let grade = Number.parseInt(gradesData[value]);
+          coursesData[i] = new Course(
+            value.split(" - ")[1].split(" Marking")[0].substring(2),
+            grade ? grade : -100,
+            []
+          );
+          i++;
+        }
+      });
 
-        ]),
-        new Course("Calculus III", 92, [
-          new Grade("Homework", "Linear Equations", 95, new Date("2024-08-15")),
-          new Grade("Quiz", "Algebra Basics", 88, new Date("2024-08-20")),
-        ]),
-        new Course("Computer Science IV", 95, [
-          new Grade("Lab Report", "Cell Structure", 91, new Date("2024-08-18")),
-          new Grade("Test", "Chemistry Fundamentals", 87, new Date("2024-08-25")),
-        ]),
-        
-        // Add more courses as needed
-      ];
+      //We need to add assignments once api works
+      /* coursesData[0].addAssignment(
+         new Grade("Homework", "Linear Equations", 95, new Date("2024-08-15"))
+      );*/
+
       setCourses(coursesData);
     };
 
@@ -234,7 +229,9 @@ const Grades = () => {
       onPress={() => setSelectedCourse(item)}
     >
       <Text style={styles.courseName}>{item.name}</Text>
-      <Text style={styles.courseGrade}>{item.overallGrade}%</Text>
+      <Text style={styles.courseGrade}>
+        {item.overallGrade == -100 ? "N/A" : item.overallGrade + "%"}
+      </Text>
     </TouchableOpacity>
   );
 
@@ -249,36 +246,36 @@ const Grades = () => {
 
   return (
     <View style={styles.container}>
-      {!selectedCourse ? (
-        <>
-          <Text style={styles.header}>Your Courses</Text>
-          <FlatList
-            data={courses}
-            renderItem={renderCourseItem}
-            keyExtractor={(item) => item.name}
-          />
-        </>
-      ) : (
-        <>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => setSelectedCourse(null)}
-          >
-            <Ionicons name="arrow-back" size={24} color="white" />
-            <Text style={styles.backButtonText}>Back to Courses</Text>
-          </TouchableOpacity>
-          <Text style={styles.header}>{selectedCourse.name} Grades</Text>
-          <FlatList
-            data={selectedCourse.grades}
-            renderItem={renderGradeItem}
-            keyExtractor={(item) => item.assignmentName}
-          />
-        </>
-      )}
+      {gradesData !== null &&
+        (!selectedCourse ? (
+          <>
+            <Text style={styles.header}>Your Courses</Text>
+            <FlatList
+              data={courses}
+              renderItem={renderCourseItem}
+              keyExtractor={(item) => item.name}
+            />
+          </>
+        ) : (
+          <>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => setSelectedCourse(null)}
+            >
+              <Ionicons name="arrow-back" size={24} color="white" />
+              <Text style={styles.backButtonText}>Back to Courses</Text>
+            </TouchableOpacity>
+            <Text style={styles.header}>{selectedCourse.name} Grades</Text>
+            <FlatList
+              data={selectedCourse.grades}
+              renderItem={renderGradeItem}
+              keyExtractor={(item) => item.assignmentName}
+            />
+          </>
+        ))}
     </View>
   );
 };
-
 
 const Calculator = () => {
   return <Text style={styles.comingSoonText}>Calculator Coming Soon</Text>;
@@ -287,12 +284,10 @@ const Calculator = () => {
 const Transcript = ({
   transcriptData,
   schoolYears,
-  user,
   hacBroken,
 }: {
   transcriptData: any;
   schoolYears: any[];
-  user: any;
   hacBroken: boolean;
 }) => {
   const [yearItem, setYearItem] = useState<any>(null);
@@ -365,7 +360,7 @@ const Transcript = ({
 
   const listRef = useRef<FlatList>(null);
 
-  return user && transcriptData !== undefined ? (
+  return transcriptData !== undefined ? (
     <View style={{ paddingTop: 30 }}>
       {!showingTranscriptDetails && (
         <View>
@@ -494,14 +489,14 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: "bold",
+    color: "white",
     marginBottom: 20,
   },
   courseItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     backgroundColor: Colors.transcriptBubblesBG,
     padding: 15,
     borderRadius: 10,
@@ -510,13 +505,13 @@ const styles = StyleSheet.create({
   },
   courseName: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: "bold",
+    color: "white",
   },
   courseGrade: {
     fontSize: 24,
     color: Colors.tabActiveTint,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     borderColor: "white",
     borderWidth: 2,
     borderRadius: 10,
@@ -530,36 +525,35 @@ const styles = StyleSheet.create({
   },
   assignmentName: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: "bold",
+    color: "white",
   },
   assignmentType: {
     fontSize: 14,
-    color: 'white',
+    color: "white",
     marginTop: 5,
   },
   grade: {
-      fontSize: 24,
-      color: 'white',
-      textAlign: 'right',
-    },
+    fontSize: 24,
+    color: "white",
+    textAlign: "right",
+  },
   date: {
     fontSize: 14,
-    color: 'white',
+    color: "white",
     marginTop: 5,
     marginBottom: 10,
   },
   backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 20,
   },
   backButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
     marginLeft: 10,
   },
-
 });
 
 export default GradesContent;
