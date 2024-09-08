@@ -17,6 +17,7 @@ import * as SecureStore from "expo-secure-store";
 import { useFocusEffect } from "@react-navigation/native";
 import HACNeededScreen from "./HACNeededScreen";
 import CourseCard from "./CourseCard"; // Adjust the import path as necessary
+import CalculatorPage from "./CalculatorPage";
 
 interface Props {
   category: string;
@@ -136,62 +137,7 @@ const GradesContent = ({ category }: Props) => {
     }
   }, [username, password]);
 
-  switch (category) {
-    case "Grades": {
-      return (
-        <View>
-          <StatusBar
-            animated={true}
-            barStyle="light-content"
-            showHideTransition="slide"
-            hidden={false}
-          />
-          <Grades gradesData={gradesData} hacBroken={HACBroken} />
-        </View>
-      );
-    }
-    case "Calculator": {
-      return (
-        <View>
-          <StatusBar
-            animated={true}
-            barStyle="light-content"
-            showHideTransition="slide"
-            hidden={false}
-          />
-          <Calculator />
-        </View>
-      );
-    }
-    case "Transcript": {
-      return (
-        <View>
-          <StatusBar
-            animated={true}
-            barStyle="light-content"
-            showHideTransition="slide"
-            hidden={false}
-          />
-          <Transcript
-            transcriptData={transcriptData}
-            schoolYears={schoolYears}
-            hacBroken={HACBroken}
-          />
-        </View>
-      );
-    }
-  }
-};
-
-const Grades = ({
-  gradesData,
-  hacBroken,
-}: {
-  gradesData: any;
-  hacBroken: boolean;
-}) => {
   const [courses, setCourses] = useState<Course[] | null>(null);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
   // Simulated data fetch - replace with actual API call
   useEffect(() => {
@@ -241,6 +187,68 @@ const Grades = ({
     fetchCourses();
   }, [gradesData]);
 
+  switch (category) {
+    case "Grades": {
+      return (
+        <View>
+          <StatusBar
+            animated={true}
+            barStyle="light-content"
+            showHideTransition="slide"
+            hidden={false}
+          />
+          <Grades
+            gradesData={gradesData}
+            hacBroken={HACBroken}
+            courses={courses}
+          />
+        </View>
+      );
+    }
+    case "Calculator": {
+      return (
+        <View>
+          <StatusBar
+            animated={true}
+            barStyle="light-content"
+            showHideTransition="slide"
+            hidden={false}
+          />
+          <Calculator />
+        </View>
+      );
+    }
+    case "Transcript": {
+      return (
+        <View>
+          <StatusBar
+            animated={true}
+            barStyle="light-content"
+            showHideTransition="slide"
+            hidden={false}
+          />
+          <Transcript
+            transcriptData={transcriptData}
+            schoolYears={schoolYears}
+            hacBroken={HACBroken}
+          />
+        </View>
+      );
+    }
+  }
+};
+
+const Grades = ({
+  gradesData,
+  hacBroken,
+  courses,
+}: {
+  gradesData: any;
+  hacBroken: boolean;
+  courses: Course[] | null;
+}) => {
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+
   const renderCourseItem = ({ item }: { item: Course }) => (
     <TouchableOpacity
       style={styles.courseItem}
@@ -264,20 +272,19 @@ const Grades = ({
     </View>
   );
 
-  return (
+  return gradesData !== undefined ? (
     <View style={styles.container}>
       {courses !== null ? (
         !selectedCourse ? (
-          <>
-            <Text style={styles.header}>Your Courses</Text>
+          <View style={{ paddingTop: 20 }}>
             <FlatList
               data={courses}
               renderItem={renderCourseItem}
               keyExtractor={(item) => item.name}
             />
-          </>
+          </View>
         ) : (
-          <View style={{ marginBottom: 180 }}>
+          <View style={{ marginBottom: 90 }}>
             <TouchableOpacity
               style={styles.backButton}
               onPress={() => setSelectedCourse(null)}
@@ -285,7 +292,13 @@ const Grades = ({
               <Ionicons name="arrow-back" size={24} color="white" />
               <Text style={styles.backButtonText}>Back to Courses</Text>
             </TouchableOpacity>
-            <Text style={styles.header}>{selectedCourse.name} Grades</Text>
+            <Text style={styles.header}>
+              {selectedCourse.name} Grades:{" "}
+              {"\t\t" +
+                (selectedCourse.overallGrade == -100
+                  ? "N/A"
+                  : selectedCourse.overallGrade + "%")}
+            </Text>
             <FlatList
               data={selectedCourse.grades}
               renderItem={renderGradeItem}
@@ -315,11 +328,13 @@ const Grades = ({
         </View>
       )}
     </View>
+  ) : (
+    <HACNeededScreen paddingTop={0} hacDown={hacBroken} />
   );
 };
 
 const Calculator = () => {
-  return <Text style={styles.comingSoonText}>Calculator Coming Soon</Text>;
+  return <CalculatorPage />;
 };
 
 const Transcript = ({
@@ -450,7 +465,7 @@ const Transcript = ({
               data={schoolYears}
               ref={listRef}
               renderItem={renderRow}
-              style={{ marginTop: 30, marginBottom: 350 }}
+              style={{ marginTop: 30, marginBottom: 370 }}
             />
           ) : (
             <View>
@@ -469,15 +484,14 @@ const Transcript = ({
                   fontSize: 16,
                 }}
               >
-                If transcript isn't loading, check that you've entered your HAC
-                info correctly on profile
+                Make sure you aren't connected to school wifi
               </Text>
             </View>
           )}
         </View>
       )}
       {showingTranscriptDetails && (
-        <View>
+        <View style={{ height: "100%" }}>
           <TouchableOpacity
             onPress={() => {
               setShowingDetails(false);
@@ -499,8 +513,8 @@ const Transcript = ({
             {yearItem.year}
           </Text>
           <ScrollView
-            style={{ marginBottom: 510 }}
             showsVerticalScrollIndicator={false}
+            style={{ marginBottom: 100 }}
           >
             <Text>{printTranscriptArray(yearItem.data)}</Text>
           </ScrollView>
@@ -521,7 +535,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderColor: "#ffffff",
     padding: 10,
-    paddingRight: 20,
     backgroundColor: Colors.transcriptBubblesBG,
   },
   close_button: { padding: 10 },
@@ -533,8 +546,8 @@ const styles = StyleSheet.create({
     marginVertical: 60,
   },
   container: {
-    padding: 20,
-    marginBottom: 180,
+    padding: 15,
+    height: "93%",
   },
   header: {
     fontSize: 24,
@@ -570,7 +583,8 @@ const styles = StyleSheet.create({
   },
   gradeItem: {
     backgroundColor: Colors.transcriptBubblesBG,
-    padding: 15,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
     borderRadius: 10,
     marginBottom: 10,
   },
