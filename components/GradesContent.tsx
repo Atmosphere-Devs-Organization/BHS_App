@@ -16,8 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import { useFocusEffect } from "@react-navigation/native";
 import HACNeededScreen from "./HACNeededScreen";
-import CourseCard from './CourseCard'; // Adjust the import path as necessary
-
+import CourseCard from "./CourseCard"; // Adjust the import path as necessary
 
 interface Props {
   category: string;
@@ -120,7 +119,7 @@ const GradesContent = ({ category }: Props) => {
     if (username && password) {
       async function fetchAPI() {
         let response = await fetchStudentInfo("transcript");
-        let response2 = await fetchStudentInfo("averages");
+        let response2 = await fetchStudentInfo("assignments");
         setTData(response);
         setGData(response2);
 
@@ -130,7 +129,7 @@ const GradesContent = ({ category }: Props) => {
             key,
             ...response[key],
           }));
-        setSchoolYears(schoolYearArray);
+        setSchoolYears(schoolYearArray.reverse());
       }
 
       fetchAPI();
@@ -191,7 +190,7 @@ const Grades = ({
   gradesData: any;
   hacBroken: boolean;
 }) => {
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<Course[] | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
   // Simulated data fetch - replace with actual API call
@@ -200,30 +199,47 @@ const Grades = ({
       // Simulated API response
       const coursesData: Course[] = [];
 
-      let i = 0;
-      const classesArray = Object.keys(gradesData);
-      classesArray.forEach(function (value) {
-        if (value.indexOf("dropped") == -1) {
-          let grade = Number.parseInt(gradesData[value]);
-          coursesData[i] = new Course(
-            value.split(" - ")[1].split(" Marking")[0].substring(2),
-            grade ? grade : -100,
-            []
-          );
-          i++;
-        }
-      });
+      if (gradesData) {
+        let i = 0;
+        const classesArray = Object.keys(gradesData);
+        classesArray.forEach(function (value) {
+          if (value.indexOf("dropped") == -1) {
+            let grade = Number.parseInt(gradesData[value]["average"]);
+            coursesData[i] = new Course(
+              value.split(" - ")[1].split(" Marking")[0].substring(2),
+              grade ? grade : -100,
+              []
+            );
 
-      //We need to add assignments once api works
-      /* coursesData[0].addAssignment(
+            let assignmentsArr = gradesData[value]["assignments"];
+            assignmentsArr.forEach(function (assignment: any[]) {
+              let assignmentGrade = Number.parseInt(assignment[3]);
+              let dateArr = assignment[1].split("/");
+
+              coursesData[i].addAssignment(
+                new Grade(
+                  assignment[2],
+                  assignment[0],
+                  assignmentGrade ? assignmentGrade : -100,
+                  new Date(dateArr[2] + "-" + dateArr[0] + "-" + dateArr[1])
+                )
+              );
+            });
+            i++;
+          }
+        });
+
+        //We need to add assignments once api works
+        /* coursesData[0].addAssignment(
          new Grade("Homework", "Linear Equations", 95, new Date("2024-08-15"))
       );*/
 
-      setCourses(coursesData);
+        setCourses(coursesData);
+      }
     };
 
     fetchCourses();
-  }, []);
+  }, [gradesData]);
 
   const renderCourseItem = ({ item }: { item: Course }) => (
     <TouchableOpacity
@@ -241,15 +257,17 @@ const Grades = ({
     <View style={styles.gradeItem}>
       <Text style={styles.assignmentName}>{item.assignmentName}</Text>
       <Text style={styles.assignmentType}>{item.assignmentType}</Text>
-      <Text style={styles.grade}>{item.grade}%</Text>
+      <Text style={styles.grade}>
+        {item.grade == -100 ? "N/A" : item.grade + "%"}
+      </Text>
       <Text style={styles.date}>{item.date.toLocaleDateString()}</Text>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      {gradesData !== null &&
-        (!selectedCourse ? (
+      {courses !== null ? (
+        !selectedCourse ? (
           <>
             <Text style={styles.header}>Your Courses</Text>
             <FlatList
@@ -259,7 +277,7 @@ const Grades = ({
             />
           </>
         ) : (
-          <>
+          <View style={{ marginBottom: 180 }}>
             <TouchableOpacity
               style={styles.backButton}
               onPress={() => setSelectedCourse(null)}
@@ -273,8 +291,29 @@ const Grades = ({
               renderItem={renderGradeItem}
               keyExtractor={(item) => item.assignmentName}
             />
-          </>
-        ))}
+          </View>
+        )
+      ) : (
+        <View>
+          <ActivityIndicator
+            size="large"
+            color="#ff4d00"
+            style={{ alignSelf: "center", marginTop: 100 }}
+          />
+          <Text
+            style={{
+              color: "#ff4d00",
+              alignSelf: "center",
+              paddingVertical: 40,
+              textAlign: "center",
+              paddingHorizontal: 20,
+              fontSize: 16,
+            }}
+          >
+            Make sure you are not on school wifi
+          </Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -296,22 +335,35 @@ const Transcript = ({
   const [showingTranscriptDetails, setShowingDetails] =
     useState<boolean>(false);
 
-  schoolYears = schoolYears.reverse();
-
   const printTranscriptArray = (array: any[]) => {
     // Group courses by semester
-    const semesters: { [key: string]: { course: any; semester: any; }[] } = { SEM1: [], SEM2: [] };
-  
-    array.forEach(item => {
-      if (item[1] && item[2]) semesters.SEM1.push({ course: item[0], semester: item[2] });
-      if (item[1] && item[3]) semesters.SEM2.push({ course: item[0], semester: item[3] });
+    const semesters: { [key: string]: { course: any; semester: any }[] } = {
+      SEM1: [],
+      SEM2: [],
+    };
+
+    array.forEach((item) => {
+      if (item[1] && item[2])
+        semesters.SEM1.push({ course: item[1], semester: item[2] });
+      if (item[1] && item[3])
+        semesters.SEM2.push({ course: item[1], semester: item[3] });
     });
-  
+
     return (
-      <ScrollView style={{ flex: 1, padding: 10, minWidth: "400%" }}>
-        {Object.keys(semesters).map(sem => (
+      <ScrollView
+        style={{ flex: 1, padding: 10, minWidth: "400%", marginBottom: 120 }}
+      >
+        {Object.keys(semesters).map((sem) => (
           <View key={sem}>
-            <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: 'bold', marginVertical: 10, color: "white" }}>
+            <Text
+              style={{
+                textAlign: "center",
+                fontSize: 20,
+                fontWeight: "bold",
+                marginVertical: 10,
+                color: "white",
+              }}
+            >
               {sem}
             </Text>
             {semesters[sem].map((courseItem, index) => (
@@ -326,38 +378,36 @@ const Transcript = ({
       </ScrollView>
     );
   };
-  
-      const renderRow: ListRenderItem<any> = ({ item }) => (
-    <TouchableOpacity
-    style={{
-      alignContent: "center",
-      borderWidth: 5,
-      padding: 20,
-      borderRadius: 15,
-      backgroundColor: Colors.transcriptBubblesBG,
-      marginBottom: 10,
-      width: "95%",
-      marginLeft: 10,
-      marginRight: 10,
-      paddingTop: 50,
-      paddingBottom: 50,
-      }}
 
+  const renderRow: ListRenderItem<any> = ({ item }) => (
+    <TouchableOpacity
+      style={{
+        alignContent: "center",
+        borderWidth: 5,
+        padding: 20,
+        borderRadius: 15,
+        backgroundColor: Colors.transcriptBubblesBG,
+        marginBottom: 10,
+        width: "95%",
+        marginLeft: 10,
+        marginRight: 10,
+        paddingTop: 50,
+        paddingBottom: 50,
+      }}
       onPress={() => {
         setYearItem(item);
         setShowingDetails(true);
       }}
     >
       <Text
-              style={{
-                color: "white",
-                fontWeight: "bold",
-                alignContent: "center",
-                textAlignVertical: "center",
-                fontSize: 25,
-                textAlign: "center",
-              }}
-      
+        style={{
+          color: "white",
+          fontWeight: "bold",
+          alignContent: "center",
+          textAlignVertical: "center",
+          fontSize: 25,
+          textAlign: "center",
+        }}
       >
         {item.year}
       </Text>
@@ -452,10 +502,7 @@ const Transcript = ({
             style={{ marginBottom: 510 }}
             showsVerticalScrollIndicator={false}
           >
-            <Text
-            >
-              {printTranscriptArray(yearItem.data)}
-            </Text>
+            <Text>{printTranscriptArray(yearItem.data)}</Text>
           </ScrollView>
         </View>
       )}
@@ -476,7 +523,6 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingRight: 20,
     backgroundColor: Colors.transcriptBubblesBG,
-    
   },
   close_button: { padding: 10 },
   comingSoonText: {
@@ -488,6 +534,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 20,
+    marginBottom: 180,
   },
   header: {
     fontSize: 24,
