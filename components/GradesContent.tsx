@@ -16,6 +16,8 @@ import { Ionicons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import { useFocusEffect } from "@react-navigation/native";
 import HACNeededScreen from "./HACNeededScreen";
+import CourseCard from './CourseCard'; // Adjust the import path as necessary
+
 
 interface Props {
   category: string;
@@ -296,62 +298,66 @@ const Transcript = ({
 
   schoolYears = schoolYears.reverse();
 
-  const printSingleTranscriptEntry = (array: any[]): string => {
+  const printTranscriptArray = (array: any[]) => {
+    // Group courses by semester
+    const semesters: { [key: string]: { course: any; semester: any; }[] } = { SEM1: [], SEM2: [] };
+  
+    array.forEach(item => {
+      if (item[1] && item[2]) semesters.SEM1.push({ course: item[0], semester: item[2] });
+      if (item[1] && item[3]) semesters.SEM2.push({ course: item[0], semester: item[3] });
+    });
+  
     return (
-      array[1] +
-      (array[2] == "" ? "" : ", SEM1: " + array[2]) +
-      (array[3] == "" ? "" : ", SEM2: " + array[3]) +
-      ", " +
-      array[4]
+      <ScrollView style={{ flex: 1, padding: 10, minWidth: "200%" }}>
+        {Object.keys(semesters).map(sem => (
+          <View key={sem}>
+            <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: 'bold', marginVertical: 10, color: "white" }}>
+              {sem}
+            </Text>
+            {semesters[sem].map((courseItem, index) => (
+              <CourseCard
+                key={index}
+                course={courseItem.course}
+                semester={courseItem.semester}
+              />
+            ))}
+          </View>
+        ))}
+      </ScrollView>
     );
   };
-  const printTranscriptArray = (array: any[][]): string => {
-    array.sort((a, b) => {
-      let comp = String(a[1]).localeCompare(String(b[1]));
-      return comp !== 0 ? comp : String(a[0]).localeCompare(String(b[0]));
-    });
-    let out = "";
-    for (let i = 0; i < (array ? array.length : 0); i++) {
-      if (String(array[i][0]) !== "Course") {
-        out +=
-          "- " +
-          printSingleTranscriptEntry(array[i]) +
-          (i === array.length - 1
-            ? ""
-            : String(array[i][1]).toUpperCase() ===
-              String(array[i + 1][1]).toUpperCase()
-            ? "\n"
-            : "\n\n");
-      }
-    }
-    return out;
-  };
-  const renderRow: ListRenderItem<any> = ({ item }) => (
+  
+      const renderRow: ListRenderItem<any> = ({ item }) => (
     <TouchableOpacity
+    style={{
+      alignContent: "center",
+      borderWidth: 5,
+      padding: 20,
+      borderRadius: 15,
+      backgroundColor: Colors.transcriptBubblesBG,
+      marginBottom: 10,
+      width: "95%",
+      marginLeft: 10,
+      marginRight: 10,
+      paddingTop: 50,
+      paddingBottom: 50,
+      }}
+
       onPress={() => {
         setYearItem(item);
         setShowingDetails(true);
       }}
     >
       <Text
-        style={{
-          color: "white",
-          marginVertical: 10,
-          fontWeight: "bold",
-          fontSize: 30,
-          borderWidth: 5,
-          borderColor: "#2176ff",
-          padding: 40,
-          textAlign: "center",
-          borderRadius: 15,
-          marginHorizontal: 15,
-          backgroundColor: Colors.transcriptBubblesBG,
-          fontFamily: "Oswald",
-          textShadowColor: "#ffffff30",
-          textShadowOffset: { width: -1, height: -1 },
-          textShadowRadius: 10,
-          elevation: 2,
-        }}
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                alignContent: "center",
+                textAlignVertical: "center",
+                fontSize: 25,
+                textAlign: "center",
+              }}
+      
       >
         {item.year}
       </Text>
@@ -371,7 +377,7 @@ const Transcript = ({
               paddingHorizontal: 17,
               marginHorizontal: 13,
               borderBottomWidth: 2,
-              borderColor: "#fff",
+              borderColor: "#ffffff",
               paddingTop: 5,
               paddingBottom: 30,
             }}
@@ -432,13 +438,12 @@ const Transcript = ({
           </TouchableOpacity>
           <Text
             style={{
-              color: "#ff4d00",
+              color: "#ffffff",
               paddingVertical: 20,
               alignSelf: "center",
               fontSize: 35,
               textAlign: "center",
               fontWeight: "bold",
-              fontFamily: "Oswald",
             }}
           >
             {yearItem.year}
@@ -448,12 +453,6 @@ const Transcript = ({
             showsVerticalScrollIndicator={false}
           >
             <Text
-              style={{
-                color: "white",
-                paddingVertical: 30,
-                paddingHorizontal: 25,
-                fontSize: 19,
-              }}
             >
               {printTranscriptArray(yearItem.data)}
             </Text>
@@ -471,10 +470,13 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 20,
     fontWeight: "bold",
-    borderWidth: 1,
-    borderRadius: 20,
+    borderWidth: 4,
+    borderRadius: 12,
     borderColor: "#ffffff",
     padding: 10,
+    paddingRight: 20,
+    backgroundColor: Colors.transcriptBubblesBG,
+    
   },
   close_button: { padding: 10 },
   comingSoonText: {
