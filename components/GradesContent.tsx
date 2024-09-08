@@ -214,7 +214,11 @@ const GradesContent = ({ category }: Props) => {
             showHideTransition="slide"
             hidden={false}
           />
-          <Calculator />
+          <Calculator
+            gradesData={gradesData}
+            hacBroken={HACBroken}
+            courses={courses}
+          />
         </View>
       );
     }
@@ -333,8 +337,22 @@ const Grades = ({
   );
 };
 
-const Calculator = () => {
-  return <CalculatorPage />;
+const Calculator = ({
+  gradesData,
+  hacBroken,
+  courses,
+}: {
+  gradesData: any;
+  hacBroken: boolean;
+  courses: Course[] | null;
+}) => {
+  return (
+    <CalculatorPage
+      gradesData={gradesData}
+      hacBroken={hacBroken}
+      courses={courses}
+    />
+  );
 };
 
 const Transcript = ({
