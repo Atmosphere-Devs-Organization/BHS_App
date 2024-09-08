@@ -308,7 +308,7 @@ const Transcript = ({
     });
   
     return (
-      <ScrollView style={{ flex: 1, padding: 10, minWidth: "200%" }}>
+      <ScrollView style={{ flex: 1, padding: 10, minWidth: "400%" }}>
         {Object.keys(semesters).map(sem => (
           <View key={sem}>
             <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: 'bold', marginVertical: 10, color: "white" }}>
@@ -518,6 +518,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 10,
     padding: 10,
+    width: 90,
+    textAlign: "center",
   },
   gradeItem: {
     backgroundColor: Colors.transcriptBubblesBG,
