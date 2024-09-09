@@ -45,90 +45,90 @@ const NormalCalendar = () => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [eventTitle, setEventTitle] = useState<string>("");
   const { clubsCache, setClubsCache } = useClubContext(); // Use context
+  const fetchEvents = async () => {
+    try {
+      // Fetch user clubs from AsyncStorage
+      const storedClubs = await AsyncStorage.getItem("userClubs");
+      const clubs = storedClubs ? JSON.parse(storedClubs) : [];
+
+      const fetchedEvents: { date: string; title: string; club: string }[] =
+        [];
+
+      if (clubsCache.length > 0) {
+      }
+      // Use cached data if available
+
+      try {
+        // Fetch cached clubs data from Firestore
+        const adminCacheRef = doc(FIREBASE_DB, "admin", "CachedClubs");
+        const adminCacheSnap = await getDoc(adminCacheRef);
+        const cachedClubsData = adminCacheSnap.data()?.clubs || [];
+
+        if (cachedClubsData.length === 0) {
+          return;
+        }
+
+        // Cache the fetched clubs data in the context
+        setClubsCache(cachedClubsData);
+
+        // Filter clubs by category
+      } catch (error) {
+        // Handle error
+      } finally {
+      }
+
+      // Fetch club events from AsyncStorage
+      for (const clubName of clubs) {
+        // Find the club in the cache by its name
+        const cachedClub = clubsCache.find((club) => club.name === clubName);
+
+        if (cachedClub) {
+          // Get the events from the cache (dateNames and dateDates)
+          const { dateNames, dateDates } = cachedClub;
+          // Combine the event names with their corresponding dates and add them to fetchedEvents
+          dateNames.forEach((title, index) => {
+            const Dates = dateDates[index];
+            const eventDate = new Date(Dates.toDate())
+              .toISOString()
+              .split("T")[0];
+            fetchedEvents.push({
+              date: eventDate,
+              title: title,
+              club: clubName,
+            });
+          });
+        }
+      }
+
+      // Fetch schoolwide events from Firebase
+      const schoolEventsRef = collection(
+        FIREBASE_DB,
+        "admin",
+        "SchoolDates",
+        "dates"
+      );
+
+      const schoolEventsSnapshot = await getDocs(schoolEventsRef);
+      schoolEventsSnapshot.forEach((doc) => {
+        const dateData = doc.data();
+        const eventDate = new Date(dateData.date.toDate())
+          .toISOString()
+          .split("T")[0];
+        fetchedEvents.push({
+          date: eventDate,
+          title: doc.id,
+          club: "Schoolwide",
+        });
+      });
+
+      setEvents(fetchedEvents);
+    } catch (error) {
+      console.error("Error fetching events: ", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        // Fetch user clubs from AsyncStorage
-        const storedClubs = await AsyncStorage.getItem("userClubs");
-        const clubs = storedClubs ? JSON.parse(storedClubs) : [];
-
-        const fetchedEvents: { date: string; title: string; club: string }[] =
-          [];
-
-        if (clubsCache.length > 0) {
-        }
-        // Use cached data if available
-
-        try {
-          // Fetch cached clubs data from Firestore
-          const adminCacheRef = doc(FIREBASE_DB, "admin", "CachedClubs");
-          const adminCacheSnap = await getDoc(adminCacheRef);
-          const cachedClubsData = adminCacheSnap.data()?.clubs || [];
-
-          if (cachedClubsData.length === 0) {
-            return;
-          }
-
-          // Cache the fetched clubs data in the context
-          setClubsCache(cachedClubsData);
-
-          // Filter clubs by category
-        } catch (error) {
-          // Handle error
-        } finally {
-        }
-
-        // Fetch club events from AsyncStorage
-        for (const clubName of clubs) {
-          // Find the club in the cache by its name
-          const cachedClub = clubsCache.find((club) => club.name === clubName);
-
-          if (cachedClub) {
-            // Get the events from the cache (dateNames and dateDates)
-            const { dateNames, dateDates } = cachedClub;
-            // Combine the event names with their corresponding dates and add them to fetchedEvents
-            dateNames.forEach((title, index) => {
-              const Dates = dateDates[index];
-              const eventDate = new Date(Dates.toDate())
-                .toISOString()
-                .split("T")[0];
-              fetchedEvents.push({
-                date: eventDate,
-                title: title,
-                club: clubName,
-              });
-            });
-          }
-        }
-
-        // Fetch schoolwide events from Firebase
-        const schoolEventsRef = collection(
-          FIREBASE_DB,
-          "admin",
-          "SchoolDates",
-          "dates"
-        );
-
-        const schoolEventsSnapshot = await getDocs(schoolEventsRef);
-        schoolEventsSnapshot.forEach((doc) => {
-          const dateData = doc.data();
-          const eventDate = new Date(dateData.date.toDate())
-            .toISOString()
-            .split("T")[0];
-          fetchedEvents.push({
-            date: eventDate,
-            title: doc.id,
-            club: "Schoolwide",
-          });
-        });
-
-        setEvents(fetchedEvents);
-      } catch (error) {
-        console.error("Error fetching events: ", error);
-      }
-    };
-
+  
     fetchEvents();
   }, []);
 
@@ -203,8 +203,12 @@ const NormalCalendar = () => {
       {/* Title Section */}
       <View style={styles.titleContainer}>
         <Text style={styles.title}>My Calendar</Text>
+      
       </View>
       <View style={styles.calendarContainer}>
+        <View style = {styles.centered}>
+          <Text style={styles.calendarInfo}>If club dates don't load, click on the calendar. May take a second to load.</Text>
+        </View>
         <View style={styles.headerContainer}>
           <TouchableOpacity onPress={handlePrevMonth}>
             <Ionicons name="arrow-back" size={24} color="#fff" />
@@ -244,6 +248,7 @@ const NormalCalendar = () => {
                   hasEvent && styles.eventDayBox,
                 ]}
                 onPress={() => {
+                  fetchEvents();
                   if (selectedDate === dateStr) {
                     setSelectedDate(null); // Deselect the current date
                   } else {
@@ -289,8 +294,8 @@ const NormalCalendar = () => {
         )}
       </View>
       <View style={styles.upcomingEventsContainer}>
-        <Text style={styles.upcomingEventsHeader}>Upcoming Events</Text>
-        {/*<ScrollView style={styles.scrollView} showsVerticalScrollIndicator={true} >*/}
+      <Text style={styles.upcomingEventsHeader}>Upcoming Events</Text>
+      {/*<ScrollView style={styles.scrollView} showsVerticalScrollIndicator={true} >*/}
         <FlatList
           data={upcomingEvents}
           keyExtractor={(item, index) => index.toString()}
@@ -461,6 +466,14 @@ const styles = StyleSheet.create({
   upcomingEventDate: {
     color: "#2176ff",
     fontWeight: "bold",
+  },
+  calendarInfo: {
+    color: "orange",
+    fontWeight: "bold",
+    fontSize: 20,
+    marginBottom: 10,
+    
+
   },
   upcomingEventTitle: {
     color: "#FFF",

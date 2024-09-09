@@ -98,16 +98,16 @@ const ClubsHeader = ({ onCategoryChanged }: Props) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.headerBGColor,
-    height: 230,
+    height: 190,
   },
   topRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 10,
+    marginTop: 0,
   },
   title: {
-    fontSize: 50,
+    fontSize: 30,
     fontWeight: "bold",
     color: "#ffffff",
     flex: 1,
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 70,
     padding: 5,
     borderRadius: 30,
-    marginTop: 20,
+    marginTop: 10,
   },
   categoriesScroll: {
     alignItems: "center",

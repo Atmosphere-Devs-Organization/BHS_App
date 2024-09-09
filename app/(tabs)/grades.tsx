@@ -13,7 +13,7 @@ const Grades = () => {
           header: () => <CustomGradesHeader onCategoryChanged={setCategory} />,
         }}
       />
-      <View style={{ flex: 1, marginTop: 210 }}>
+      <View style={{ flex: 1, marginTop: 180 }}>
         <GradesContent category={category} />
       </View>
     </View>
