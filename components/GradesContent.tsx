@@ -266,6 +266,8 @@ const Grades = ({
       item.overallGrade === -100 ? "black" : getBackgroundColor(item.overallGrade);
   
     return (
+
+      <View style={styles.causeWhyNot}>
       <TouchableOpacity
         style={styles.courseItem} // Keep the existing styles for the main container
         onPress={() => setSelectedCourse(item)}
@@ -274,10 +276,11 @@ const Grades = ({
         {/* Wrap the Text component in a View to handle background and border styling */}
         <View style={[styles.gradeContainer, { backgroundColor }]}>
           <Text style={styles.courseGrade}>
-            {item.overallGrade == -100 ? "N/A" : item.overallGrade + "%"}
+            {item.overallGrade==-100?"N/A":item.overallGrade+"%"}
           </Text>
         </View>
       </TouchableOpacity>
+      </View>
     );
   };
   
@@ -384,50 +387,42 @@ const Transcript = ({
   const [showingTranscriptDetails, setShowingDetails] =
     useState<boolean>(false);
 
-  const printTranscriptArray = (array: any[]) => {
-    // Group courses by semester
-    const semesters: { [key: string]: { course: any; semester: any }[] } = {
-      SEM1: [],
-      SEM2: [],
+    const printTranscriptArray = (array: any[]) => {
+      // Create an object to aggregate course data
+      const courseData: { [key: string]: { sem1Grade: string; sem2Grade: string } } = {};
+    
+      // Process the array to format the data
+      array.forEach(item => {
+        if (item[0] !== "Course") { // Assuming the first row contains column headers
+          const courseName = item[1];
+          const sem1Grade = item[2] || '-';
+          const sem2Grade = item[3] || '-';
+    
+          // If the course already exists, update the grades
+          if (courseData[courseName]) {
+            courseData[courseName].sem1Grade = courseData[courseName].sem1Grade === '-' ? sem1Grade : courseData[courseName].sem1Grade;
+            courseData[courseName].sem2Grade = courseData[courseName].sem2Grade === '-' ? sem2Grade : courseData[courseName].sem2Grade;
+          } else {
+            courseData[courseName] = { sem1Grade, sem2Grade };
+          }
+        }
+      });
+    
+      // Convert the aggregated data into an array for rendering
+      const courses = Object.keys(courseData).map(courseName => ({
+        courseName,
+        sem1Grade: courseData[courseName].sem1Grade,
+        sem2Grade: courseData[courseName].sem2Grade,
+      }));
+    
+      return (
+        <ScrollView style={{ flex: 1, padding: 10 }}>
+          <CourseCard courses={courses} />
+        </ScrollView>
+      );
     };
-
-    array.forEach((item) => {
-      if (item[1] && item[2])
-        semesters.SEM1.push({ course: item[1], semester: item[2] });
-      if (item[1] && item[3])
-        semesters.SEM2.push({ course: item[1], semester: item[3] });
-    });
-
-    return (
-      <ScrollView
-        style={{ flex: 1, padding: 10, minWidth: "400%", marginBottom: 120 }}
-      >
-        {Object.keys(semesters).map((sem) => (
-          <View key={sem}>
-            <Text
-              style={{
-                textAlign: "center",
-                fontSize: 20,
-                fontWeight: "bold",
-                marginVertical: 10,
-                color: "white",
-              }}
-            >
-              {sem}
-            </Text>
-            {semesters[sem].map((courseItem, index) => (
-              <CourseCard
-                key={index}
-                course={courseItem.course}
-                semester={courseItem.semester}
-              />
-            ))}
-          </View>
-        ))}
-      </ScrollView>
-    );
-  };
-
+        
+        
   const renderRow: ListRenderItem<any> = ({ item }) => (
     <TouchableOpacity
       style={{
@@ -593,28 +588,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    textAlignVertical: "center",
     backgroundColor: Colors.transcriptBubblesBG,
     padding: 15,
+    height: 86,
+    borderBottomColor: "black",
+    borderBottomWidth: 2,
     borderRadius: 10,
-    marginBottom: 10,
-    height: 100,
   },
   courseName: {
     fontSize: 18,
     fontWeight: "bold",
     color: "white",
   },
-  courseGrade: {
-    fontSize: 24,
-    color: 'white',
-    fontWeight: "bold",
-    textAlignVertical: "center",
-    verticalAlign: "middle",
-
-    padding: 10,
-    width: 90,
-    textAlign: "center",
+  causeWhyNot: {
+    borderRadius: 10,
   },
   gradeItem: {
     backgroundColor: Colors.transcriptBubblesBG,
@@ -639,11 +626,17 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   gradeContainer: {
-    borderRadius: 10,   // Curved borders for the colored box
-    alignSelf: "flex-start", // Adjusts the width of the box to fit the content
-    alignItems: "center",    // Centers the content horizontally
-    textAlignVertical: "center", // Centers the content vertically
-    marginVertical: 12,          // Adds space around the content
+    borderRadius: 10, // Curved borders for the colored box
+    justifyContent: "center", // Centers content vertically
+    alignItems: "center", // Centers content horizontally
+    width: 90, // Adjusts the width of the box to fit the content
+    height: 45, // Adjusts the height of the box to fit the content
+  },
+  courseGrade: {
+    fontSize: 20,
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   date: {
     fontSize: 14,
