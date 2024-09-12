@@ -58,7 +58,8 @@
         {
           "username": "bridgelandapp"
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,

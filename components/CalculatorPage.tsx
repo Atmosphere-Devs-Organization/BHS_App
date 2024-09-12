@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
 import React from "react";
+import { Link } from "expo-router";
 
 class Grade {
   constructor(
@@ -32,7 +33,20 @@ const CalculatorPage = ({
   hacBroken: boolean;
   courses: Course[] | null;
 }) => {
-  return <Text style={styles.comingSoonText}>Calculator Coming Soon</Text>;
+  // return (
+  //   <Link
+  //     href={{
+  //       pathname: "/(screens)/gradesCalculating",
+  //       params: { name: "Dan" },
+  //     }}
+  //     asChild
+  //   >
+  //     <Text style={styles.comingSoonText}>Calculator Soon</Text>
+  //   </Link>
+  // );
+  return (
+    <Text style={styles.comingSoonText}>Calculator Coming Very Soon!</Text>
+  );
 };
 
 const styles = StyleSheet.create({
