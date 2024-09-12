@@ -87,6 +87,14 @@ function RootLayoutNav() {
         }}
       />
       <Stack.Screen
+        name="(screens)/gradesCalculating"
+        options={{
+          headerShown: false,
+          presentation: "modal",
+          animation: "fade_from_bottom",
+        }}
+      />
+      <Stack.Screen
         name="clubPage/[id]"
         options={{ headerShown: false, animation: "flip" }}
       />

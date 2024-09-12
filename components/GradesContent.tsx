@@ -253,18 +253,34 @@ const Grades = ({
 }) => {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
-  const renderCourseItem = ({ item }: { item: Course }) => (
-    <TouchableOpacity
-      style={styles.courseItem}
-      onPress={() => setSelectedCourse(item)}
-    >
-      <Text style={styles.courseName}>{item.name}</Text>
-      <Text style={styles.courseGrade}>
-        {item.overallGrade == -100 ? "N/A" : item.overallGrade + "%"}
-      </Text>
-    </TouchableOpacity>
-  );
+  // Function to determine the background color based on the grade
+  const getBackgroundColor = (grade: number) => {
+    if (grade >= 90) return "#009933";
+    if (grade >= 80) return "#33BBFF";
+    if (grade >= 70) return "#cccc00";
+    return "red"; // For grades less than 70
+  };
 
+  const renderCourseItem = ({ item }: { item: Course }) => {
+    const backgroundColor =
+      item.overallGrade === -100 ? "black" : getBackgroundColor(item.overallGrade);
+  
+    return (
+      <TouchableOpacity
+        style={styles.courseItem} // Keep the existing styles for the main container
+        onPress={() => setSelectedCourse(item)}
+      >
+        <Text style={styles.courseName}>{item.name}</Text>
+        {/* Wrap the Text component in a View to handle background and border styling */}
+        <View style={[styles.gradeContainer, { backgroundColor }]}>
+          <Text style={styles.courseGrade}>
+            {item.overallGrade == -100 ? "N/A" : item.overallGrade + "%"}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+  
   const renderGradeItem = ({ item }: { item: Grade }) => (
     <View style={styles.gradeItem}>
       <Text style={styles.assignmentName}>{item.assignmentName}</Text>
@@ -577,6 +593,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    textAlignVertical: "center",
     backgroundColor: Colors.transcriptBubblesBG,
     padding: 15,
     borderRadius: 10,
@@ -590,11 +607,11 @@ const styles = StyleSheet.create({
   },
   courseGrade: {
     fontSize: 24,
-    color: Colors.tabActiveTint,
+    color: 'white',
     fontWeight: "bold",
-    borderColor: "white",
-    borderWidth: 2,
-    borderRadius: 10,
+    textAlignVertical: "center",
+    verticalAlign: "middle",
+
     padding: 10,
     width: 90,
     textAlign: "center",
@@ -620,6 +637,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: "white",
     textAlign: "right",
+  },
+  gradeContainer: {
+    borderRadius: 10,   // Curved borders for the colored box
+    alignSelf: "flex-start", // Adjusts the width of the box to fit the content
+    alignItems: "center",    // Centers the content horizontally
+    textAlignVertical: "center", // Centers the content vertically
+    marginVertical: 12,          // Adds space around the content
   },
   date: {
     fontSize: 14,

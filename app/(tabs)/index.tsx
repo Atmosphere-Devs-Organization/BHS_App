@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import {
   StatusBar,
   StyleSheet,
@@ -9,17 +9,17 @@ import {
   Animated,
   Linking,
   TouchableWithoutFeedback,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { FIREBASE_AUTH } from '@/FirebaseConfig';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import Colors from '@/constants/Colors';
-import Numbers from '@/constants/Numbers';
-import { buttons, Button } from '@/components/ButtonData'; 
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { FIREBASE_AUTH } from "@/FirebaseConfig";
+import { onAuthStateChanged, User } from "firebase/auth";
+import Colors from "@/constants/Colors";
+import Numbers from "@/constants/Numbers";
+import { buttons, Button } from "@/components/ButtonData";
 import * as SecureStore from "expo-secure-store";
 
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 
 const categories = ["All", "Students", "Parents"];
 
@@ -32,16 +32,20 @@ const Home: React.FC = () => {
 
   const scrollY = useRef(new Animated.Value(0)).current;
   const [isButtonVisible, setIsButtonVisible] = useState(true);
-  const [buttonPressTimeout, setButtonPressTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [buttonPressTimeout, setButtonPressTimeout] =
+    useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    
-    if (!SecureStore.getItemAsync("HACusername")) {
-      router.push('(modals)/login');
-    }
-   
+    const fetchUserData = async () => {
+      let user = await SecureStore.getItemAsync("HACusername");
+      let pass = await SecureStore.getItemAsync("HACpassword");
+      if (user == null || user == "" || pass == null || pass == "") {
+        router.push("(modals)/login");
+      }
+    };
 
-  }, [router]);
+    fetchUserData();
+  }, []);
 
   useEffect(() => {
     const listener = scrollY.addListener(({ value }) => {
@@ -57,7 +61,9 @@ const Home: React.FC = () => {
     if (selectedCategory === "All") {
       return buttons;
     } else {
-      return buttons.filter(button => button.categories.includes(selectedCategory));
+      return buttons.filter((button) =>
+        button.categories.includes(selectedCategory)
+      );
     }
   };
 
@@ -76,20 +82,22 @@ const Home: React.FC = () => {
   };
 
   const handlePressOut = (buttonTitle: string, url: string) => {
-    setButtonPressTimeout(setTimeout(() => {
-      if (pressedButton === buttonTitle) {
-        handleButtonPress(url);
-      }
-      setPressedButton(null);
-    }, 500)); 
+    setButtonPressTimeout(
+      setTimeout(() => {
+        if (pressedButton === buttonTitle) {
+          handleButtonPress(url);
+        }
+        setPressedButton(null);
+      }, 500)
+    );
   };
 
   return (
     <View style={[styles.home_BG_Color]}>
       <StatusBar
         animated={true}
-        barStyle={'light-content'}
-        showHideTransition={'fade'}
+        barStyle={"light-content"}
+        showHideTransition={"fade"}
         hidden={false}
       />
 
@@ -104,19 +112,21 @@ const Home: React.FC = () => {
             { useNativeDriver: false }
           )}
         >
-          <Animated.View style={[
-            styles.profileButtonContainer,
-            {
-              opacity: scrollY.interpolate({
-                inputRange: [0, 100],
-                outputRange: [1, 0],
-                extrapolate: 'clamp',
-              }),
-            }
-          ]}>
+          <Animated.View
+            style={[
+              styles.profileButtonContainer,
+              {
+                opacity: scrollY.interpolate({
+                  inputRange: [0, 100],
+                  outputRange: [1, 0],
+                  extrapolate: "clamp",
+                }),
+              },
+            ]}
+          >
             {isButtonVisible && (
               <TouchableOpacity
-                onPress={() => router.push('(screens)/profile')}
+                onPress={() => router.push("(screens)/profile")}
                 style={styles.profileButton}
               >
                 <Ionicons
@@ -133,12 +143,12 @@ const Home: React.FC = () => {
           </View>
 
           <View style={styles.tabContainer}>
-            {categories.map(category => (
+            {categories.map((category) => (
               <TouchableOpacity
                 key={category}
                 style={[
                   styles.tabButton,
-                  selectedCategory === category && styles.tabButtonActive
+                  selectedCategory === category && styles.tabButtonActive,
                 ]}
                 onPress={() => setSelectedCategory(category)}
               >
@@ -155,21 +165,20 @@ const Home: React.FC = () => {
                 onPressOut={() => handlePressOut(button.title, button.link)}
                 style={[
                   styles.button,
-                  pressedButton === button.title && styles.buttonPressed
+                  pressedButton === button.title && styles.buttonPressed,
                 ]}
               >
                 <Text style={styles.buttonText}>{button.title}</Text>
               </TouchableOpacity>
             ))}
           </View>
-          
+
           <TouchableOpacity
-            onPress={() => router.push('(modals)/report')}
+            onPress={() => router.push("(modals)/report")}
             style={styles.reportButton}
           >
             <Text style={styles.reportButtonText}>Report an Issue</Text>
           </TouchableOpacity>
-          
         </Animated.ScrollView>
       </TouchableWithoutFeedback>
     </View>
@@ -179,27 +188,27 @@ const Home: React.FC = () => {
 const styles = StyleSheet.create({
   home_BG_Color: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: "#121212",
   },
   scrollViewContent: {
     flexGrow: 1,
-    alignItems: 'center',
-    paddingBottom: 150, 
-    paddingTop: 140, 
+    alignItems: "center",
+    paddingBottom: 150,
+    paddingTop: 140,
   },
   welcomeContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingTop: 20,
     marginBottom: 20,
   },
   welcomeText: {
     fontSize: 34,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+    fontWeight: "bold",
+    color: "#FFFFFF",
   },
   tabContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginBottom: 20,
     marginTop: 15,
   },
@@ -208,45 +217,45 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     marginHorizontal: 5,
     borderRadius: 20,
-    backgroundColor: '#333333',
+    backgroundColor: "#333333",
   },
   tabButtonActive: {
-    backgroundColor: '#007BFF',
+    backgroundColor: "#007BFF",
   },
   tabButtonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   buttonsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    width: '100%',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    width: "100%",
     paddingHorizontal: 20,
     paddingTop: 15,
   },
   button: {
-    width: '45%',
+    width: "45%",
     marginBottom: 10,
-    backgroundColor: '#007BFF',
+    backgroundColor: "#007BFF",
     borderRadius: 10,
     paddingVertical: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: '2.5%',
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: "2.5%",
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
   },
   buttonPressed: {
-    backgroundColor: '#0056b3',
+    backgroundColor: "#0056b3",
   },
   profileButtonContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 40,
     right: 15,
     zIndex: 10,
@@ -255,22 +264,22 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   reportButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 120, // Moves the button up from the bottom edge
-    left: '50%', // Centers the button horizontally
+    left: "50%", // Centers the button horizontally
     marginLeft: -80, // Half of the button's width to align it perfectly at the center (width is 160)
-    backgroundColor: '#FF8500',
+    backgroundColor: "#FF8500",
     borderRadius: 50,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    marginVertical: -20, 
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginVertical: -20,
+    alignItems: "center",
+    justifyContent: "center",
   },
   reportButtonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 

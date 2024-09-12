@@ -4,7 +4,6 @@ import {
   ScrollView,
   View,
   Text,
-  FlatList,
   StyleSheet,
   TouchableOpacity,
   TextInput,
@@ -12,7 +11,6 @@ import {
   Keyboard,
   Pressable,
   Alert,
-  ListRenderItem,
 } from "react-native";
 import { FIREBASE_AUTH } from "@/FirebaseConfig";
 import { User, onAuthStateChanged } from "firebase/auth";
@@ -21,9 +19,6 @@ import { Entypo, Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import Numbers from "@/constants/Numbers";
 import Colors from "@/constants/Colors";
-import AwesomeButton from "react-native-really-awesome-button";
-import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
-import clubsData from "assets/data/clubs-data.json"; // Adjust the path as necessary
 import * as SecureStore from "expo-secure-store";
 
 const screenWidth = Dimensions.get("window").width;
@@ -43,8 +38,6 @@ const App = () => {
 };
 
 const NormalProfile = () => {
-  const [isEditingHAC, setIsEditingHAC] = useState(false);
-
   const [sid, setSid] = useState("");
   const [HACpassword, setHACPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -62,23 +55,14 @@ const NormalProfile = () => {
     fetchUserData();
   }, []);
 
-  useEffect(() => {
-    if (isEditingHAC) {
-      sidInputRef.current?.focus();
-      scrollRef.current?.scrollToEnd({ animated: true });
-    }
-  }, [isEditingHAC]);
-
-  const updateUser = async (field: "HACusername" | "HACpassword") => {
+  const saveUserData = async () => {
     try {
-      if (field === "HACusername") {
-        await SecureStore.setItemAsync("HACusername", sid);
-        Alert.alert("Success", "S-id updated");
-      } else if (field === "HACpassword") {
-        await SecureStore.setItemAsync("HACpassword", HACpassword);
-        Alert.alert("Success", "HAC password updated");
-      }
-    } catch (error) {}
+      await SecureStore.setItemAsync("HACusername", sid);
+      await SecureStore.setItemAsync("HACpassword", HACpassword);
+      Alert.alert("Success", "HAC Information saved");
+    } catch (error) {
+      Alert.alert("Error", "Failed to save HAC Information");
+    }
   };
 
   return (
@@ -111,7 +95,6 @@ const NormalProfile = () => {
                     placeholderTextColor={"grey"}
                     value={sid}
                     onChangeText={setSid}
-                    editable={isEditingHAC}
                     ref={sidInputRef}
                   />
                 </View>
@@ -126,7 +109,6 @@ const NormalProfile = () => {
                       value={HACpassword}
                       onChangeText={setHACPassword}
                       secureTextEntry={!showPassword}
-                      editable={isEditingHAC}
                       ref={hacPasswordInputRef}
                     />
                     <Pressable
@@ -143,20 +125,10 @@ const NormalProfile = () => {
                 </View>
 
                 <TouchableOpacity
-                  onPress={() => {
-                    if (isEditingHAC) {
-                      setIsEditingHAC(false);
-                      updateUser("HACusername");
-                      updateUser("HACpassword");
-                    } else {
-                      setIsEditingHAC(true);
-                    }
-                  }}
-                  style={styles.edit_button}
+                  onPress={saveUserData}
+                  style={styles.save_button}
                 >
-                  <Text style={styles.edit_button_text}>
-                    {isEditingHAC ? "Save" : "Edit"}
-                  </Text>
+                  <Text style={styles.save_button_text}>Save</Text>
                 </TouchableOpacity>
               </View>
             </SafeAreaView>
@@ -169,10 +141,6 @@ const NormalProfile = () => {
 
 // Styles
 const styles = StyleSheet.create({
-  logged_out_profile_container: {
-    flex: 1,
-    backgroundColor: "#121212",
-  },
   normal_profile_container: {
     flex: 1,
     backgroundColor: "#121212",
@@ -193,27 +161,6 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     textAlign: "center",
   },
-  need_signin_text: {
-    alignSelf: "center",
-    marginTop: 100,
-    marginHorizontal: 20,
-    marginBottom: 20,
-    fontWeight: "bold",
-    fontSize: Numbers.needSignInFontSize,
-    color: "white",
-    textAlign: "center",
-  },
-  login_button: {
-    marginVertical: 25,
-    alignContent: "center",
-    alignSelf: "center",
-  },
-  login_text: {
-    fontSize: Numbers.loginTextFontSize,
-    color: "white",
-    textAlign: "center",
-    fontWeight: "bold",
-  },
   infoContainer: {
     marginHorizontal: 20,
     marginVertical: 10,
@@ -223,11 +170,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  infoText: {
-    color: "white",
-    fontSize: 16,
-    marginVertical: 5,
-  },
   infoInput: {
     flex: 1,
     color: "white",
@@ -236,15 +178,16 @@ const styles = StyleSheet.create({
     borderBottomColor: "white",
     marginVertical: 5,
   },
-  edit_button: {
+  save_button: {
     marginTop: 10,
     backgroundColor: "orange",
     padding: 5,
     borderRadius: 5,
   },
-  edit_button_text: {
+  save_button_text: {
     color: "white",
     fontWeight: "bold",
+    textAlign: "center",
   },
   sectionTitle: {
     fontSize: 25,
@@ -253,49 +196,14 @@ const styles = StyleSheet.create({
     textAlign: "center",
     margin: 10,
   },
-  clubTitle: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: "white",
-    margin: 20,
-    alignSelf: "center",
-  },
-  clubContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    marginVertical: 10,
-    marginHorizontal: 20,
-  },
-  club_button: {
-    marginVertical: 10,
-  },
-  club_button_text: {
-    color: "#FF8500",
-    fontWeight: "bold",
-    fontSize: 20,
-    textAlign: "center",
-  },
-  logout_button: {
-    marginTop: 40,
-    alignContent: "center",
-    alignSelf: "center",
-    marginBottom: 120,
-  },
   passwordContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 5,
-    paddingHorizontal: 0, // Align with the input field
+    paddingHorizontal: 0,
   },
   eyeIcon: {
     marginLeft: 10,
-  },
-  logout_text: {
-    fontSize: 25,
-    color: "white",
-    textAlign: "center",
-    fontWeight: "bold",
   },
   cardContainer: {
     backgroundColor: "#1E1E1E",
@@ -304,19 +212,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: 20,
   },
-  cardLabel: {
-    color: "#2176ff",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  cardInput: {
-    color: "black",
-    fontSize: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "black",
-  },
 });
 
 export default App;
-
