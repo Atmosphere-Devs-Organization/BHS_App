@@ -1,0 +1,66 @@
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import classData from './classes.json'; // Ensure this path matches where your JSON is located
+
+interface ClassInfo {
+  name: string;
+  average: number;
+}
+
+const screenWidth = Dimensions.get('window').width;
+
+const Home: React.FC = () => {
+  const [currentClassIndex, setCurrentClassIndex] = useState(0);
+  const [currentClass, setCurrentClass] = useState<ClassInfo | null>(null);
+
+  useEffect(() => {
+    // Set the initial class
+    setCurrentClass(classData[currentClassIndex]);
+
+    // Cycle through classes every 3 seconds
+    const interval = setInterval(() => {
+      setCurrentClassIndex((prevIndex) => {
+        const newIndex = (prevIndex + 1) % classData.length;
+        setCurrentClass(classData[newIndex]);
+        return newIndex;
+      });
+    }, 3000);
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(interval);
+  }, [currentClassIndex]);
+
+  return (
+    <View style={styles.container}>
+      {currentClass ? (
+        <>
+          <Text style={styles.className}>{currentClass.name}</Text>
+          <Text style={styles.classAverage}>Average: {currentClass.average}</Text>
+        </>
+      ) : (
+        <Text>Loading...</Text>
+      )}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#121212',
+  },
+  className: {
+    fontSize: 34,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  classAverage: {
+    fontSize: 28,
+    marginTop: 10,
+    color: '#FFFFFF',
+  },
+});
+
+export default Home;
