@@ -1,84 +1,80 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Colors from "@/constants/Colors";
 
-const CourseCard = ({ course, semester }: { course: string, semester: string }) => {
-  return (
-    <View style={styles.card}>
-      <Text style={styles.courseName}>{course}</Text>
-      {semester && 
-          
-      <Text style={styles.courseGrade}>{semester}</Text>
+interface Course {
+  courseName: string;
+  sem1Grade: string;
+  sem2Grade: string;
 }
+
+interface CourseBlockProps {
+  courses: Course[];
+}
+
+const CourseBlock: React.FC<CourseBlockProps> = ({ courses }) => {
+  return (
+    <View style={styles.block}>
+      <Text style={styles.semesterTitle}>Transcript</Text>
+      <View style={styles.headerRow}>
+        <Text style={styles.headerText}>Course</Text>
+        <Text style={styles.headerText}>SEM1</Text>
+        <Text style={styles.headerText}>SEM2</Text>
+      </View>
+      {courses.map((course, index) => (
+        <View key={index} style={styles.courseRow}>
+          <Text style={styles.courseText}>{course.courseName}</Text>
+          <Text style={styles.courseText}>{course.sem1Grade}</Text>
+          <Text style={styles.courseText}>{course.sem2Grade}</Text>
+        </View>
+      ))}
     </View>
   );
-
-
-  /*
-      <TouchableOpacity
-      style={styles.courseItem}
-      onPress={() => setSelectedCourse(item)}
-    >
-      <Text style={styles.courseName}>{item.name}</Text>
-      <Text style={styles.courseGrade}>
-
-  */
 };
 
 const styles = StyleSheet.create({
-  card: {
-    color: "white",
-    borderWidth: 1,
-    borderColor : "#fff",
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: Colors.transcriptBubblesBG,
-    
-
-
+  block: {
+    borderWidth: 2,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 10,
+    marginVertical: 10,
+    width: '103%',
   },
-  courseTitle: {
+  semesterTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    textAlign: 'center',
+    color: "white",
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    paddingBottom: 5,
+    color: "white",
+  },
+  headerText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: 'white',
-  },
-  semesterText: {
-    fontSize: 14,
-    color: 'white',
-
-  },
-  courseItem: {
-    backgroundColor: Colors.transcriptBubblesBG,
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    height: 100,
-  },
-  courseName: {
-    fontSize: 18,
-    fontWeight: "bold",
+    width: '30%', // Adjust width as needed to align columns
+    textAlign: 'center',
     color: "white",
   },
-  courseGrade: {
-    fontSize: 24,
-    color: Colors.tabActiveTint,
-    fontWeight: "bold",
-    borderColor: "white",
-    borderWidth: 2,
-    borderRadius: 10,
-    padding: 15,
-    alignSelf: "flex-end",
-    width: 100,
-    textAlign: "center",
-    textAlignVertical: "center",
-    alignItems : "center",
-
+  courseRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 5,
+    color: "white",
   },
-
+  courseText: {
+    fontSize: 16,
+    width: '30%', // Adjust width as needed to align columns
+    textAlign: 'center',
+    color: "white",
+  },
 });
 
-export default CourseCard;
+export default CourseBlock;
