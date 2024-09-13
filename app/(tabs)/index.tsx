@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
   Animated,
   Linking,
+  ScrollView,
   TouchableWithoutFeedback,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { FIREBASE_AUTH } from "@/FirebaseConfig";
 import { onAuthStateChanged, User } from "firebase/auth";
@@ -18,6 +18,17 @@ import Colors from "@/constants/Colors";
 import Numbers from "@/constants/Numbers";
 import { buttons, Button } from "@/components/ButtonData";
 import * as SecureStore from "expo-secure-store";
+import classData from './classes.json'; 
+
+interface ClassInfo {
+  name: string;
+  average: number;
+}
+
+interface resource {
+  name: string;
+  url: string;
+}
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -27,35 +38,37 @@ const Home: React.FC = () => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [isScrolling, setIsScrolling] = useState<boolean>(false);
   const [pressedButton, setPressedButton] = useState<string | null>(null);
-
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const [isButtonVisible, setIsButtonVisible] = useState(true);
-  const [buttonPressTimeout, setButtonPressTimeout] =
-    useState<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      let user = await SecureStore.getItemAsync("HACusername");
-      let pass = await SecureStore.getItemAsync("HACpassword");
-      if (user == null || user == "" || pass == null || pass == "") {
-        router.push("(modals)/login");
-      }
-    };
-
-    fetchUserData();
-  }, []);
+  const [currentClassIndex, setCurrentClassIndex] = useState(0);
+  const [currentClass, setCurrentClass] = useState<ClassInfo | null>(null);
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const [isScrolling, setIsScrolling] = useState(false);
 
   useEffect(() => {
-    const listener = scrollY.addListener(({ value }) => {
-      setIsButtonVisible(value < 100);
-    });
+    setCurrentClass(classData[currentClassIndex]);
 
-    return () => {
-      scrollY.removeListener(listener);
-    };
-  }, [scrollY]);
+    const interval = setInterval(() => {
+      Animated.timing(fadeAnim, {
+        toValue: 0, 
+        duration: 500,
+        useNativeDriver: true,
+      }).start(() => {
+        setCurrentClassIndex((prevIndex) => {
+          const newIndex = (prevIndex + 1) % classData.length;
+          setCurrentClass(classData[newIndex]);
+          return newIndex;
+        });
+
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }).start();
+      });
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [currentClassIndex]);
 
   const filterButtons = (): Button[] => {
     if (selectedCategory === "All") {
@@ -67,76 +80,53 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleButtonPress = (url: string) => {
-    if (!isScrolling) {
-      Linking.openURL(url);
-    }
+  const handleScrollBegin = () => {
+    setIsScrolling(true);
+  };
+
+  const handleScrollEnd = () => {
+    setIsScrolling(false);
   };
 
   const handlePressIn = (buttonTitle: string) => {
-    setPressedButton(buttonTitle);
-
-    if (buttonPressTimeout) {
-      clearTimeout(buttonPressTimeout);
+    if (!isScrolling) {
+      setPressedButton(buttonTitle);
     }
   };
 
   const handlePressOut = (buttonTitle: string, url: string) => {
-    setButtonPressTimeout(
+    if (!isScrolling) {
       setTimeout(() => {
         if (pressedButton === buttonTitle) {
-          handleButtonPress(url);
+          Linking.openURL(url);
         }
         setPressedButton(null);
-      }, 500)
-    );
+      }, 500);
+    }
   };
 
   return (
-    <View style={[styles.home_BG_Color]}>
-      <StatusBar
-        animated={true}
-        barStyle={"light-content"}
-        showHideTransition={"fade"}
-        hidden={false}
-      />
+    <View style={styles.home_BG_Color}>
+      <StatusBar hidden={true} />
 
       <TouchableWithoutFeedback onPressIn={() => setIsScrolling(true)}>
-        <Animated.ScrollView
-          contentContainerStyle={styles.scrollViewContent}
-          onScrollBeginDrag={() => setIsScrolling(true)}
-          onScrollEndDrag={() => setIsScrolling(false)}
-          onMomentumScrollEnd={() => setIsScrolling(false)}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: false }
-          )}
-        >
-          <Animated.View
-            style={[
-              styles.profileButtonContainer,
-              {
-                opacity: scrollY.interpolate({
-                  inputRange: [0, 100],
-                  outputRange: [1, 0],
-                  extrapolate: "clamp",
-                }),
-              },
-            ]}
-          >
-            {isButtonVisible && (
-              <TouchableOpacity
-                onPress={() => router.push("(screens)/profile")}
-                style={styles.profileButton}
-              >
-                <Ionicons
-                  name="person-circle-sharp"
-                  size={Numbers.profileButtonSize}
-                  color={Colors.profileButton}
-                />
-              </TouchableOpacity>
+        <ScrollView>
+          <View style={styles.gradeContainer}>
+            {currentClass ? (
+              <>
+                <Animated.Text style={[styles.className, { opacity: fadeAnim }]}>
+                  {currentClass.name}
+                </Animated.Text>
+                <Animated.Text
+                  style={[styles.classAverage, { opacity: fadeAnim }]}
+                >
+                  Average: {currentClass.average}
+                </Animated.Text>
+              </>
+            ) : (
+              <Text>Loading...</Text>
             )}
-          </Animated.View>
+          </View>
 
           <View style={styles.welcomeContainer}>
             <Text style={styles.welcomeText}>Resources</Text>
@@ -157,12 +147,21 @@ const Home: React.FC = () => {
             ))}
           </View>
 
-          <View style={styles.buttonsContainer}>
+          <ScrollView
+            horizontal={true}
+            style={styles.horizontalScrollView}
+            onScrollBeginDrag={handleScrollBegin}
+            onScrollEndDrag={handleScrollEnd}
+            scrollEventThrottle={16}
+          >
             {filterButtons().map((button: Button) => (
               <TouchableOpacity
                 key={button.title}
-                onPressIn={() => handlePressIn(button.title)}
-                onPressOut={() => handlePressOut(button.title, button.link)}
+                onPress={() => {
+                    if (!isScrolling) {
+                      Linking.openURL(button.link);
+                    }
+                  }}
                 style={[
                   styles.button,
                   pressedButton === button.title && styles.buttonPressed,
@@ -171,16 +170,18 @@ const Home: React.FC = () => {
                 <Text style={styles.buttonText}>{button.title}</Text>
               </TouchableOpacity>
             ))}
-          </View>
-
-          <TouchableOpacity
-            onPress={() => router.push("(modals)/report")}
-            style={styles.reportButton}
-          >
-            <Text style={styles.reportButtonText}>Report an Issue</Text>
-          </TouchableOpacity>
-        </Animated.ScrollView>
+          </ScrollView>
+        </ScrollView>
       </TouchableWithoutFeedback>
+
+      <View style={styles.reportButtonContainer}>
+        <TouchableOpacity
+          onPress={() => router.push("(modals)/report")}
+          style={styles.reportButton}
+        >
+          <Text style={styles.reportButtonText}>Report an Issue</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -189,12 +190,13 @@ const styles = StyleSheet.create({
   home_BG_Color: {
     flex: 1,
     backgroundColor: "#121212",
+    paddingBottom: "30%"
   },
-  scrollViewContent: {
-    flexGrow: 1,
+  gradeContainer: {
+    padding: 20,
+    justifyContent: "center",
     alignItems: "center",
-    paddingBottom: 150,
-    paddingTop: 140,
+    backgroundColor: "#121212",
   },
   welcomeContainer: {
     alignItems: "center",
@@ -227,52 +229,37 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  buttonsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
+  horizontalScrollView: {
     width: "100%",
-    paddingHorizontal: 20,
-    paddingTop: 15,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
   },
   button: {
-    width: "45%",
-    marginBottom: 10,
     backgroundColor: "#007BFF",
     borderRadius: 10,
     paddingVertical: 15,
+    paddingHorizontal: 10,
     alignItems: "center",
     justifyContent: "center",
-    marginHorizontal: "2.5%",
+    marginHorizontal: 5,
   },
   buttonText: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
-    textAlign: "center",
   },
   buttonPressed: {
     backgroundColor: "#0056b3",
   },
-  profileButtonContainer: {
-    position: "absolute",
-    top: 40,
-    right: 15,
-    zIndex: 10,
-  },
-  profileButton: {
-    padding: 10,
+  reportButtonContainer: {
+    alignItems: 'center',
+    marginVertical: 20,
   },
   reportButton: {
-    position: "absolute",
-    bottom: 120, // Moves the button up from the bottom edge
-    left: "50%", // Centers the button horizontally
-    marginLeft: -80, // Half of the button's width to align it perfectly at the center (width is 160)
     backgroundColor: "#FF8500",
     borderRadius: 50,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    marginVertical: -20,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -280,6 +267,16 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  className: {
+    fontSize: 34,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+  },
+  classAverage: {
+    fontSize: 28,
+    marginTop: 10,
+    color: "#FFFFFF",
   },
 });
 
