@@ -11,7 +11,7 @@ import {
   Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import * as MailComposer from "expo-mail-composer";
 
 const PrivacyPolicyPage = () => {
@@ -53,9 +53,12 @@ const PrivacyPolicyPage = () => {
       <ScrollView>
         <View>
           {/* Back Button */}
-          <Link href="/(tabs)/calendar" style={styles.backButton}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backButton}
+          >
             <Ionicons name="arrow-back-outline" size={24} color="white" />
-          </Link>
+          </TouchableOpacity>
           <Text style={styles.title}>Report an Issue</Text>
 
           {/* Issue Description Input */}
