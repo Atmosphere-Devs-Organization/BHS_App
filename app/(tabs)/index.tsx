@@ -17,6 +17,7 @@ import { useRouter } from "expo-router";
 import { Entypo, MaterialIcons } from "@expo/vector-icons"; // Import MaterialIcons
 import { buttons, Button } from "@/components/ButtonData"; // Your button data
 import * as SecureStore from "expo-secure-store";
+import { refreshGradeData } from "@/globalVars/gradesVariables";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -54,13 +55,8 @@ const Home: React.FC = () => {
     }
   };
   useEffect(() => {
-    const fetchUserData = async () => {
-      setSid((await SecureStore.getItemAsync("HACusername")) || "");
-      setHACPassword((await SecureStore.getItemAsync("HACpassword")) || "");
-    };
-
-    fetchUserData();
-  }, []);
+    refreshGradeData(sid, HACpassword);
+  }, [sid, HACpassword]);
 
   const filterButtons = (): Button[] => {
     if (selectedCategory === "All") {
@@ -95,56 +91,50 @@ const Home: React.FC = () => {
 
       <TouchableWithoutFeedback onPressIn={() => setIsScrolling(true)}>
         <ScrollView>
-          <View style={styles.welcomeContainer}>
-           
-          </View>
-              <View style={styles.cardContainer}>
-                <Text style={styles.sectionTitle}>HAC Information</Text>
-                <View style={styles.infoContainer}>
-                  <Text style={styles.infoLabel}>SID (include S)</Text>
-                  <TextInput
-                    style={styles.infoInput}
-                    placeholder="Enter your SID: (Include the S)"
-                    placeholderTextColor={"grey"}
-                    value={sid}
-                    onChangeText={setSid}
-                    ref={sidInputRef}
-                  />
-                </View>
+          <View style={styles.welcomeContainer}></View>
+          <View style={styles.cardContainer}>
+            <Text style={styles.sectionTitle}>HAC Information</Text>
+            <View style={styles.infoContainer}>
+              <Text style={styles.infoLabel}>SID (include S)</Text>
+              <TextInput
+                style={styles.infoInput}
+                placeholder="Enter your SID: (Include the S)"
+                placeholderTextColor={"grey"}
+                value={sid}
+                onChangeText={setSid}
+                ref={sidInputRef}
+              />
+            </View>
 
-                <View style={styles.infoContainer}>
-                  <Text style={styles.infoLabel}>HAC Password</Text>
-                  <View style={styles.passwordContainer}>
-                    <TextInput
-                      style={styles.infoInput}
-                      placeholder="Enter your HAC password"
-                      placeholderTextColor={"grey"}
-                      value={HACpassword}
-                      onChangeText={setHACPassword}
-                      secureTextEntry={!showPassword}
-                      ref={hacPasswordInputRef}
-                    />
-                    <Pressable
-                      onPress={() => setShowPassword(!showPassword)}
-                      style={styles.eyeIcon}
-                    >
-                      <Entypo
-                        name={showPassword ? "eye" : "eye-with-line"}
-                        size={20}
-                        color="white"
-                      />
-                    </Pressable>
-                  </View>
-                </View>
-
-                <TouchableOpacity
-                  onPress={saveUserData}
-                  style={styles.save_button}
+            <View style={styles.infoContainer}>
+              <Text style={styles.infoLabel}>HAC Password</Text>
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={styles.infoInput}
+                  placeholder="Enter your HAC password"
+                  placeholderTextColor={"grey"}
+                  value={HACpassword}
+                  onChangeText={setHACPassword}
+                  secureTextEntry={!showPassword}
+                  ref={hacPasswordInputRef}
+                />
+                <Pressable
+                  onPress={() => setShowPassword(!showPassword)}
+                  style={styles.eyeIcon}
                 >
-                  <Text style={styles.save_button_text}>Save</Text>
-                </TouchableOpacity>
+                  <Entypo
+                    name={showPassword ? "eye" : "eye-with-line"}
+                    size={20}
+                    color="white"
+                  />
+                </Pressable>
               </View>
-          
+            </View>
+
+            <TouchableOpacity onPress={saveUserData} style={styles.save_button}>
+              <Text style={styles.save_button_text}>Save</Text>
+            </TouchableOpacity>
+          </View>
 
           <ScrollView
             horizontal={true}

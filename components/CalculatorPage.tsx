@@ -33,20 +33,20 @@ const CalculatorPage = ({
   hacBroken: boolean;
   courses: Course[] | null;
 }) => {
-  // return (
-  //   <Link
-  //     href={{
-  //       pathname: "/(screens)/gradesCalculating",
-  //       params: { name: "Dan" },
-  //     }}
-  //     asChild
-  //   >
-  //     <Text style={styles.comingSoonText}>Calculator Soon</Text>
-  //   </Link>
-  // );
   return (
-    <Text style={styles.comingSoonText}>Calculator Coming Very Soon!</Text>
+    <Link
+      href={{
+        pathname: "(screens)/gradesCalculating",
+        params: { className: "Dan" },
+      }}
+      asChild
+    >
+      <Text style={styles.comingSoonText}>Calculator</Text>
+    </Link>
   );
+  // return (
+  //   <Text style={styles.comingSoonText}>Calculator Coming Very Soon!</Text>
+  // );
 };
 
 const styles = StyleSheet.create({
