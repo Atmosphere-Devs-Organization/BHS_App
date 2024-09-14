@@ -10,17 +10,11 @@ import { useLocalSearchParams, router } from "expo-router";
 import Numbers from "@/constants/Numbers";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "react-native/Libraries/NewAppScreen";
-import {
-  Course,
-  Grade,
-  refreshGradeData,
-  getCourses,
-  HACBroken,
-} from "@/globalVars/gradesVariables";
+import { Course, getCourses } from "@/globalVars/gradesVariables";
 
 const gradesCalculating = () => {
   const { className } = useLocalSearchParams();
-  const [courses, setCourses] = useState<Course[] | null>(null);
+  const [courses, setCourses] = useState<Course[] | null | undefined>(null);
 
   async function setCoursesAsync() {
     if (!courses) {

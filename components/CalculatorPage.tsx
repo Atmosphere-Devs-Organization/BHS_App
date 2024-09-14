@@ -25,13 +25,11 @@ class Course {
 }
 
 const CalculatorPage = ({
-  gradesData,
   hacBroken,
   courses,
 }: {
-  gradesData: any;
   hacBroken: boolean;
-  courses: Course[] | null;
+  courses: Course[] | null | undefined;
 }) => {
   return (
     <Link
@@ -41,7 +39,7 @@ const CalculatorPage = ({
       }}
       asChild
     >
-      <Text style={styles.comingSoonText}>Calculator</Text>
+      <Text style={styles.comingSoonText}>Click Here</Text>
     </Link>
   );
   // return (

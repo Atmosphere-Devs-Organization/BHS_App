@@ -18,31 +18,10 @@ import { useFocusEffect } from "@react-navigation/native";
 import HACNeededScreen from "./HACNeededScreen";
 import CourseCard from "./CourseCard"; // Adjust the import path as necessary
 import CalculatorPage from "./CalculatorPage";
+import { Course, getCourses, Grade } from "@/globalVars/gradesVariables";
 
 interface Props {
   category: string;
-}
-
-class Grade {
-  constructor(
-    public assignmentType: string,
-    public assignmentName: string,
-    public grade: number,
-    public date: Date
-  ) {}
-}
-
-// Class to represent a course
-class Course {
-  constructor(
-    public name: string,
-    public overallGrade: number,
-    public grades: Grade[]
-  ) {}
-
-  addAssignment(assignment: Grade) {
-    this.grades[this.grades.length] = assignment;
-  }
 }
 
 const GradesContent = ({ category }: Props) => {
@@ -111,81 +90,46 @@ const GradesContent = ({ category }: Props) => {
   };
 
   const [transcriptData, setTData] = useState<any>(null);
-  const [gradesData, setGData] = useState<any>(null);
   const [schoolYears, setSchoolYears] = useState<any>([]);
 
   useEffect(() => {
     setTData(null);
-    setGData(null);
     if (username && password) {
       async function fetchAPI() {
         let response = await fetchStudentInfo("transcript");
-        let response2 = await fetchStudentInfo("assignments");
         setTData(response);
-        setGData(response2);
 
-        const schoolYearArray = Object.keys(response)
-          .filter((key) => key.includes("School Year"))
-          .map((key) => ({
-            key,
-            ...response[key],
-          }));
-        setSchoolYears(schoolYearArray.reverse());
+        if (response) {
+          const schoolYearArray = Object.keys(response)
+            .filter((key) => key.includes("School Year"))
+            .map((key) => ({
+              key,
+              ...response[key],
+            }));
+          setSchoolYears(schoolYearArray.reverse());
+        }
       }
 
       fetchAPI();
     }
   }, [username, password]);
 
-  const [courses, setCourses] = useState<Course[] | null>(null);
+  const [courses, setCourses] = useState<Course[] | null | undefined>(null);
+  async function setCoursesAsync() {
+    if (!courses) {
+      setCourses(await getCourses());
+    }
+  }
 
-  // Simulated data fetch - replace with actual API call
+  let intervalId: NodeJS.Timeout = setInterval(() => {
+    setCoursesAsync();
+  }, 10);
+
   useEffect(() => {
-    const fetchCourses = async () => {
-      // Simulated API response
-      const coursesData: Course[] = [];
-
-      if (gradesData) {
-        let i = 0;
-        const classesArray = Object.keys(gradesData);
-        classesArray.forEach(function (value) {
-          if (value.indexOf("dropped") == -1) {
-            let grade = Number.parseInt(gradesData[value]["average"]);
-            coursesData[i] = new Course(
-              value.split(" - ")[1].split(" Marking")[0].substring(2),
-              grade ? grade : -100,
-              []
-            );
-
-            let assignmentsArr = gradesData[value]["assignments"];
-            assignmentsArr.forEach(function (assignment: any[]) {
-              let assignmentGrade = Number.parseInt(assignment[3]);
-              let dateArr = assignment[1].split("/");
-
-              coursesData[i].addAssignment(
-                new Grade(
-                  assignment[2],
-                  assignment[0],
-                  assignmentGrade ? assignmentGrade : -100,
-                  new Date(dateArr[2] + "-" + dateArr[0] + "-" + dateArr[1])
-                )
-              );
-            });
-            i++;
-          }
-        });
-
-        //We need to add assignments once api works
-        /* coursesData[0].addAssignment(
-         new Grade("Homework", "Linear Equations", 95, new Date("2024-08-15"))
-      );*/
-
-        setCourses(coursesData);
-      }
-    };
-
-    fetchCourses();
-  }, [gradesData]);
+    if (courses) {
+      clearInterval(intervalId);
+    }
+  }, [courses]);
 
   switch (category) {
     case "Grades": {
@@ -197,11 +141,7 @@ const GradesContent = ({ category }: Props) => {
             showHideTransition="slide"
             hidden={false}
           />
-          <Grades
-            gradesData={gradesData}
-            hacBroken={HACBroken}
-            courses={courses}
-          />
+          <Grades hacBroken={HACBroken} courses={courses} />
         </View>
       );
     }
@@ -214,11 +154,7 @@ const GradesContent = ({ category }: Props) => {
             showHideTransition="slide"
             hidden={false}
           />
-          <Calculator
-            gradesData={gradesData}
-            hacBroken={HACBroken}
-            courses={courses}
-          />
+          <Calculator hacBroken={HACBroken} courses={courses} />
         </View>
       );
     }
@@ -243,13 +179,11 @@ const GradesContent = ({ category }: Props) => {
 };
 
 const Grades = ({
-  gradesData,
   hacBroken,
   courses,
 }: {
-  gradesData: any;
   hacBroken: boolean;
-  courses: Course[] | null;
+  courses: Course[] | null | undefined;
 }) => {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
@@ -263,27 +197,28 @@ const Grades = ({
 
   const renderCourseItem = ({ item }: { item: Course }) => {
     const backgroundColor =
-      item.overallGrade === -100 ? "black" : getBackgroundColor(item.overallGrade);
-  
-    return (
+      item.overallGrade === -100
+        ? "black"
+        : getBackgroundColor(item.overallGrade);
 
+    return (
       <View style={styles.causeWhyNot}>
-      <TouchableOpacity
-        style={styles.courseItem} // Keep the existing styles for the main container
-        onPress={() => setSelectedCourse(item)}
-      >
-        <Text style={styles.courseName}>{item.name}</Text>
-        {/* Wrap the Text component in a View to handle background and border styling */}
-        <View style={[styles.gradeContainer, { backgroundColor }]}>
-          <Text style={styles.courseGrade}>
-            {item.overallGrade==-100?"N/A":item.overallGrade+"%"}
-          </Text>
-        </View>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.courseItem} // Keep the existing styles for the main container
+          onPress={() => setSelectedCourse(item)}
+        >
+          <Text style={styles.courseName}>{item.name}</Text>
+          {/* Wrap the Text component in a View to handle background and border styling */}
+          <View style={[styles.gradeContainer, { backgroundColor }]}>
+            <Text style={styles.courseGrade}>
+              {item.overallGrade == -100 ? "N/A" : item.overallGrade + "%"}
+            </Text>
+          </View>
+        </TouchableOpacity>
       </View>
     );
   };
-  
+
   const renderGradeItem = ({ item }: { item: Grade }) => (
     <View style={styles.gradeItem}>
       <Text style={styles.assignmentName}>{item.assignmentName}</Text>
@@ -295,7 +230,7 @@ const Grades = ({
     </View>
   );
 
-  return gradesData !== undefined ? (
+  return courses !== undefined ? (
     <View style={styles.container}>
       {courses !== null ? (
         !selectedCourse ? (
@@ -357,21 +292,13 @@ const Grades = ({
 };
 
 const Calculator = ({
-  gradesData,
   hacBroken,
   courses,
 }: {
-  gradesData: any;
   hacBroken: boolean;
-  courses: Course[] | null;
+  courses: Course[] | null | undefined;
 }) => {
-  return (
-    <CalculatorPage
-      gradesData={gradesData}
-      hacBroken={hacBroken}
-      courses={courses}
-    />
-  );
+  return <CalculatorPage hacBroken={hacBroken} courses={courses} />;
 };
 
 const Transcript = ({
@@ -387,42 +314,50 @@ const Transcript = ({
   const [showingTranscriptDetails, setShowingDetails] =
     useState<boolean>(false);
 
-    const printTranscriptArray = (array: any[]) => {
-      // Create an object to aggregate course data
-      const courseData: { [key: string]: { sem1Grade: string; sem2Grade: string } } = {};
-    
-      // Process the array to format the data
-      array.forEach(item => {
-        if (item[0] !== "Course") { // Assuming the first row contains column headers
-          const courseName = item[1];
-          const sem1Grade = item[2] || '-';
-          const sem2Grade = item[3] || '-';
-    
-          // If the course already exists, update the grades
-          if (courseData[courseName]) {
-            courseData[courseName].sem1Grade = courseData[courseName].sem1Grade === '-' ? sem1Grade : courseData[courseName].sem1Grade;
-            courseData[courseName].sem2Grade = courseData[courseName].sem2Grade === '-' ? sem2Grade : courseData[courseName].sem2Grade;
-          } else {
-            courseData[courseName] = { sem1Grade, sem2Grade };
-          }
+  const printTranscriptArray = (array: any[]) => {
+    // Create an object to aggregate course data
+    const courseData: {
+      [key: string]: { sem1Grade: string; sem2Grade: string };
+    } = {};
+
+    // Process the array to format the data
+    array.forEach((item) => {
+      if (item[0] !== "Course") {
+        // Assuming the first row contains column headers
+        const courseName = item[1];
+        const sem1Grade = item[2] || "-";
+        const sem2Grade = item[3] || "-";
+
+        // If the course already exists, update the grades
+        if (courseData[courseName]) {
+          courseData[courseName].sem1Grade =
+            courseData[courseName].sem1Grade === "-"
+              ? sem1Grade
+              : courseData[courseName].sem1Grade;
+          courseData[courseName].sem2Grade =
+            courseData[courseName].sem2Grade === "-"
+              ? sem2Grade
+              : courseData[courseName].sem2Grade;
+        } else {
+          courseData[courseName] = { sem1Grade, sem2Grade };
         }
-      });
-    
-      // Convert the aggregated data into an array for rendering
-      const courses = Object.keys(courseData).map(courseName => ({
-        courseName,
-        sem1Grade: courseData[courseName].sem1Grade,
-        sem2Grade: courseData[courseName].sem2Grade,
-      }));
-    
-      return (
-        <ScrollView style={{ flex: 1, padding: 10 }}>
-          <CourseCard courses={courses} />
-        </ScrollView>
-      );
-    };
-        
-        
+      }
+    });
+
+    // Convert the aggregated data into an array for rendering
+    const courses = Object.keys(courseData).map((courseName) => ({
+      courseName,
+      sem1Grade: courseData[courseName].sem1Grade,
+      sem2Grade: courseData[courseName].sem2Grade,
+    }));
+
+    return (
+      <ScrollView style={{ flex: 1, padding: 10 }}>
+        <CourseCard courses={courses} />
+      </ScrollView>
+    );
+  };
+
   const renderRow: ListRenderItem<any> = ({ item }) => (
     <TouchableOpacity
       style={{

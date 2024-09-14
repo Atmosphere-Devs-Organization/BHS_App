@@ -17,7 +17,10 @@ import { useRouter } from "expo-router";
 import { Entypo, MaterialIcons } from "@expo/vector-icons"; // Import MaterialIcons
 import { buttons, Button } from "@/components/ButtonData"; // Your button data
 import * as SecureStore from "expo-secure-store";
-import { refreshGradeData } from "@/globalVars/gradesVariables";
+import {
+  refreshBridgelandStudent,
+  refreshGradeData,
+} from "@/globalVars/gradesVariables";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -56,6 +59,7 @@ const Home: React.FC = () => {
   };
   useEffect(() => {
     refreshGradeData(sid, HACpassword);
+    refreshBridgelandStudent(sid, HACpassword);
   }, [sid, HACpassword]);
 
   const filterButtons = (): Button[] => {

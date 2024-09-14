@@ -18,91 +18,30 @@ import AwesomeButton from "react-native-really-awesome-button";
 import { Ionicons } from "@expo/vector-icons";
 import Numbers from "@/constants/Numbers";
 import HACNeededScreen from "@/components/HACNeededScreen";
+import { getAccessStatus } from "@/globalVars/gradesVariables";
 
 const Clubs = () => {
-  const [username, setUsername] = useState<string | null>(null);
-  const [password, setPassword] = useState<string | null>(null);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const fetchCredentials = async () => {
-        const storedUsername = await SecureStore.getItemAsync("HACusername");
-        const storedPassword = await SecureStore.getItemAsync("HACpassword");
-
-        setUsername(storedUsername);
-        setPassword(storedPassword);
-      };
-
-      fetchCredentials();
-
-      return () => {
-        // Do something when the screen is unfocused
-        // Useful for cleanup functions
-      };
-    }, [])
-  );
-
-  const HAC_Link = "https://home-access.cfisd.net";
-
-  let specCharsMap = new Map<string | undefined, string>();
-  specCharsMap.set(" ", "%20");
-  specCharsMap.set("#", "%23");
-  specCharsMap.set("&", "%26");
-  specCharsMap.set("/", "%2F");
-  specCharsMap.set("?", "%3F");
-  specCharsMap.set("!", "%21");
-  specCharsMap.set("$", "%24");
-  specCharsMap.set("@", "%40");
-
   const [HACBroken, setHACBroken] = useState<boolean>(false);
 
-  const fetchStudentInfo = async (apiSection: string): Promise<any> => {
-    let tempPassword = "";
-    for (let i = 0; i < (password ? password.length : 0); i++) {
-      tempPassword += specCharsMap.has(password?.substring(i, i + 1))
-        ? specCharsMap.get(password?.substring(i, i + 1))
-        : password?.substring(i, i + 1);
-    }
-
-    const apiLink =
-      "https://home-access-center-ap-iv2-sooty.vercel.app/api/" +
-      apiSection +
-      "?link=" +
-      HAC_Link +
-      "/&user=" +
-      username +
-      "&pass=" +
-      tempPassword;
-
-    try {
-      const response = await axios.get(apiLink);
-      setHACBroken(false);
-      return response.data;
-    } catch (error) {
-      setHACBroken(error == "AxiosError: Request failed with status code 500");
-      return undefined;
-    }
-  };
-
   const [hasAccess, setAccess] = useState<boolean>(false);
-  const [loadingInfo, setLoadingInfo] = useState<boolean>(false);
+  const [loadingInfo, setLoadingInfo] = useState<boolean>(true);
+
+  async function setCoursesAsync() {
+    if (!hasAccess) {
+      setAccess(await getAccessStatus());
+    }
+  }
+
+  let intervalId: NodeJS.Timeout = setInterval(() => {
+    setCoursesAsync();
+  }, 10);
 
   useEffect(() => {
-    if (username && password) {
-      async function fetchAPI() {
-        setLoadingInfo(true);
-        let response = await fetchStudentInfo("info");
-        setAccess(
-          response
-            ? response["school"].toLowerCase().includes("bridgeland")
-            : false
-        );
-        setLoadingInfo(false);
-      }
-
-      fetchAPI();
+    if (hasAccess) {
+      setLoadingInfo(false);
+      clearInterval(intervalId);
     }
-  }, [username, password]);
+  }, [hasAccess]);
 
   const [category, setCategory] = useState("All");
   const items = useMemo(() => clubData as any, []);
@@ -122,6 +61,20 @@ const Clubs = () => {
         color="#ff4d00"
         style={{ alignSelf: "center", marginTop: 300 }}
       />
+      <Text
+        style={{
+          color: "#ff4d00",
+          alignSelf: "center",
+          textAlign: "center",
+          fontSize: 16,
+          marginTop: 20,
+          fontWeight: "bold",
+        }}
+      >
+        {
+          "Make sure you are not on school wifi\nMake sure your HAC info is correct"
+        }
+      </Text>
     </View>
   ) : hasAccess ? (
     <View style={styles.BG_Color}>

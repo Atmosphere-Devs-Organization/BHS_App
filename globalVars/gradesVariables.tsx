@@ -23,7 +23,7 @@ export class Course {
   }
 }
 
-export let courses: Course[] | null = null;
+let courses: Course[] | null | undefined = null;
 export const [HACBroken, setHACBroken] = useState<boolean>(false);
 
 const HAC_Link = "https://home-access.cfisd.net";
@@ -72,8 +72,6 @@ const fetchStudentInfo = async (
 
 let refreshing: boolean = false;
 export async function refreshGradeData(username: string, password: string) {
-  console.log("Refreshing Grades");
-
   refreshing = true;
 
   courses = null;
@@ -113,12 +111,37 @@ export async function refreshGradeData(username: string, password: string) {
       });
 
       courses = coursesData;
-      console.log("Finished course setting");
+      refreshing = false;
+    } else {
+      courses = undefined;
       refreshing = false;
     }
+  } else {
+    courses = undefined;
+    refreshing = false;
   }
 }
 
-export async function getCourses(): Promise<Course[] | null> {
+export async function getCourses(): Promise<Course[] | null | undefined> {
   return courses;
+}
+
+let hasAccess: boolean = false;
+export async function refreshBridgelandStudent(
+  username: string,
+  password: string
+) {
+  if (username && password) {
+    let studentInfoResponse = await fetchStudentInfo(
+      "info",
+      username,
+      password
+    );
+    hasAccess = studentInfoResponse
+      ? studentInfoResponse["school"].toLowerCase().includes("bridgeland")
+      : false;
+  }
+}
+export async function getAccessStatus(): Promise<boolean> {
+  return hasAccess;
 }
