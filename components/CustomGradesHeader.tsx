@@ -6,11 +6,14 @@ import {
   Platform,
   SafeAreaView,
   ScrollView,
+  Dimensions,
 } from "react-native";
 import React, { useRef, useState } from "react";
 import Colors from "@/constants/Colors";
 import Numbers from "@/constants/Numbers";
 import { MaterialIcons } from "@expo/vector-icons";
+
+const screenHeight = Dimensions.get("window").height;
 
 const clubCategories = [
   {
@@ -47,10 +50,7 @@ const ClubsHeader = ({ onCategoryChanged }: Props) => {
   return (
     <View style={{ flex: 1 }}>
       <SafeAreaView style={styles.container}>
-        <View style={styles.topRow}>
-          <Text style={styles.title}>Grades</Text>
-        </View>
-
+        
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -98,7 +98,7 @@ const ClubsHeader = ({ onCategoryChanged }: Props) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.headerBGColor,
-    height: 190,
+    height: screenHeight * .15,
   },
   topRow: {
     flexDirection: "row",
@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   categoriesScroll: {
+    marginTop: screenHeight * .05, 
     alignItems: "center",
     justifyContent: "center",
     gap: 70,
