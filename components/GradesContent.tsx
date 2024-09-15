@@ -219,13 +219,39 @@ const Grades = ({
     );
   };
 
+  const renderHeader = (overallGrade: number, courseTitle: string) => {
+    // Function to get the background color based on the overall grade
+    const getGradeBackgroundColor = (grade: number) => {
+      if (grade >= 90) return "#45cc2d"; // Green for A
+      if (grade >= 80) return "#33BBFF"; // Blue for B
+      if (grade >= 70) return "#f7c902"; // Yellow for C
+      return "red"; // Red for failing grades
+    };
+  
+    // Grade background color
+    const backgroundColor = getGradeBackgroundColor(overallGrade);
+  
+    return (
+      <View style={styles.headerContainer}>
+        {/* Left side: Course Title */}
+        <View style={styles.headerTitleBox}>
+          <Text style={styles.headerTitleText}>{courseTitle}</Text>
+        </View>
+  
+        {/* Right side: Overall Grade Box */}
+        <View style={[styles.headerGradeBox, { backgroundColor }]}>
+          <Text style={styles.headerGradeText}>{`${overallGrade}%`}</Text>
+        </View>
+      </View>
+    );
+  };  
+
   const renderGradeItem = ({ item }: { item: Grade }) => {
     // Function to get the background color based on the grade
     const getGradeBackgroundColor = (grade: number) => {
-      if (grade >= 90) return "#009933"; // Green for A
+      if (grade >= 90) return "#45cc2d"; // Green for A
       if (grade >= 80) return "#33BBFF"; // Blue for B
-      if (grade >= 70) return "#cccc00"; // Yellow for C
-      if (grade >= 60) return "#FF9933"; // Orange for D
+      if (grade >= 70) return "#f7c902"; // Yellow for C
       return "red"; // Red for failing grades
     };
   
@@ -233,9 +259,10 @@ const Grades = ({
     const backgroundColor = item.grade === -100 ? "#444" : getGradeBackgroundColor(item.grade);
   
     return (
+      
       <View style={styles.gradeRow}>
         {/* Left side: assignment name, type, and date */}
-        <View style={styles.assignmentInfo}>
+        <View style={styles.assignmentInfo}>        
           <Text style={styles.assignmentName}>{item.assignmentName}</Text>
           <Text style={styles.assignmentType}>{item.assignmentType}</Text>
           <Text style={styles.date}>{item.date.toLocaleDateString()}</Text>
@@ -265,27 +292,20 @@ const Grades = ({
           </View>
         ) : (
           <View style={{ marginBottom: 30 }}>
-            <View style={{flexDirection: "row", justifyContent: "space-evenly"}}>
-
             <TouchableOpacity
               style={styles.backButton}
               onPress={() => setSelectedCourse(null)}
             >
               <Ionicons name="arrow-back" size={24} color="white" />
             </TouchableOpacity>
-            <Text style={styles.header}>
-              {selectedCourse.name} Grades:{" "}
-              {"\t\t" +
-                (selectedCourse.overallGrade == -100
-                  ? "N/A"
-                  : selectedCourse.overallGrade + "%")}
-            </Text>
-            </View>
+            <ScrollView>
+            {selectedCourse && renderHeader(selectedCourse.overallGrade, selectedCourse.name)}
             <FlatList
               data={selectedCourse.grades}
               renderItem={renderGradeItem}
               keyExtractor={(item) => item.assignmentName}
             />
+            </ScrollView> 
           </View>
         )
       ) : (
@@ -562,6 +582,36 @@ const styles = StyleSheet.create({
   causeWhyNot: {
     borderRadius: 10,
   },
+  headerContainer: {
+    flexDirection: "row", // Row format for title and grade box
+    justifyContent: "space-between", // Space between left and right
+    alignItems: "center", // Center items vertically
+    marginBottom: 20, // Add spacing below the header
+    paddingVertical: 20, // Add padding to make the header box taller
+    borderBottomWidth: 1, // Border for separating the header from the items
+    borderBottomColor: "#444", // Border color
+  },
+  headerTitleBox: {
+    flex: 1, // Take up most of the row width
+  },
+  headerTitleText: {
+    fontSize: 24, // Larger font for the course title
+    fontWeight: "bold", 
+    color: "white", 
+  },
+  headerGradeBox: {
+    width: 80, // Square box for the grade
+    height: 80, // Square box for the grade
+    borderRadius: 12, // Rounded corners for the grade box
+    justifyContent: "center", // Center the grade text
+    alignItems: "center", // Center the grade text horizontally
+  },
+  headerGradeText: {
+    fontSize: 22, // Larger font for the overall grade
+    fontWeight: "bold", 
+    color: "white", 
+  },
+
   gradeItem: {
     backgroundColor: Colors.transcriptBubblesBG,
     paddingVertical: 5,
@@ -589,7 +639,6 @@ const styles = StyleSheet.create({
   backButton: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
   },
   backButtonText: {
     color: "white",
@@ -602,9 +651,7 @@ const styles = StyleSheet.create({
     alignItems: "center", // Vertically center the content
     paddingVertical: 10, // Padding for spacing
     paddingHorizontal: 15, // Horizontal padding
-    borderBottomWidth: 1, // Bottom border between rows
-    borderBottomColor: "#333", // Border color
-    marginBottom: 10, // Margin between rows
+    marginBottom: 0, // Margin between rows
   },
   assignmentInfo: {
     flex: 1, // Takes up most of the row width
