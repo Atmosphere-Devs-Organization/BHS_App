@@ -13,6 +13,7 @@ import {
   TextInput,
   Pressable,
   ImageBackground,
+  SafeAreaView,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Entypo, MaterialIcons } from "@expo/vector-icons"; // Import MaterialIcons
@@ -94,15 +95,17 @@ const Home: React.FC = () => {
   return (
     <View style={styles.home_BG_Color}>
       <StatusBar hidden={true} />
-      <View>
-        <ImageBackground
-          source={bannerImage} 
-          style={styles.image}
-          resizeMode="cover"
-          imageStyle={{ borderRadius: 15 }}
-        >
-        </ImageBackground>
-      </View>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View>
+          <ImageBackground
+            source={bannerImage}
+            style={styles.image}
+            resizeMode="contain" // Resize mode set to 'contain'
+            imageStyle={{ borderRadius: 15 }}
+          >
+          </ImageBackground>
+        </View>
+      </SafeAreaView>
       <TouchableWithoutFeedback onPressIn={() => setIsScrolling(true)}>
         
         <ScrollView style = {{marginTop: 150,}}>
