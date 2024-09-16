@@ -1,6 +1,12 @@
-import { View, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import React from "react";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { Course } from "@/globalVars/gradesVariables";
 
 const CalculatorPage = ({
@@ -10,20 +16,51 @@ const CalculatorPage = ({
   hacBroken: boolean;
   courses: Course[] | null | undefined;
 }) => {
+  const renderCourseItem = ({ item }: { item: Course }) => {
+    return (
+      <TouchableOpacity
+        onPress={() =>
+          router.push({
+            pathname: "(screens)/gradesCalculating",
+            params: {
+              className: item.name,
+            },
+          })
+        }
+      >
+        <View
+          style={{
+            margin: 10,
+            paddingVertical: 30,
+            paddingHorizontal: 20,
+            borderWidth: 3,
+            borderColor: "#ffffff",
+            borderRadius: 10,
+          }}
+        >
+          <Text style={{ color: "#ffffff", fontSize: 20, fontWeight: "bold" }}>
+            {item.name}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
-    <Link
-      href={{
-        pathname: "(screens)/gradesCalculating",
-        params: { className: "U S Govt AP" },
-      }}
-      asChild
-    >
-      <Text style={styles.comingSoonText}>Click Here</Text>
-    </Link>
+    <View>
+      <View>
+        <Text style={styles.comingSoonText}>Select a Class</Text>
+      </View>
+      <FlatList
+        data={courses}
+        renderItem={renderCourseItem}
+        keyExtractor={(item) => item.name}
+        showsHorizontalScrollIndicator={false}
+        horizontal={true}
+        contentContainerStyle={{ marginHorizontal: 10 }}
+      />
+    </View>
   );
-  // return (
-  //   <Text style={styles.comingSoonText}>Calculator Coming Very Soon!</Text>
-  // );
 };
 
 const styles = StyleSheet.create({
@@ -32,7 +69,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
-    marginVertical: 60,
+    marginTop: 60,
+    marginBottom: 30,
   },
 });
 

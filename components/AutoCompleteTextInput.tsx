@@ -37,10 +37,14 @@ const AutoCompleteTextInput = ({
   useEffect(() => {
     setFilteredClubs(
       possibleInputs.filter(
-        (room) =>
-          room.indexOf(
-            value ? value : "Random thing that won't be in rooms"
-          ) !== -1 && room !== value
+        (possibleInput) =>
+          possibleInput
+            .toLowerCase()
+            .indexOf(
+              value
+                ? value.toLowerCase()
+                : "Random thing that won't be in rooms"
+            ) !== -1 && possibleInput !== value
       )
     );
   }, [value]);
@@ -87,7 +91,7 @@ const styles = StyleSheet.create({
   listContainer: {
     alignItems: "center",
     backgroundColor: Colors.autoCompleteBG,
-    width: "77%",
+    width: "90%",
     height: undefined,
     alignSelf: "center",
     borderBottomWidth: 5,
@@ -97,13 +101,14 @@ const styles = StyleSheet.create({
   item: {
     fontWeight: "bold",
     textAlign: "center",
+    flex: 1,
   },
   itemContainer: {
     paddingVertical: 10,
     borderBottomColor: "#000000",
     borderBottomWidth: 2,
     width: "100%",
-    paddingHorizontal: "35%",
+    paddingHorizontal: "5%",
   },
 });
 

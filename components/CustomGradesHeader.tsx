@@ -50,7 +50,6 @@ const ClubsHeader = ({ onCategoryChanged }: Props) => {
   return (
     <View style={{ flex: 1 }}>
       <SafeAreaView style={styles.container}>
-        
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -98,7 +97,7 @@ const ClubsHeader = ({ onCategoryChanged }: Props) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.headerBGColor,
-    height: screenHeight * .15,
+    height: screenHeight * 0.15,
   },
   topRow: {
     flexDirection: "row",
@@ -118,7 +117,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   categoriesScroll: {
-    marginTop: screenHeight * .05, 
+    marginTop: screenHeight * 0.05,
     alignItems: "center",
     justifyContent: "center",
     gap: 70,
