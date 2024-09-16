@@ -8,6 +8,7 @@ import {
   StatusBar,
   ActivityIndicator,
   ScrollView,
+  SafeAreaView,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
@@ -18,7 +19,13 @@ import { useFocusEffect } from "@react-navigation/native";
 import HACNeededScreen from "./HACNeededScreen";
 import CourseCard from "./CourseCard"; // Adjust the import path as necessary
 import CalculatorPage from "./CalculatorPage";
-import { Course, getCourses, Grade } from "@/globalVars/gradesVariables";
+import {
+  calculateAssignmentTypePercentages,
+  Course,
+  getCourses,
+  Grade,
+} from "@/globalVars/gradesVariables";
+import Numbers from "@/constants/Numbers";
 
 interface Props {
   category: string;
@@ -189,10 +196,10 @@ const Grades = ({
 
   // Function to determine the background color based on the grade
   const getBackgroundColor = (grade: number) => {
-    if (grade >= 90) return "#009933";
-    if (grade >= 80) return "#33BBFF";
-    if (grade >= 70) return "#cccc00";
-    return "red"; // For grades less than 70
+    if (grade >= 90) return Colors.courseGradeAColor; // Green for A
+    if (grade >= 80) return Colors.courseGradeBColor; // Blue for B
+    if (grade >= 70) return Colors.courseGradeCColor; // Yellow for C
+    return Colors.courseGradeFailColor; // Red for failing grades
   };
 
   const renderCourseItem = ({ item }: { item: Course }) => {
@@ -222,35 +229,126 @@ const Grades = ({
   const renderGradeItem = ({ item }: { item: Grade }) => {
     // Function to get the background color based on the grade
     const getGradeBackgroundColor = (grade: number) => {
-      if (grade >= 90) return "#009933"; // Green for A
-      if (grade >= 80) return "#33BBFF"; // Blue for B
-      if (grade >= 70) return "#cccc00"; // Yellow for C
-      if (grade >= 60) return "#FF9933"; // Orange for D
-      return "red"; // Red for failing grades
+      if (grade >= 90) return Colors.gradeGradeAColor; // Green for A
+      if (grade >= 80) return Colors.gradeGradeBColor; // Blue for B
+      if (grade >= 70) return Colors.gradeGradeCColor; // Yellow for C
+      return Colors.gradeGradeFailColor; // Red for failing grades
     };
-  
+
     // Grade background color
-    const backgroundColor = item.grade === -100 ? "#444" : getGradeBackgroundColor(item.grade);
-  
+    const backgroundColor =
+      item.grade === -100 ? "#444" : getGradeBackgroundColor(item.grade);
+
+    const color =
+      item.assignmentType.toLowerCase() == "summative assessments"
+        ? Colors.saColor
+        : item.assignmentType.toLowerCase() == "relevant applications"
+        ? Colors.raColor
+        : item.assignmentType.toLowerCase() == "checking for understanding"
+        ? Colors.cfuColor
+        : "#aaa";
+
     return (
       <View style={styles.gradeRow}>
         {/* Left side: assignment name, type, and date */}
         <View style={styles.assignmentInfo}>
-          <Text style={styles.assignmentName}>{item.assignmentName}</Text>
-          <Text style={styles.assignmentType}>{item.assignmentType}</Text>
+          <Text numberOfLines={1} style={styles.assignmentName}>
+            {item.assignmentName}
+          </Text>
+          <Text style={[styles.assignmentType, { color }]}>
+            {item.assignmentType}
+          </Text>
           <Text style={styles.date}>{item.date.toLocaleDateString()}</Text>
         </View>
-  
+
         {/* Right side: grade box */}
         <View style={[styles.gradeBox, { backgroundColor }]}>
           <Text style={styles.gradeText}>
-            {item.grade === -100 ? "N/A" : `${item.grade}%`}
+            {item.grade === -100 ? "N/A" : `${item.grade}`}
           </Text>
         </View>
       </View>
     );
   };
-    
+  const renderHeader = (overallGrade: number, courseTitle: string) => {
+    // Function to get the background color based on the overall grade
+    const getGradeBackgroundColor = (grade: number) => {
+      if (grade >= 90) return Colors.gradeGradeAColor; // Green for A
+      if (grade >= 80) return Colors.gradeGradeBColor; // Blue for B
+      if (grade >= 70) return Colors.gradeGradeCColor; // Yellow for C
+      return Colors.gradeGradeFailColor; // Red for failing grades
+    };
+
+    // Grade background color
+    const backgroundColor = getGradeBackgroundColor(overallGrade);
+
+    let percentagesArray = calculateAssignmentTypePercentages(selectedCourse);
+
+    return (
+      <View style={styles.headerContainer}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignContent: "center",
+            borderBottomWidth: 1, // Border for separating the header from the items
+            borderBottomColor: "#444", // Border color
+            marginBottom: 15,
+            paddingBottom: 10,
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => setSelectedCourse(null)}
+            style={styles.back_button}
+          >
+            <Ionicons
+              name="arrow-back-sharp"
+              size={Numbers.backButtonSize}
+              color={Colors.backButton}
+            />
+          </TouchableOpacity>
+          {/* Course Title */}
+          <View style={styles.headerTitleBox}>
+            <Text style={styles.headerTitleText}>{courseTitle}</Text>
+          </View>
+        </View>
+
+        <View style={{ flexDirection: "row", gap: 25 }}>
+          {/* Overall Grade Box */}
+          <View style={[styles.headerGradeBox, { backgroundColor }]}>
+            <Text style={styles.headerGradeText}>{`${overallGrade}%`}</Text>
+          </View>
+
+          <View style={{ alignContent: "center", justifyContent: "center" }}>
+            <Text style={[styles.averagesTopText, { color: Colors.cfuColor }]}>
+              CFU Average:{" "}
+              {percentagesArray
+                ? percentagesArray[0] == -100
+                  ? "N/A"
+                  : "" + percentagesArray[0].toFixed(2)
+                : "N/A"}
+            </Text>
+            <Text style={[styles.averagesTopText, { color: Colors.raColor }]}>
+              RA Average:{" "}
+              {percentagesArray
+                ? percentagesArray[1] == -100
+                  ? "N/A"
+                  : "" + percentagesArray[1].toFixed(2)
+                : "N/A"}
+            </Text>
+            <Text style={[styles.averagesTopText, { color: Colors.saColor }]}>
+              SA Average:{" "}
+              {percentagesArray
+                ? percentagesArray[2] == -100
+                  ? "N/A"
+                  : "" + percentagesArray[2].toFixed(2)
+                : "N/A"}
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
 
   return courses !== undefined ? (
     <View style={styles.container}>
@@ -261,32 +359,35 @@ const Grades = ({
               data={courses}
               renderItem={renderCourseItem}
               keyExtractor={(item) => item.name}
+              showsVerticalScrollIndicator={false}
             />
           </View>
         ) : (
-          <View style={{ marginBottom: 30 }}>
-            <View style={{flexDirection: "row", justifyContent: "space-evenly"}}>
-
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => setSelectedCourse(null)}
-            >
-              <Ionicons name="arrow-back" size={24} color="white" />
-            </TouchableOpacity>
-            <Text style={styles.header}>
-              {selectedCourse.name} Grades:{" "}
-              {"\t\t" +
-                (selectedCourse.overallGrade == -100
-                  ? "N/A"
-                  : selectedCourse.overallGrade + "%")}
-            </Text>
+          <SafeAreaView
+            style={{
+              backgroundColor: Colors.overallBackground,
+              height: "100%",
+            }}
+          >
+            <View style={{ padding: 5 }}>
+              {selectedCourse && (
+                <View style={{ marginBottom: 455 }}>
+                  {renderHeader(
+                    selectedCourse.overallGrade,
+                    selectedCourse.name
+                  )}
+                  <FlatList
+                    data={selectedCourse.grades}
+                    renderItem={renderGradeItem}
+                    keyExtractor={(item: { assignmentName: any }) =>
+                      item.assignmentName
+                    }
+                    showsVerticalScrollIndicator={false}
+                  />
+                </View>
+              )}
             </View>
-            <FlatList
-              data={selectedCourse.grades}
-              renderItem={renderGradeItem}
-              keyExtractor={(item) => item.assignmentName}
-            />
-          </View>
+          </SafeAreaView>
         )
       ) : (
         <View>
@@ -515,6 +616,12 @@ const Transcript = ({
 };
 
 const styles = StyleSheet.create({
+  averagesTopText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    paddingVertical: 7,
+    color: "#ffffff",
+  },
   topText: {
     color: "#ffffff",
     fontSize: 20,
@@ -534,7 +641,7 @@ const styles = StyleSheet.create({
     marginVertical: 60,
   },
   container: {
-    padding: 15,
+    padding: 0,
     height: "93%",
   },
   header: {
@@ -552,7 +659,8 @@ const styles = StyleSheet.create({
     borderColor: "#363737",
     borderWidth: 2,
     borderRadius: 10,
-    marginBottom: 10,
+    margin: 10,
+    marginBottom: 0,
   },
   courseName: {
     fontSize: 18,
@@ -562,12 +670,45 @@ const styles = StyleSheet.create({
   causeWhyNot: {
     borderRadius: 10,
   },
+  headerContainer: {
+    marginBottom: 20, // Add spacing below the header
+    paddingTop: 20, // Add padding to make the header box taller
+    paddingBottom: 30,
+    borderBottomWidth: 5, // Border for separating the header from the items
+    borderBottomColor: "#444", // Border color
+  },
+  headerTitleBox: {
+    position: "absolute", // Positioning it freely within the parent container
+    left: 0, // Ensure it takes full width
+    right: 0,
+    alignItems: "center", // Center text horizontally within this container
+  },
+  headerTitleText: {
+    fontSize: 24, // Larger font for the course title
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
+  },
+  headerGradeBox: {
+    borderRadius: 12, // Rounded corners for the grade box
+    justifyContent: "center", // Center the grade text
+    alignItems: "center", // Center the grade text horizontally
+    height: 100,
+    width: 120,
+  },
+  headerGradeText: {
+    fontSize: 22, // Larger font for the overall grade
+    fontWeight: "bold",
+    color: "white",
+  },
+
   gradeItem: {
     backgroundColor: Colors.transcriptBubblesBG,
     paddingVertical: 5,
     paddingHorizontal: 15,
     borderRadius: 10,
-    marginBottom: 10,},
+    marginBottom: 10,
+  },
   grade: {
     fontSize: 24,
     color: "white",
@@ -589,7 +730,6 @@ const styles = StyleSheet.create({
   backButton: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
   },
   backButtonText: {
     color: "white",
@@ -601,43 +741,49 @@ const styles = StyleSheet.create({
     justifyContent: "space-between", // Space between left and right
     alignItems: "center", // Vertically center the content
     paddingVertical: 10, // Padding for spacing
-    paddingHorizontal: 15, // Horizontal padding
-    borderBottomWidth: 1, // Bottom border between rows
-    borderBottomColor: "#333", // Border color
-    marginBottom: 10, // Margin between rows
+    paddingHorizontal: 5, // Horizontal padding
+    borderBottomWidth: 1,
+    borderBottomColor: "#444", // Border color
+    gap: 10,
   },
   assignmentInfo: {
     flex: 1, // Takes up most of the row width
     justifyContent: "flex-start", // Aligns content to the start
   },
   assignmentName: {
-    fontSize: 16, 
-    fontWeight: "bold", 
-    color: "white", 
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "white",
     marginBottom: 3,
+    flex: 1,
   },
   assignmentType: {
-    fontSize: 14, 
-    color: "#aaa", // Slightly lighter color for assignment type
+    fontSize: 14,
+    //color: "#aaa", // Slightly lighter color for assignment type
     marginBottom: 3,
   },
   date: {
-    fontSize: 12, 
+    fontSize: 12,
     color: "#888", // Lighter color for date
   },
   gradeBox: {
-    borderRadius: 8, // Rounded corners for grade box
+    borderRadius: 12, // Rounded corners for grade box
+    borderWidth: 2,
+    borderColor: Colors.gradeBoxBorder,
     justifyContent: "center", // Center the grade text
     alignItems: "center", // Center the grade text horizontally
-    paddingVertical: 10, // Padding inside the box
-    paddingHorizontal: 15, // Adjust the padding based on grade box size
+    paddingVertical: 15, // Padding inside the box
+    width: 80,
     minWidth: 60, // Ensure a minimum width for the grade box
   },
   gradeText: {
-    fontSize: 18, 
-    fontWeight: "bold", 
-    color: "white", 
+    fontSize: 19,
+    fontWeight: "bold",
+    color: "white",
+  },
+  back_button: {
+    zIndex: 2, // Ensure the back button stays on top
   },
 });
-  
+
 export default GradesContent;

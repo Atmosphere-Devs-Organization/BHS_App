@@ -1,5 +1,5 @@
 export default {
-  overallBackground: "#000042",
+  overallBackground: "#121212",
 
   //Tab Bar
   tabActiveTint: "#ff4800",
@@ -91,4 +91,20 @@ export default {
 
   transcriptBubblesBG: "#ffffff24",
   transcriptBubbleText: "#ff4d00",
+
+  gradeBoxBorder: "#555555",
+
+  courseGradeAColor: "#45cc2d",
+  courseGradeBColor: "#33BBFF",
+  courseGradeCColor: "#f7c902",
+  courseGradeFailColor: "#cc2d2d",
+
+  gradeGradeAColor: "#45cc2d",
+  gradeGradeBColor: "#33BBFF",
+  gradeGradeCColor: "#f7c902",
+  gradeGradeFailColor: "#cc2d2d",
+
+  saColor: "#f3d8fd",
+  cfuColor: "#daddff",
+  raColor: "#fffccf",
 };
