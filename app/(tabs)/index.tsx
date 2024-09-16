@@ -12,6 +12,7 @@ import {
   Alert,
   TextInput,
   Pressable,
+  ImageBackground,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Entypo, MaterialIcons } from "@expo/vector-icons"; // Import MaterialIcons
@@ -21,6 +22,7 @@ import {
   refreshBridgelandStudent,
   refreshGradeData,
 } from "@/globalVars/gradesVariables";
+import bannerImage from 'assets/images/banner.png';
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -92,9 +94,18 @@ const Home: React.FC = () => {
   return (
     <View style={styles.home_BG_Color}>
       <StatusBar hidden={true} />
-
+      <View>
+        <ImageBackground
+          source={bannerImage} 
+          style={styles.image}
+          resizeMode="cover"
+          imageStyle={{ borderRadius: 15 }}
+        >
+        </ImageBackground>
+      </View>
       <TouchableWithoutFeedback onPressIn={() => setIsScrolling(true)}>
-        <ScrollView>
+        
+        <ScrollView style = {{marginTop: 150,}}>
           <View style={styles.welcomeContainer}></View>
           <View style={styles.cardContainer}>
             <Text style={styles.sectionTitle}>HAC Information</Text>
@@ -139,6 +150,8 @@ const Home: React.FC = () => {
               <Text style={styles.save_button_text}>Save</Text>
             </TouchableOpacity>
           </View>
+
+          <Text style={styles.resourcesTitle}>Resources</Text>
 
           <ScrollView
             horizontal={true}
@@ -196,7 +209,6 @@ const styles = StyleSheet.create({
   },
   welcomeContainer: {
     alignItems: "center",
-    paddingTop: 20,
     marginBottom: 20,
   },
   welcomeText: {
@@ -344,6 +356,23 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 10,
     marginHorizontal: 20,
+  },
+  image: {
+    
+    marginTop: 20,
+    height: 140, 
+    alignSelf: "center",
+    width: "100%",
+    justifyContent: "center",
+    flex: 1,
+    flexDirection: "column",
+  },
+  resourcesTitle: {
+    fontSize: 25,
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
+    marginVertical: 15, // Adjust spacing as needed
   },
 });
 
