@@ -34,7 +34,11 @@ export class Course {
     this.grades.push(assignment);
     return this;
   }
-  deleteAssignment(assignment: Grade) {
+  deleteAssignment(assignment: Grade | undefined) {
+    if (!assignment) {
+      return;
+    }
+
     this.grades.forEach((item, index) => {
       if (item === assignment) this.grades.splice(index, 1);
     });
@@ -118,9 +122,9 @@ export async function refreshGradeData(username: string, password: string) {
             value.split(" - ")[1].split(" Marking")[0].substring(2),
             grade ? grade : -100,
             [],
-            -1,
-            -1,
-            -1
+            0,
+            0,
+            0
           );
 
           let assignmentsArr = gradesData[value]["assignments"];
@@ -241,4 +245,33 @@ export function calculateAssignmentTypePercentages(
   let saPercent = saMaxTotal <= 0 ? -100 : (saTotal / saMaxTotal) * 100;
 
   return new Array(cfuPercent, raPercent, saPercent);
+}
+
+export function CalculateOverallAverage(
+  course: Course | null | undefined,
+  percentagesArr: number[] | null
+): number {
+  if (!course || !percentagesArr) {
+    return 0;
+  }
+
+  let cfuWeight = course.cfuPercent;
+  let raWeight = course.raPercent;
+  let saWeight = course.saPercent;
+
+  let maxPoints =
+    (percentagesArr[0] == -100 ? 0 : cfuWeight) +
+    (percentagesArr[1] == -100 ? 0 : raWeight) +
+    (percentagesArr[2] == -100 ? 0 : saWeight);
+
+  return maxPoints == 0
+    ? 100
+    : (((percentagesArr[0] == -100 ? 0 : percentagesArr[0]) *
+        (cfuWeight / 100.0) +
+        (percentagesArr[1] == -100 ? 0 : percentagesArr[1]) *
+          (raWeight / 100.0) +
+        (percentagesArr[2] == -100 ? 0 : percentagesArr[2]) *
+          (saWeight / 100.0)) /
+        maxPoints) *
+        100;
 }

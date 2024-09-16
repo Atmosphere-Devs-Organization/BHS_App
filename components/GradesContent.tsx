@@ -26,6 +26,7 @@ import {
   Grade,
 } from "@/globalVars/gradesVariables";
 import Numbers from "@/constants/Numbers";
+import { Link } from "expo-router";
 
 interface Props {
   category: string;
@@ -272,14 +273,21 @@ const Grades = ({
   };
   const renderHeader = (overallGrade: number, courseTitle: string) => {
     // Function to get the background color based on the overall grade
-    const getGradeBackgroundColor = (grade: number) => {
+    const getGradeBorderColor = (grade: number) => {
       if (grade >= 90) return Colors.gradeGradeAColor; // Green for A
       if (grade >= 80) return Colors.gradeGradeBColor; // Blue for B
       if (grade >= 70) return Colors.gradeGradeCColor; // Yellow for C
       return Colors.gradeGradeFailColor; // Red for failing grades
     };
+    const getGradeBackgroundColor = (grade: number) => {
+      if (grade >= 90) return Colors.gradeGradeAColorBG; // Green for A
+      if (grade >= 80) return Colors.gradeGradeBColorBG; // Blue for B
+      if (grade >= 70) return Colors.gradeGradeCColorBG; // Yellow for C
+      return Colors.gradeGradeFailColorBG; // Red for failing grades
+    };
 
     // Grade background color
+    const borderColor = getGradeBorderColor(overallGrade);
     const backgroundColor = getGradeBackgroundColor(overallGrade);
 
     let percentagesArray = calculateAssignmentTypePercentages(selectedCourse);
@@ -311,17 +319,46 @@ const Grades = ({
           <View style={styles.headerTitleBox}>
             <Text style={styles.headerTitleText}>{courseTitle}</Text>
           </View>
+
+          <View
+            style={{
+              alignSelf: "center",
+              backgroundColor: borderColor,
+              padding: 10,
+              borderRadius: 10,
+              borderWidth: 2,
+              borderColor: "#000000",
+            }}
+          >
+            <Link
+              href={{
+                pathname: "(screens)/gradesCalculating",
+                params: {
+                  className: selectedCourse ? selectedCourse.name : "Dan",
+                },
+              }}
+              asChild
+            >
+              <Text
+                style={{ fontSize: 14, fontWeight: "bold", color: "#000000" }}
+              >
+                Calculator
+              </Text>
+            </Link>
+          </View>
         </View>
 
         <View style={{ flexDirection: "row", gap: 25 }}>
           {/* Overall Grade Box */}
-          <View style={[styles.headerGradeBox, { backgroundColor }]}>
+          <View
+            style={[styles.headerGradeBox, { borderColor, backgroundColor }]}
+          >
             <Text style={styles.headerGradeText}>{`${overallGrade}%`}</Text>
           </View>
 
           <View style={{ alignContent: "center", justifyContent: "center" }}>
             <Text style={[styles.averagesTopText, { color: Colors.cfuColor }]}>
-              CFU Average:{" "}
+              CFU Average:{"  "}
               {percentagesArray
                 ? percentagesArray[0] == -100
                   ? "N/A"
@@ -329,7 +366,7 @@ const Grades = ({
                 : "N/A"}
             </Text>
             <Text style={[styles.averagesTopText, { color: Colors.raColor }]}>
-              RA Average:{" "}
+              RA Average:{"     "}
               {percentagesArray
                 ? percentagesArray[1] == -100
                   ? "N/A"
@@ -337,7 +374,7 @@ const Grades = ({
                 : "N/A"}
             </Text>
             <Text style={[styles.averagesTopText, { color: Colors.saColor }]}>
-              SA Average:{" "}
+              SA Average:{"     "}
               {percentagesArray
                 ? percentagesArray[2] == -100
                   ? "N/A"
@@ -371,7 +408,7 @@ const Grades = ({
           >
             <View style={{ padding: 5 }}>
               {selectedCourse && (
-                <View style={{ marginBottom: 455 }}>
+                <View style={{ marginBottom: 405 }}>
                   {renderHeader(
                     selectedCourse.overallGrade,
                     selectedCourse.name
@@ -477,7 +514,10 @@ const Transcript = ({
     }));
 
     return (
-      <ScrollView style={{ flex: 1, padding: 10 }}>
+      <ScrollView
+        style={{ flex: 1, padding: 10 }}
+        showsVerticalScrollIndicator={false}
+      >
         <CourseCard courses={courses} />
       </ScrollView>
     );
@@ -555,6 +595,7 @@ const Transcript = ({
               ref={listRef}
               renderItem={renderRow}
               style={{ marginTop: 30, marginBottom: 370 }}
+              showsVerticalScrollIndicator={false}
             />
           ) : (
             <View>
@@ -593,6 +634,7 @@ const Transcript = ({
             style={{
               color: "#ffffff",
               paddingVertical: 20,
+              paddingHorizontal: 10,
               alignSelf: "center",
               fontSize: 35,
               textAlign: "center",
@@ -641,7 +683,7 @@ const styles = StyleSheet.create({
     marginVertical: 60,
   },
   container: {
-    padding: 0,
+    padding: 10,
     height: "93%",
   },
   header: {
@@ -655,7 +697,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 15,
-    height: 86,
+    height: 85,
     borderColor: "#363737",
     borderWidth: 2,
     borderRadius: 10,
@@ -672,16 +714,24 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     marginBottom: 20, // Add spacing below the header
-    paddingTop: 20, // Add padding to make the header box taller
-    paddingBottom: 30,
-    borderBottomWidth: 5, // Border for separating the header from the items
+    paddingTop: 5, // Add padding to make the header box taller
+    paddingBottom: 15,
+    borderBottomWidth: 1, // Border for separating the header from the items
     borderBottomColor: "#444", // Border color
   },
   headerTitleBox: {
+    // position: "absolute", // Positioning it freely within the parent container
+    // left: 0, // Ensure it takes full width
+    // right: 0,
+    marginLeft: 10,
+    alignItems: "center", // Center text horizontally within this container
+    justifyContent: "center",
+  },
+  headerCalcButtonBox: {
     position: "absolute", // Positioning it freely within the parent container
     left: 0, // Ensure it takes full width
     right: 0,
-    alignItems: "center", // Center text horizontally within this container
+    alignItems: "flex-end", // Center text horizontally within this container
   },
   headerTitleText: {
     fontSize: 24, // Larger font for the course title
@@ -690,14 +740,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   headerGradeBox: {
-    borderRadius: 12, // Rounded corners for the grade box
+    borderRadius: 10, // Rounded corners for the grade box
     justifyContent: "center", // Center the grade text
     alignItems: "center", // Center the grade text horizontally
     height: 100,
-    width: 120,
+    width: 130,
+    borderWidth: 5,
+    marginLeft: 5,
   },
   headerGradeText: {
-    fontSize: 22, // Larger font for the overall grade
+    fontSize: 30, // Larger font for the overall grade
     fontWeight: "bold",
     color: "white",
   },
@@ -719,7 +771,7 @@ const styles = StyleSheet.create({
     justifyContent: "center", // Centers content vertically
     alignItems: "center", // Centers content horizontally
     width: 90, // Adjusts the width of the box to fit the content
-    height: 45, // Adjusts the height of the box to fit the content
+    height: 55, // Adjusts the height of the box to fit the content
   },
   courseGrade: {
     fontSize: 20,
