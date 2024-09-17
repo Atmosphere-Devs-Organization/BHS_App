@@ -117,7 +117,7 @@ export async function refreshGradeData(username: string, password: string) {
       const classesArray = Object.keys(gradesData);
       classesArray.forEach(function (value) {
         if (value.indexOf("dropped") == -1) {
-          let grade = Number.parseInt(gradesData[value]["average"]);
+          let grade = Number.parseInt(gradesData[value]["average"].trim());
           coursesData[i] = new Course(
             value.split(" - ")[1].split(" Marking")[0].substring(2),
             grade ? grade : -100,
@@ -137,7 +137,11 @@ export async function refreshGradeData(username: string, password: string) {
               new Grade(
                 assignment[2],
                 assignment[0],
-                assignmentGrade ? assignmentGrade : -100,
+                assignmentGrade
+                  ? assignmentGrade
+                  : assignment[3].toLowerCase().indexOf("z") != -1
+                  ? 0
+                  : -100,
                 maxAssignmentGrade,
                 new Date(dateArr[2] + "-" + dateArr[0] + "-" + dateArr[1])
               )
@@ -159,6 +163,23 @@ export async function refreshGradeData(username: string, password: string) {
               coursesData[i].saPercent = Number.parseFloat(percentageSplit[1]);
             }
           });
+
+          if (coursesData[i].cfuPercent > 0 && coursesData[i].raPercent > 0) {
+            coursesData[i].saPercent =
+              100 - coursesData[i].cfuPercent - coursesData[i].raPercent;
+          } else if (
+            coursesData[i].raPercent > 0 &&
+            coursesData[i].saPercent > 0
+          ) {
+            coursesData[i].cfuPercent =
+              100 - coursesData[i].raPercent - coursesData[i].saPercent;
+          } else if (
+            coursesData[i].saPercent > 0 &&
+            coursesData[i].cfuPercent > 0
+          ) {
+            coursesData[i].raPercent =
+              100 - coursesData[i].saPercent - coursesData[i].cfuPercent;
+          }
 
           i++;
         }
