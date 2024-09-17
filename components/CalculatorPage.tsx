@@ -47,7 +47,7 @@ const CalculatorPage = ({
   };
 
   return (
-    <View>
+    <View style={{ marginBottom: 330 }}>
       <View>
         <Text style={styles.comingSoonText}>Select a Class</Text>
       </View>
