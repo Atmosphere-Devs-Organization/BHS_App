@@ -56,7 +56,7 @@ const CalculatorPage = ({
         renderItem={renderCourseItem}
         keyExtractor={(item) => item.name}
         showsHorizontalScrollIndicator={false}
-        horizontal={true}
+        //horizontal={true}
         contentContainerStyle={{ marginHorizontal: 10 }}
       />
     </View>
