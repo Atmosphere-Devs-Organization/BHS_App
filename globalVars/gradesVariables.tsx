@@ -143,7 +143,11 @@ export async function refreshGradeData(username: string, password: string) {
                   ? 0
                   : -100,
                 maxAssignmentGrade,
-                new Date(dateArr[2] + "-" + dateArr[0] + "-" + dateArr[1])
+                new Date(
+                  Number.parseInt(dateArr[2]),
+                  Number.parseInt(dateArr[0]) - 1,
+                  Number.parseInt(dateArr[1])
+                )
               )
             );
           });
