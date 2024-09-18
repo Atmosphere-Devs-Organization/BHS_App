@@ -33,6 +33,8 @@ const AutoCompleteTextInput = ({
 }: Props) => {
   const listRef = useRef<FlatList>(null);
 
+  const [inputSelected, setInputSelected] = useState<boolean>(false);
+
   const [filteredClubs, setFilteredClubs] = useState<string[]>(possibleInputs);
   useEffect(() => {
     setFilteredClubs(
@@ -40,11 +42,8 @@ const AutoCompleteTextInput = ({
         (possibleInput) =>
           possibleInput
             .toLowerCase()
-            .indexOf(
-              value
-                ? value.toLowerCase()
-                : "Random thing that won't be in rooms"
-            ) !== -1 && possibleInput !== value
+            .indexOf(value ? value.toLowerCase() : "") !== -1 &&
+          possibleInput !== value
       )
     );
   }, [value]);
@@ -68,9 +67,10 @@ const AutoCompleteTextInput = ({
         keyboardType={keyboardType}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor} // Add this line
+        onFocus={() => setInputSelected(true)}
       />
 
-      {value !== "" ? (
+      {inputSelected ? (
         <View style={styles.listContainer}>
           <FlatList
             data={filteredClubs}
