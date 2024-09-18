@@ -4,6 +4,7 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React from "react";
 import { Link, router } from "expo-router";
@@ -46,7 +47,7 @@ const CalculatorPage = ({
     );
   };
 
-  return (
+  return courses ? (
     <View style={{ marginBottom: 330 }}>
       <View>
         <Text style={styles.comingSoonText}>Select a Class</Text>
@@ -59,6 +60,26 @@ const CalculatorPage = ({
         //horizontal={true}
         contentContainerStyle={{ marginHorizontal: 10 }}
       />
+    </View>
+  ) : (
+    <View>
+      <ActivityIndicator
+        size="large"
+        color="#ff4d00"
+        style={{ alignSelf: "center", marginTop: 100 }}
+      />
+      <Text
+        style={{
+          color: "#ff4d00",
+          alignSelf: "center",
+          paddingVertical: 40,
+          textAlign: "center",
+          paddingHorizontal: 20,
+          fontSize: 16,
+        }}
+      >
+        Make sure you are not on school wifi
+      </Text>
     </View>
   );
 };
