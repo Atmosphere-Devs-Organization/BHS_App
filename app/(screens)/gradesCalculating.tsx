@@ -409,7 +409,7 @@ const gradesCalculating = () => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View
             style={{
-              height: "50%",
+              height: "60%",
               marginHorizontal: 20,
               backgroundColor: "#121212",
               borderWidth: 3,
@@ -542,7 +542,7 @@ const gradesCalculating = () => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View
             style={{
-              height: "50%",
+              height: "60%",
               marginHorizontal: 20,
               backgroundColor: "#121212",
               borderWidth: 3,
@@ -703,6 +703,7 @@ const styles = StyleSheet.create({
     width: 75,
     fontWeight: "bold",
     textAlign: "center",
+    flex: 1,
   },
   infoInput: {
     color: "white",
@@ -715,6 +716,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: 200,
     fontWeight: "bold",
+    flex: 1,
   },
   averagesTopText: {
     fontSize: 16,
