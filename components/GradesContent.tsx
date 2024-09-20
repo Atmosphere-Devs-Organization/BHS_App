@@ -26,7 +26,7 @@ import {
   Grade,
 } from "@/globalVars/gradesVariables";
 import Numbers from "@/constants/Numbers";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 
 interface Props {
   category: string;
@@ -212,9 +212,16 @@ const Grades = ({
     return (
       <View style={styles.causeWhyNot}>
         <TouchableOpacity
-          style={styles.courseItem} // Keep the existing styles for the main container
-          onPress={() => setSelectedCourse(item)}
-        >
+  style={styles.courseItem} // Keep the existing styles for the main container
+  onPress={() =>
+    router.push({
+      pathname: "(screens)/gradesCalculating",
+      params: {
+        className: item ? item.name : "Dan",
+      },
+    })
+  }
+>
           <Text style={styles.courseName}>{item.name}</Text>
           {/* Wrap the Text component in a View to handle background and border styling */}
           <View style={[styles.gradeContainer, { backgroundColor }]}>
