@@ -185,6 +185,13 @@ export async function refreshGradeData(username: string, password: string) {
               100 - coursesData[i].saPercent - coursesData[i].cfuPercent;
           }
 
+          if (coursesData[i].overallGrade == -100) {
+            coursesData[i].overallGrade = CalculateOverallAverage(
+              coursesData[i],
+              calculateAssignmentTypePercentages(coursesData[i])
+            );
+          }
+
           i++;
         }
       });
