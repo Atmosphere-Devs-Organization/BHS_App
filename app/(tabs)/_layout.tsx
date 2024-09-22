@@ -6,7 +6,7 @@ const Layout = () => {
   return (
     <Tabs tabBar={(props) => <CustomTabBar {...props} />}>
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           tabBarLabel: "Home",
           headerShown: false,
@@ -21,7 +21,7 @@ const Layout = () => {
         }}
       />
       <Tabs.Screen
-        name="grades"
+        name="index"
         options={{
           tabBarLabel: "Grades",
           headerTitle: "Grades",

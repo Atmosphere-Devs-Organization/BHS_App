@@ -35,7 +35,7 @@ export default function CustomTabBar({
     });
   };
 
-  const tabPositionX = useSharedValue(0);
+  const tabPositionX = useSharedValue(buttonWidth * 7);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

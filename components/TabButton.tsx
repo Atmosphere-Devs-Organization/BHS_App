@@ -30,7 +30,7 @@ const TabButton = ({
   label: string;
 }) => {
   const icon: any = {
-    index: (props: any) => (
+    home: (props: any) => (
       <Ionicons name="home-sharp" size={Numbers.iconSize} {...props} />
     ),
     calendar: (props: any) => (
@@ -46,7 +46,7 @@ const TabButton = ({
     map: (props: any) => (
       <Ionicons name="map-sharp" size={Numbers.iconSize} {...props} />
     ),
-    grades: (props: any) => (
+    index: (props: any) => (
       <Ionicons name="school-sharp" size={Numbers.iconSize} {...props} />
     ),
   };
