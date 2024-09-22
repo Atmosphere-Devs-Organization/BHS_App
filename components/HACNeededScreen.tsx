@@ -43,7 +43,7 @@ const HACNeededScreen = ({
           height={100}
           width={320}
           raiseLevel={20}
-          onPressOut={() => router.replace("/(tabs)/")}
+          onPressOut={() => router.replace("/(tabs)/home")}
         >
           <Ionicons
             name="person-circle-sharp"

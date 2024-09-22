@@ -17,6 +17,7 @@ import {
 } from "@/globalVars/gradesVariables";
 import axios from "axios";
 import * as Application from "expo-application";
+import { useIsFocused } from "@react-navigation/native";
 
 const screenHeight = Dimensions.get("window").height;
 
@@ -25,14 +26,21 @@ const Grades = () => {
   const [sid, setSid] = useState("");
   const [HACpassword, setHACPassword] = useState("");
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      setSid((await SecureStore.getItemAsync("HACusername")) || "");
-      setHACPassword((await SecureStore.getItemAsync("HACpassword")) || "");
-    };
-    checkForUpdate();
+  const isFocused = useIsFocused();
 
-    fetchUserData();
+  useEffect(() => {
+    if (isFocused) {
+      const fetchUserData = async () => {
+        setSid((await SecureStore.getItemAsync("HACusername")) || "");
+        setHACPassword((await SecureStore.getItemAsync("HACpassword")) || "");
+      };
+
+      fetchUserData();
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
+    checkForUpdate();
   }, []);
 
   useEffect(() => {
