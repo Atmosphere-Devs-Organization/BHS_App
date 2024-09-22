@@ -215,7 +215,7 @@ const Grades = ({
   style={styles.courseItem} // Keep the existing styles for the main container
   onPress={() =>
     router.push({
-      pathname: "(screens)/gradesCalculating",
+      pathname: "/(screens)/gradesCalculating",
       params: {
         className: item ? item.name : "Dan",
       },
@@ -339,7 +339,7 @@ const Grades = ({
           >
             <Link
               href={{
-                pathname: "(screens)/gradesCalculating",
+                pathname: "/(screens)/gradesCalculating",
                 params: {
                   className: selectedCourse ? selectedCourse.name : "Dan",
                 },
@@ -467,7 +467,7 @@ const Calculator = ({
   hacBroken: boolean;
   courses: Course[] | null | undefined;
 }) => {
-  return <CalculatorPage hacBroken={hacBroken} courses={courses} />;
+  return <><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text style={{ fontSize: 30, color: "white", textAlign: "center", fontWeight: "bold", fontFamily: "times-new-roman" }}>Tools Like Final Calculator and GPA Calculator Come Soon!</Text></>;
 };
 
 const Transcript = ({
