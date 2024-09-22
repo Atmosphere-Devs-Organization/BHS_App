@@ -27,6 +27,7 @@ import {
 import bannerImage from 'assets/images/banner.png';
 import axios from "axios";
 import * as Application from 'expo-application';
+import LinearGradient from "react-native-linear-gradient";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -244,7 +245,7 @@ const Home: React.FC = () => {
 
           <View style={styles.reportButtonContainer}>
             <TouchableOpacity
-              onPress={() => router.push("(modals)/report")}
+              onPress={() => router.push("/(modals)/report")}
               style={styles.reportButton}
             >
               <Text style={styles.reportButtonText}>Report an Issue</Text>
@@ -422,6 +423,12 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
   },
+  gradient: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
   resourcesTitle: {
     fontSize: 25,
     fontWeight: "bold",

@@ -104,10 +104,10 @@ export default {
   gradeGradeCColor: "#f7c902",
   gradeGradeFailColor: "#cc2d2d",
 
-  gradeGradeAColorBG: "#41b42d28",
-  gradeGradeBColorBG: "#33BBFF28",
-  gradeGradeCColorBG: "#f7c90228",
-  gradeGradeFailColorBG: "#cc2d2d28",
+  gradeGradeAColorBG: "#41b42d",
+  gradeGradeBColorBG: "#33BBFF",
+  gradeGradeCColorBG: "#f7c902",
+  gradeGradeFailColorBG: "#cc2d2d",
 
   saColor: "#f3d8fd",
   cfuColor: "#daddff",
