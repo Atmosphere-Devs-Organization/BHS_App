@@ -128,7 +128,6 @@ const NormalCalendar = () => {
   };
 
   useEffect(() => {
-  
     fetchEvents();
   }, []);
 
@@ -207,7 +206,10 @@ const NormalCalendar = () => {
       </View>
       <View style={styles.calendarContainer}>
         <View style = {styles.centered}>
-          <Text style={styles.calendarInfo}>If club dates don't load, click on the calendar. May take a second to load.</Text>
+          <Text style={styles.calendarInfo}>                 *Under Maintainence*           </Text>
+          <TouchableOpacity onPress={fetchEvents} style={styles.refreshButton}>
+            <Ionicons name="refresh" size={24} color="orange" />
+          </TouchableOpacity>
         </View>
         <View style={styles.headerContainer}>
           <TouchableOpacity onPress={handlePrevMonth}>
@@ -486,6 +488,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    flexDirection: "row",
   },
   text: {
     color: "#FFF",
@@ -499,6 +502,11 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: "bold",
     color: "#FFF",
+  },
+  refreshButton: {
+    marginLeft: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
