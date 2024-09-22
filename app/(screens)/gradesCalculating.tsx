@@ -21,6 +21,7 @@ import {
   Course,
   getCourses,
   Grade,
+  neededScore,
 } from "@/globalVars/gradesVariables";
 import Modal from "react-native-modal";
 import AutoCompleteTextInput from "@/components/AutoCompleteTextInput";
@@ -44,6 +45,8 @@ const gradesCalculating = () => {
     useState<boolean>(false);
 
   const [selectedGrade, setSelectedGrade] = useState<Grade>();
+  
+  console.log(neededScore(selectedCourse, 100, "checking for understanding"))
 
   async function setCoursesAsync() {
     if (!courses) {
