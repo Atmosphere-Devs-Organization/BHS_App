@@ -58,6 +58,8 @@ export class Course {
 let courses: Course[] | null | undefined = null;
 let HACBroken: boolean = false;
 
+let loadingBridgelandStudentAccess: boolean = false;
+
 const HAC_Link = "https://home-access.cfisd.net";
 
 let specCharsMap = new Map<string | undefined, string>();
@@ -218,6 +220,8 @@ export async function refreshBridgelandStudent(
   password: string
 ) {
   if (username && password) {
+    loadingBridgelandStudentAccess = true;
+
     let studentInfoResponse = await fetchStudentInfo(
       "info",
       username,
@@ -226,10 +230,15 @@ export async function refreshBridgelandStudent(
     hasAccess = studentInfoResponse
       ? studentInfoResponse["school"].toLowerCase().includes("bridgeland")
       : false;
+
+    loadingBridgelandStudentAccess = false;
   }
 }
 export async function getAccessStatus(): Promise<boolean> {
   return hasAccess;
+}
+export async function getBHSStudentLoadingStatus(): Promise<boolean> {
+  return loadingBridgelandStudentAccess;
 }
 
 export function calculateAssignmentTypePercentages(
