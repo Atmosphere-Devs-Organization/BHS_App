@@ -14,6 +14,7 @@ import {
   Pressable,
   ImageBackground,
   SafeAreaView,
+  Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Entypo, MaterialIcons } from "@expo/vector-icons"; // Import MaterialIcons
@@ -24,6 +25,8 @@ import {
   refreshGradeData,
 } from "@/globalVars/gradesVariables";
 import bannerImage from 'assets/images/banner.png';
+import axios from "axios";
+import * as Application from 'expo-application';
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -41,15 +44,64 @@ const Home: React.FC = () => {
   const sidInputRef = useRef<TextInput>(null);
   const hacPasswordInputRef = useRef<TextInput>(null);
   const scrollRef = useRef<ScrollView>(null);
-
+  
   useEffect(() => {
     const fetchUserData = async () => {
       setSid((await SecureStore.getItemAsync("HACusername")) || "");
       setHACPassword((await SecureStore.getItemAsync("HACpassword")) || "");
     };
+    checkForUpdate();
 
     fetchUserData();
   }, []);
+
+  const checkForUpdate = async () => {
+    try {
+      const currentVersion = Application.nativeApplicationVersion;
+
+      let storeVersion;
+      if (Platform.OS === 'ios') {
+        // Fetch version from Apple App Store
+        const response = await axios.get(
+          `https://itunes.apple.com/lookup?bundleId=${Application.applicationId}`
+        );
+        storeVersion = response.data.results[0].version;
+      } else if (Platform.OS === 'android') {
+        // You can either get the version from the Play Store API or your server.
+        // This example assumes the version is fetched from your server.
+        const response = await axios.get(
+          `https://your-server.com/latest-android-version`
+        );
+        storeVersion = response.data.version;
+      }
+      console.log('current');
+      console.log(currentVersion);
+      console.log('app store');
+      console.log(storeVersion);
+
+      if (storeVersion && currentVersion !== storeVersion) {
+        // Show an alert to update the app
+        Alert.alert(
+          'Update Available',
+          'Please update the app to the latest version from the store.',
+          [
+            {
+              text: 'Update',
+              onPress: () => {
+                const url = Platform.OS === 'ios'
+                  ? 'itms-apps://itunes.apple.com/app/6630367027'
+                  : 'market://details?id=YOUR_PACKAGE_NAME';
+                Linking.openURL(url);
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+    } catch (error) {
+      console.error('Failed to check app version:', error);
+    }
+  };
 
   const saveUserData = async () => {
     try {
