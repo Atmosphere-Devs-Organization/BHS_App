@@ -6,29 +6,27 @@ import {
   Text,
 } from "react-native";
 import React, { useEffect, useMemo, useState } from "react";
-import { router, Stack, useFocusEffect } from "expo-router";
+import { Stack } from "expo-router";
 import ClubsHeader from "@/components/ClubsHeader";
 import ClubList from "@/components/ClubList";
 import clubData from "@/assets/data/clubs-data.json";
-import * as SecureStore from "expo-secure-store";
-import { FIREBASE_AUTH } from "@/FirebaseConfig";
-import axios from "axios";
-import { User, onAuthStateChanged } from "firebase/auth";
-import AwesomeButton from "react-native-really-awesome-button";
-import { Ionicons } from "@expo/vector-icons";
 import Numbers from "@/constants/Numbers";
-import HACNeededScreen from "@/components/HACNeededScreen";
-import { getAccessStatus } from "@/globalVars/gradesVariables";
+import {
+  getAccessStatus,
+  getBHSStudentLoadingStatus,
+} from "@/globalVars/gradesVariables";
+import HACNeededScreen_BHS from "@/components/HACNeededScreen_BHS";
 
 const Clubs = () => {
   const [HACBroken, setHACBroken] = useState<boolean>(false);
 
   const [hasAccess, setAccess] = useState<boolean>(false);
-  const [loadingInfo, setLoadingInfo] = useState<boolean>(true);
+  const [loadingInfo, setLoadingInfo] = useState<boolean>(false);
 
   async function setCoursesAsync() {
     if (!hasAccess) {
       setAccess(await getAccessStatus());
+      setLoadingInfo(await getBHSStudentLoadingStatus());
     }
   }
 
@@ -38,7 +36,6 @@ const Clubs = () => {
 
   useEffect(() => {
     if (hasAccess) {
-      setLoadingInfo(false);
       clearInterval(intervalId);
     }
   }, [hasAccess]);
@@ -94,7 +91,7 @@ const Clubs = () => {
           header: () => <ClubsHeader onCategoryChanged={onCategoryChanged} />,
         }}
       />
-      <HACNeededScreen paddingTop={200} hacDown={HACBroken} />
+      <HACNeededScreen_BHS paddingTop={200} hacDown={HACBroken} />
     </View>
   );
 };

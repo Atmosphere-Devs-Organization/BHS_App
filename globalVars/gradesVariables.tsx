@@ -58,6 +58,8 @@ export class Course {
 let courses: Course[] | null | undefined = null;
 let HACBroken: boolean = false;
 
+let loadingBridgelandStudentAccess: boolean = false;
+
 const HAC_Link = "https://home-access.cfisd.net";
 
 let specCharsMap = new Map<string | undefined, string>();
@@ -117,7 +119,7 @@ export async function refreshGradeData(username: string, password: string) {
       const classesArray = Object.keys(gradesData);
       classesArray.forEach(function (value) {
         if (value.indexOf("dropped") == -1) {
-          let grade = Number.parseInt(gradesData[value]["average"]);
+          let grade = Number.parseInt(gradesData[value]["average"].trim());
           coursesData[i] = new Course(
             value.split(" - ")[1].split(" Marking")[0].substring(2),
             grade ? grade : -100,
@@ -137,9 +139,17 @@ export async function refreshGradeData(username: string, password: string) {
               new Grade(
                 assignment[2],
                 assignment[0],
-                assignmentGrade ? assignmentGrade : -100,
+                assignmentGrade
+                  ? assignmentGrade
+                  : assignment[3].toLowerCase().indexOf("z") != -1
+                  ? 0
+                  : -100,
                 maxAssignmentGrade,
-                new Date(dateArr[2] + "-" + dateArr[0] + "-" + dateArr[1])
+                new Date(
+                  Number.parseInt(dateArr[2]),
+                  Number.parseInt(dateArr[0]) - 1,
+                  Number.parseInt(dateArr[1])
+                )
               )
             );
           });
@@ -159,6 +169,30 @@ export async function refreshGradeData(username: string, password: string) {
               coursesData[i].saPercent = Number.parseFloat(percentageSplit[1]);
             }
           });
+
+          if (coursesData[i].cfuPercent > 0 && coursesData[i].raPercent > 0) {
+            coursesData[i].saPercent =
+              100 - coursesData[i].cfuPercent - coursesData[i].raPercent;
+          } else if (
+            coursesData[i].raPercent > 0 &&
+            coursesData[i].saPercent > 0
+          ) {
+            coursesData[i].cfuPercent =
+              100 - coursesData[i].raPercent - coursesData[i].saPercent;
+          } else if (
+            coursesData[i].saPercent > 0 &&
+            coursesData[i].cfuPercent > 0
+          ) {
+            coursesData[i].raPercent =
+              100 - coursesData[i].saPercent - coursesData[i].cfuPercent;
+          }
+
+          if (coursesData[i].overallGrade == -100) {
+            coursesData[i].overallGrade = CalculateOverallAverage(
+              coursesData[i],
+              calculateAssignmentTypePercentages(coursesData[i])
+            );
+          }
 
           i++;
         }
@@ -186,6 +220,8 @@ export async function refreshBridgelandStudent(
   password: string
 ) {
   if (username && password) {
+    loadingBridgelandStudentAccess = true;
+
     let studentInfoResponse = await fetchStudentInfo(
       "info",
       username,
@@ -194,10 +230,15 @@ export async function refreshBridgelandStudent(
     hasAccess = studentInfoResponse
       ? studentInfoResponse["school"].toLowerCase().includes("bridgeland")
       : false;
+
+    loadingBridgelandStudentAccess = false;
   }
 }
 export async function getAccessStatus(): Promise<boolean> {
   return hasAccess;
+}
+export async function getBHSStudentLoadingStatus(): Promise<boolean> {
+  return loadingBridgelandStudentAccess;
 }
 
 export function calculateAssignmentTypePercentages(

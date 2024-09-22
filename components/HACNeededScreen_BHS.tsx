@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import { View, StyleSheet, Text } from "react-native";
 import AwesomeButton from "react-native-really-awesome-button";
 
-const HACNeededScreen = ({
+const HACNeededScreen_BHS = ({
   paddingTop,
   hacDown,
 }: {
@@ -33,7 +33,7 @@ const HACNeededScreen = ({
       >
         {hacDown
           ? "HAC is not working right now. We cannot verify your login."
-          : "Check your home access account login\nAlso make sure you aren't on school wifi"}
+          : "You must be signed into your Bridgeland High School Home Access Center account!\nAlso make sure you aren't on school wifi"}
       </Text>
       {!hacDown && (
         <AwesomeButton
@@ -72,4 +72,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HACNeededScreen;
+export default HACNeededScreen_BHS;

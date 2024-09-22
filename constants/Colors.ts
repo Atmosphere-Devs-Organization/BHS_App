@@ -104,16 +104,17 @@ export default {
   gradeGradeCColor: "#f7c902",
   gradeGradeFailColor: "#cc2d2d",
 
-  gradeGradeAColorBG: "#41b42d28",
-  gradeGradeBColorBG: "#33BBFF28",
-  gradeGradeCColorBG: "#f7c90228",
-  gradeGradeFailColorBG: "#cc2d2d28",
+  gradeGradeAColorBG: "#41b42d47",
+  gradeGradeBColorBG: "#33BBFF47",
+  gradeGradeCColorBG: "#f7c90247",
+  gradeGradeFailColorBG: "#cc2d2d47",
 
   saColor: "#f3d8fd",
   cfuColor: "#daddff",
   raColor: "#fffccf",
 
-  addAssignmentBG: "#44ff547c",
+  addAssignmentBG: "#3b9f2a",
+  whatDoINeedBG: "#3c9f2ac7",
   deleteAssignmentBG: "#ff5858a3",
   saveAssignmentBG: "#ffff3fa3",
   resetCalcBG: "#69696972",

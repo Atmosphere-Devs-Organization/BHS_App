@@ -12,7 +12,7 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import roomData from "@/assets/data/map-data.json";
 import { Room } from "@/interfaces/Room";
-import { router, useFocusEffect } from "expo-router";
+import { router } from "expo-router";
 import GridMap from "@/components/GridMap";
 import { MapCoords } from "@/interfaces/MapCoords";
 import floorData from "@/assets/data/floor-data.json";
@@ -22,24 +22,22 @@ import AutoCompleteTextInput from "@/components/AutoCompleteTextInput";
 import Colors from "@/constants/Colors";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import AwesomeButton from "react-native-really-awesome-button";
-import { FIREBASE_AUTH } from "@/FirebaseConfig";
-import axios from "axios";
-import { User, onAuthStateChanged } from "firebase/auth";
-import * as SecureStore from "expo-secure-store";
-import Numbers from "@/constants/Numbers";
-import { Ionicons } from "@expo/vector-icons";
-import HACNeededScreen from "@/components/HACNeededScreen";
-import { getAccessStatus } from "@/globalVars/gradesVariables";
+import {
+  getAccessStatus,
+  getBHSStudentLoadingStatus,
+} from "@/globalVars/gradesVariables";
+import HACNeededScreen_BHS from "@/components/HACNeededScreen_BHS";
 
 const MapPage = () => {
   const [HACBroken, setHACBroken] = useState<boolean>(false);
 
   const [hasAccess, setAccess] = useState<boolean>(false);
-  const [loadingInfo, setLoadingInfo] = useState<boolean>(true);
+  const [loadingInfo, setLoadingInfo] = useState<boolean>(false);
 
   async function setCoursesAsync() {
     if (!hasAccess) {
       setAccess(await getAccessStatus());
+      setLoadingInfo(await getBHSStudentLoadingStatus());
     }
   }
 
@@ -49,7 +47,6 @@ const MapPage = () => {
 
   useEffect(() => {
     if (hasAccess) {
-      setLoadingInfo(false);
       clearInterval(intervalId);
     }
   }, [hasAccess]);
@@ -460,7 +457,7 @@ const MapPage = () => {
       </ScrollView>
     </View>
   ) : (
-    <HACNeededScreen paddingTop={0} hacDown={HACBroken} />
+    <HACNeededScreen_BHS paddingTop={0} hacDown={HACBroken} />
   );
 };
 
