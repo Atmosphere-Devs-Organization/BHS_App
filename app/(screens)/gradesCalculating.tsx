@@ -13,7 +13,13 @@ import {
 import React, { useEffect, useState } from "react";
 import { useLocalSearchParams, router } from "expo-router";
 import Numbers from "@/constants/Numbers";
-import { Entypo, Ionicons, SimpleLineIcons } from "@expo/vector-icons";
+import {
+  Entypo,
+  FontAwesome5,
+  FontAwesome6,
+  Ionicons,
+  SimpleLineIcons,
+} from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import {
   calculateAssignmentTypePercentages,
@@ -183,6 +189,34 @@ const gradesCalculating = () => {
               {selectedCourse?.name}
             </Text>
           </View>
+
+          <TouchableOpacity
+            style={{
+              borderWidth: 2,
+              borderColor: "#ffffff90",
+              borderRadius: 10,
+              padding: 5,
+              backgroundColor: Colors.addAssignmentBG,
+              alignSelf: "flex-end",
+              alignContent: "center",
+              justifyContent: "center",
+              width: 40,
+            }}
+            onPress={() => {
+              setAddingError(null);
+              setAddAssignmentName("");
+              setAddAssignmentType("");
+              setAddAssignmentGrade("");
+              setVisibleAddAssignment(true);
+            }}
+          >
+            <Ionicons
+              name="add-sharp"
+              size={25}
+              color="#ffffff"
+              style={{ paddingRight: 3 }}
+            />
+          </TouchableOpacity>
         </View>
 
         <View style={{ flexDirection: "row", gap: 25 }}>
@@ -242,7 +276,7 @@ const gradesCalculating = () => {
               flexDirection: "row",
               alignContent: "center",
               borderWidth: 2,
-              borderColor: "#ffffff",
+              borderColor: "#696969",
               borderRadius: 10,
               padding: 5,
               backgroundColor: Colors.resetCalcBG,
@@ -266,10 +300,10 @@ const gradesCalculating = () => {
               flexDirection: "row",
               alignContent: "center",
               borderWidth: 2,
-              borderColor: "#ffffff",
+              borderColor: "#3c9f2a",
               borderRadius: 10,
               padding: 5,
-              backgroundColor: Colors.addAssignmentBG,
+              backgroundColor: Colors.whatDoINeedBG,
             }}
             onPress={() => {
               setAddingError(null);
@@ -279,16 +313,16 @@ const gradesCalculating = () => {
               setVisibleAddAssignment(true);
             }}
           >
-            <Ionicons
-              name="add-sharp"
+            <FontAwesome6
+              name="question"
               size={20}
               color="#ffffff"
-              style={{ paddingRight: 3 }}
+              style={{ paddingRight: 7 }}
             />
             <Text
               style={{ color: "#ffffff", fontSize: 16, fontWeight: "bold" }}
             >
-              Add Assignment
+              What do I Need?
             </Text>
           </TouchableOpacity>
         </View>
@@ -782,7 +816,7 @@ const styles = StyleSheet.create({
     alignItems: "center", // Center text horizontally within this container
   },
   headerTitleText: {
-    fontSize: 24, // Larger font for the course title
+    fontSize: 27, // Larger font for the course title
     fontWeight: "bold",
     color: "white",
     textAlign: "center",
@@ -868,11 +902,11 @@ const styles = StyleSheet.create({
   },
   gradeBox: {
     borderRadius: 12, // Rounded corners for grade box
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: Colors.gradeBoxBorder,
     justifyContent: "center", // Center the grade text
     alignItems: "center", // Center the grade text horizontally
-    paddingVertical: 15, // Padding inside the box
+    paddingVertical: 17, // Padding inside the box
     width: 80,
     minWidth: 60, // Ensure a minimum width for the grade box
     alignSelf: "flex-end",

@@ -113,7 +113,8 @@ export default {
   cfuColor: "#daddff",
   raColor: "#fffccf",
 
-  addAssignmentBG: "#44ff547c",
+  addAssignmentBG: "#3b9f2a",
+  whatDoINeedBG: "#3c9f2ac7",
   deleteAssignmentBG: "#ff5858a3",
   saveAssignmentBG: "#ffff3fa3",
   resetCalcBG: "#69696972",
