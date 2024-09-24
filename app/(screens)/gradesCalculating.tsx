@@ -9,7 +9,7 @@ import {
   TextInput,
   Keyboard,
   TouchableWithoutFeedback,
-  ImageBackground
+  ImageBackground,
 } from "react-native";
 //import background from ".\app\(screens)\background\gradientback.jpeg";
 import React, { useEffect, useState } from "react";
@@ -71,20 +71,31 @@ const gradesCalculating = () => {
     }
   }, [courses]);
   const WhatDoINeedBox = () => (
-    <View style={{
-      padding: 7, 
-      borderRadius: 10, 
-      backgroundColor: "green", 
-      width: "99%", 
-      alignContent: "center", 
-      alignItems: "center", 
-      height: 40,
-      marginTop: 10 }}>
-      <Text style={{ fontWeight: "bold", fontSize: 20, textAlign: "center", color: "white" }}>What Do I Need?</Text>
+    <View
+      style={{
+        padding: 7,
+        borderRadius: 10,
+        backgroundColor: "green",
+        width: "99%",
+        alignContent: "center",
+        alignItems: "center",
+        height: 40,
+        marginTop: 10,
+      }}
+    >
+      <Text
+        style={{
+          fontWeight: "bold",
+          fontSize: 20,
+          textAlign: "center",
+          color: "white",
+        }}
+      >
+        What Do I Need?
+      </Text>
     </View>
   );
-  
-  
+
   const renderGradeItem = ({ item }: { item: Grade }) => {
     // Function to get the background color based on the grade
     const getGradeBackgroundColor = (grade: number) => {
@@ -96,7 +107,9 @@ const gradesCalculating = () => {
 
     // Grade background color
     const backgroundColor =
-      item.grade === -100 ? "#444" : getGradeBackgroundColor(item.grade);
+      item.grade === -100
+        ? "#444"
+        : getGradeBackgroundColor((item.grade / item.maxGrade) * 100);
 
     const color =
       item.assignmentType.toLowerCase() == "summative assessments"
@@ -112,36 +125,32 @@ const gradesCalculating = () => {
         onPress={() => {
           setSelectedGrade(item);
           setAddAssignmentName(item.assignmentName);
-          setAddAssignmentGrade(
-            "" + (item.grade == -100 ? "N/A" : item.grade)
-          );
+          setAddAssignmentGrade("" + (item.grade == -100 ? "N/A" : item.grade));
           setAddAssignmentType(item.assignmentType);
           setLookingAtAssignmentOptions(true);
-        } }
+        }}
         style={{}}
       >
-          <View style={styles.gradeRow}>
-            {/* Left side: assignment name, type, and date */}
-            <View style={styles.assignmentInfo}>
-              <Text numberOfLines={1} style={styles.assignmentName}>
-                {item.assignmentName}
-              </Text>
-              <Text style={[styles.assignmentType, { color }]}>
-                {item.assignmentType}
-              </Text>
-              <Text style={styles.date}>{item.date.toLocaleDateString()}</Text>
-
-            </View>
-
-            {/* Right side: grade box */}
-            <View style={[styles.gradeBox, { backgroundColor }]}>
-              <Text style={styles.gradeText}>
-                {item.grade === -100 ? "N/A" : `${item.grade}`}
-              </Text>
-            </View>
-
+        <View style={styles.gradeRow}>
+          {/* Left side: assignment name, type, and date */}
+          <View style={styles.assignmentInfo}>
+            <Text numberOfLines={1} style={styles.assignmentName}>
+              {item.assignmentName}
+            </Text>
+            <Text style={[styles.assignmentType, { color }]}>
+              {item.assignmentType}
+            </Text>
+            <Text style={styles.date}>{item.date.toLocaleDateString()}</Text>
           </View>
-        </TouchableOpacity>
+
+          {/* Right side: grade box */}
+          <View style={[styles.gradeBox, { backgroundColor }]}>
+            <Text style={styles.gradeText}>
+              {item.grade === -100 ? "N/A" : `${item.grade}`}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
     );
   };
   const renderHeader = () => {
@@ -195,7 +204,9 @@ const gradesCalculating = () => {
           </TouchableOpacity>
           {/* Course Title */}
           <View style={styles.headerTitleBox}>
-            <Text style={styles.headerTitleText}>{selectedCourse?.name}</Text>
+            <Text numberOfLines={1} style={styles.headerTitleText}>
+              {selectedCourse?.name}
+            </Text>
           </View>
         </View>
 
@@ -259,7 +270,7 @@ const gradesCalculating = () => {
               padding: 5,
               height: 40,
               marginLeft: 20,
-              alignItems : "center",
+              alignItems: "center",
               alignSelf: "center",
               backgroundColor: Colors.resetCalcBG,
             }}
@@ -321,10 +332,6 @@ const gradesCalculating = () => {
   const [addingError, setAddingError] = useState<string | null>(null);
 
   function AddNewAssignment(): boolean {
-    if (addAssignmentName === "") {
-      setAddingError("Please input an assignment name");
-      return false;
-    }
     try {
       Number.parseFloat(addAssignmentGrade);
     } catch {
@@ -347,7 +354,7 @@ const gradesCalculating = () => {
     selectedCourse?.addAssignment(
       new Grade(
         addAssignmentType,
-        addAssignmentName,
+        addAssignmentName == "" ? "New Assignment" : addAssignmentName,
         Number.parseFloat(addAssignmentGrade),
         100,
         new Date()
@@ -404,25 +411,23 @@ const gradesCalculating = () => {
         height: "100%",
       }}
     >
-    {/*<ImageBackground
+      {/*<ImageBackground
       //    source={background}
         //  style={styles.background}
       >*/}
-<View style={{ flex: 1, padding: 3 }}>
-  {selectedCourse && (
-    <View style={{ flex: 1 }}>
-      {renderHeader()}
-        <FlatList
-          data={selectedCourse.grades}
-          renderItem={renderGradeItem}
-          keyExtractor={(item: { assignmentName: any }) => item.assignmentName}
-          showsVerticalScrollIndicator={false}
-          nestedScrollEnabled={true} // If it's nested inside another ScrollView
-        />
-        </View>
-    
-  )}
-</View>
+      <View style={{ flex: 1, padding: 3 }}>
+        {selectedCourse && (
+          <View style={{ flex: 1 }}>
+            {renderHeader()}
+            <FlatList
+              data={selectedCourse.grades}
+              renderItem={renderGradeItem}
+              showsVerticalScrollIndicator={false}
+              nestedScrollEnabled={true} // If it's nested inside another ScrollView
+            />
+          </View>
+        )}
+      </View>
       <Modal
         isVisible={addAssignmentModalVisible}
         animationIn={"pulse"}
@@ -478,7 +483,6 @@ const gradesCalculating = () => {
             {addingError && addingError !== "" && (
               <Text style={styles.error}>{addingError}</Text>
             )}
-
 
             <View
               style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}
@@ -819,6 +823,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
     textAlign: "center",
+    width: "80%",
   },
   headerGradeBox: {
     borderRadius: 10, // Rounded corners for the grade box
@@ -827,7 +832,6 @@ const styles = StyleSheet.create({
     height: 100,
     width: 130,
     borderWidth: 5,
-
   },
   headerGradeText: {
     fontSize: 30, // Larger font for the overall grade
@@ -839,7 +843,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
     textAlign: "center",
-
   },
 
   gradeItem: {
@@ -886,7 +889,6 @@ const styles = StyleSheet.create({
     paddingEnd: 15,
     borderBottomWidth: 1, // Border for separating the items
     borderBottomColor: "#444", // Border color
-
   },
   assignmentInfo: {
     flex: 1, // Takes up most of the row width
@@ -909,11 +911,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#888", // Lighter color for date
     fontWeight: "bold",
-
   },
   background: {
     flex: 1,
-    resizeMode: 'cover', // optional: adjust the image scaling
+    resizeMode: "cover", // optional: adjust the image scaling
   },
 
   gradeBox: {
