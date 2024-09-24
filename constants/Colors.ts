@@ -88,7 +88,7 @@ export default {
 
   //Grades
   topText: "#ff4d00",
-  gradesCurvedView: "#000000",
+  gradesCurvedView: "#ffffff24",
   transcriptBubblesBG: "#ffffff24",
   transcriptBubbleText: "#ff4d00",
 

@@ -406,7 +406,7 @@ const gradesCalculating = () => {
   return (
     <SafeAreaView
       style={{
-        backgroundColor: Colors.overallBackground,
+        backgroundColor: "#080402",
         height: "100%",
       }}
     >
@@ -414,7 +414,7 @@ const gradesCalculating = () => {
         {selectedCourse && (
           <View style={{ flex: 1 }}>
             {renderHeader()}
-            <View style={{backgroundColor: Colors.gradesCurvedView,marginLeft: 3, marginRight: 3, borderRadius: 15}}>
+            <View style={{backgroundColor: Colors.gradesCurvedView,marginLeft: 7, marginRight: 7, borderRadius: 15}}>
             <FlatList
               data={selectedCourse.grades}
               renderItem={renderGradeItem}
