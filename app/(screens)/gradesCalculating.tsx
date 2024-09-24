@@ -9,7 +9,9 @@ import {
   TextInput,
   Keyboard,
   TouchableWithoutFeedback,
+  ImageBackground
 } from "react-native";
+//import background from ".\app\(screens)\background\gradientback.jpeg";
 import React, { useEffect, useState } from "react";
 import { useLocalSearchParams, router } from "expo-router";
 import Numbers from "@/constants/Numbers";
@@ -157,7 +159,6 @@ const gradesCalculating = () => {
       return Colors.gradeGradeFailColorBG; // Red for failing grades
     };
 
-
     let percentagesArray = calculateAssignmentTypePercentages(selectedCourse);
     let overallCourseAverage = Math.round(
       CalculateOverallAverage(selectedCourse, percentagesArray)
@@ -173,10 +174,11 @@ const gradesCalculating = () => {
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
+            alignContent: "center",
             borderBottomWidth: 1, // Border for separating the header from the items
             borderBottomColor: "#444", // Border color
-            paddingEnd:15,
-            paddingBottom: 10,
+            marginBottom: 15,
+            paddingBottom: 17,
           }}
         >
           <TouchableOpacity
@@ -195,30 +197,9 @@ const gradesCalculating = () => {
           <View style={styles.headerTitleBox}>
             <Text style={styles.headerTitleText}>{selectedCourse?.name}</Text>
           </View>
-          <TouchableOpacity
-            style={{
-              borderRadius: 10,
-              padding: 5,
-              backgroundColor: Colors.addAssignmentBG,
-            }}
-            onPress={() => {
-              setAddingError(null);
-              setAddAssignmentName("");
-              setAddAssignmentType("");
-              setAddAssignmentGrade("");
-              setVisibleAddAssignment(true);
-            }}
-          >
-            <Ionicons
-              name="add-sharp"
-              size={20}
-              color="#ffffff"
-              style={{ padding: 3}}
-            />
-          </TouchableOpacity>
-
         </View>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", padding: 15}}>
+
+        <View style={{ flexDirection: "row", gap: 25 }}>
           {/* Overall Grade Box */}
           <View
             style={[styles.headerGradeBox, { backgroundColor, borderColor }]}
@@ -227,7 +208,8 @@ const gradesCalculating = () => {
               style={styles.headerGradeText}
             >{`${overallCourseAverage}%`}</Text>
           </View>
-          <View style={{ alignContent: "center", marginRight: 20}}>
+
+          <View style={{ alignContent: "center", justifyContent: "center" }}>
             <Text style={[styles.averagesTopText, { color: Colors.cfuColor }]}>
               CFU Average:{"  "}
               {!refreshing
@@ -259,10 +241,76 @@ const gradesCalculating = () => {
                 : "Loading..."}
             </Text>
           </View>
-          </View>
-              {/*{WhatDoINeedBox()}*/}
         </View>
-
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignContent: "center",
+            marginTop: 15,
+            marginHorizontal: 10,
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              flexDirection: "row",
+              alignContent: "center",
+              borderRadius: 10,
+              padding: 5,
+              height: 40,
+              marginLeft: 20,
+              alignItems : "center",
+              alignSelf: "center",
+              backgroundColor: Colors.resetCalcBG,
+            }}
+            onPress={() => ResetCalculator()}
+          >
+            <Ionicons
+              name="refresh-sharp"
+              size={20}
+              color="#ffffff"
+              style={{ paddingRight: 3 }}
+            />
+            <Text
+              style={{ color: "#ffffff", fontSize: 16, fontWeight: "bold" }}
+            >
+              Reset Calculator
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              flexDirection: "row",
+              alignContent: "center",
+              alignItems: "center",
+              alignSelf: "center",
+              borderRadius: 10,
+              height: 40,
+              marginRight: 20,
+              padding: 5,
+              backgroundColor: Colors.addAssignmentBG,
+            }}
+            onPress={() => {
+              setAddingError(null);
+              setAddAssignmentName("");
+              setAddAssignmentType("");
+              setAddAssignmentGrade("");
+              setVisibleAddAssignment(true);
+            }}
+          >
+            <Ionicons
+              name="add-sharp"
+              size={20}
+              color="#ffffff"
+              style={{ paddingRight: 3 }}
+            />
+            <Text
+              style={{ color: "#ffffff", fontSize: 16, fontWeight: "bold" }}
+            >
+              Add Assignment
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     );
   };
 
@@ -356,6 +404,10 @@ const gradesCalculating = () => {
         height: "100%",
       }}
     >
+    {/*<ImageBackground
+      //    source={background}
+        //  style={styles.background}
+      >*/}
 <View style={{ flex: 1, padding: 3 }}>
   {selectedCourse && (
     <View style={{ flex: 1 }}>
@@ -644,6 +696,7 @@ const gradesCalculating = () => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
+      {/*</ImageBackground>*/}
     </SafeAreaView>
   );
 };
@@ -756,9 +809,10 @@ const styles = StyleSheet.create({
     borderBottomColor: "#444", // Border color
   },
   headerTitleBox: {
-    flexDirection: "row", // Row format for the title and grade box
-    alignItems: "flex-start",
-    alignContent: "space-between" // Center text horizontally within this container
+    position: "absolute", // Positioning it freely within the parent container
+    left: 0, // Ensure it takes full width
+    right: 0,
+    alignItems: "center", // Center text horizontally within this container
   },
   headerTitleText: {
     fontSize: 24, // Larger font for the course title
@@ -842,15 +896,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "white",
+    flex: 1,
+    marginBottom: 5,
   },
   assignmentType: {
     fontSize: 14,
+    fontWeight: "bold",
+    marginBottom: 5,
     //color: "#aaa", // Slightly lighter color for assignment type
   },
   date: {
     fontSize: 12,
     color: "#888", // Lighter color for date
+    fontWeight: "bold",
+
   },
+  background: {
+    flex: 1,
+    resizeMode: 'cover', // optional: adjust the image scaling
+  },
+
   gradeBox: {
     borderRadius: 12, // Rounded corners for grade box
     borderWidth: 1,

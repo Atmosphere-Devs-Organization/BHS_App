@@ -109,9 +109,9 @@ export default {
   gradeGradeCColorBG: "#f7c90247",
   gradeGradeFailColorBG: "#cc2d2d47",
 
-  saColor: "#f3d8fd",
-  cfuColor: "#daddff",
-  raColor: "#fffccf",
+  saColor: "#e0aaff",
+  cfuColor: "#90e0ef",
+  raColor: "#ffee99",
 
   addAssignmentBG: "#3b9f2a",
   whatDoINeedBG: "#3c9f2ac7",
