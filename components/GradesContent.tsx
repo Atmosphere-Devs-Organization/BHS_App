@@ -706,6 +706,7 @@ const styles = StyleSheet.create({
     padding: 15,
     height: 85,
     borderColor: "#363737",
+    backgroundColor: Colors.transcriptBubblesBG,
     borderWidth: 2,
     borderRadius: 10,
     margin: 10,

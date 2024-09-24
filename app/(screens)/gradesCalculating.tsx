@@ -11,7 +11,6 @@ import {
   TouchableWithoutFeedback,
   ImageBackground,
 } from "react-native";
-//import background from ".\app\(screens)\background\gradientback.jpeg";
 import React, { useEffect, useState } from "react";
 import { useLocalSearchParams, router } from "expo-router";
 import Numbers from "@/constants/Numbers";
@@ -269,7 +268,7 @@ const gradesCalculating = () => {
               borderRadius: 10,
               padding: 5,
               height: 40,
-              marginLeft: 20,
+              marginLeft: "2%",
               alignItems: "center",
               alignSelf: "center",
               backgroundColor: Colors.resetCalcBG,
@@ -296,7 +295,7 @@ const gradesCalculating = () => {
               alignSelf: "center",
               borderRadius: 10,
               height: 40,
-              marginRight: 20,
+              marginRight: "2%",
               padding: 5,
               backgroundColor: Colors.addAssignmentBG,
             }}
@@ -411,20 +410,18 @@ const gradesCalculating = () => {
         height: "100%",
       }}
     >
-      {/*<ImageBackground
-      //    source={background}
-        //  style={styles.background}
-      >*/}
       <View style={{ flex: 1, padding: 3 }}>
         {selectedCourse && (
           <View style={{ flex: 1 }}>
             {renderHeader()}
+            <View style={{backgroundColor: Colors.gradesCurvedView,marginLeft: 3, marginRight: 3, borderRadius: 15}}>
             <FlatList
               data={selectedCourse.grades}
               renderItem={renderGradeItem}
               showsVerticalScrollIndicator={false}
               nestedScrollEnabled={true} // If it's nested inside another ScrollView
             />
+            </View>
           </View>
         )}
       </View>
@@ -700,7 +697,6 @@ const gradesCalculating = () => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-      {/*</ImageBackground>*/}
     </SafeAreaView>
   );
 };
@@ -811,6 +807,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     borderBottomWidth: 1, // Border for separating the header from the items
     borderBottomColor: "#444", // Border color
+    padding: 20,
   },
   headerTitleBox: {
     position: "absolute", // Positioning it freely within the parent container
@@ -898,7 +895,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "white",
-    flex: 1,
+    width: "92%",
     marginBottom: 5,
   },
   assignmentType: {
@@ -909,7 +906,7 @@ const styles = StyleSheet.create({
   },
   date: {
     fontSize: 12,
-    color: "#888", // Lighter color for date
+    color: "#ffffff", // Lighter color for date
     fontWeight: "bold",
   },
   background: {
