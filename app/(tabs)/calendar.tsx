@@ -51,8 +51,7 @@ const NormalCalendar = () => {
       const storedClubs = await AsyncStorage.getItem("userClubs");
       const clubs = storedClubs ? JSON.parse(storedClubs) : [];
 
-      const fetchedEvents: { date: string; title: string; club: string }[] =
-        [];
+      const fetchedEvents: { date: string; title: string; club: string }[] = [];
 
       if (clubsCache.length > 0) {
       }
@@ -202,11 +201,9 @@ const NormalCalendar = () => {
       {/* Title Section */}
       <View style={styles.titleContainer}>
         <Text style={styles.title}>My Calendar</Text>
-      
       </View>
       <View style={styles.calendarContainer}>
-        <View style = {styles.centered}>
-          <Text style={styles.calendarInfo}>                 *Under Maintainence*           </Text>
+        <View style={styles.centered}>
           <TouchableOpacity onPress={fetchEvents} style={styles.refreshButton}>
             <Ionicons name="refresh" size={24} color="orange" />
           </TouchableOpacity>
@@ -296,8 +293,8 @@ const NormalCalendar = () => {
         )}
       </View>
       <View style={styles.upcomingEventsContainer}>
-      <Text style={styles.upcomingEventsHeader}>Upcoming Events</Text>
-      {/*<ScrollView style={styles.scrollView} showsVerticalScrollIndicator={true} >*/}
+        <Text style={styles.upcomingEventsHeader}>Upcoming Events</Text>
+        {/*<ScrollView style={styles.scrollView} showsVerticalScrollIndicator={true} >*/}
         <FlatList
           data={upcomingEvents}
           keyExtractor={(item, index) => index.toString()}
@@ -474,8 +471,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
     marginBottom: 10,
-    
-
   },
   upcomingEventTitle: {
     color: "#FFF",

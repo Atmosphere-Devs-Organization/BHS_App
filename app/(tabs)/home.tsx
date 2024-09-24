@@ -57,7 +57,10 @@ const Home: React.FC = () => {
 
   const saveUserData = async () => {
     try {
-      await SecureStore.setItemAsync("HACusername", sid);
+      await SecureStore.setItemAsync(
+        "HACusername",
+        sid.startsWith("s") || sid.startsWith("S") ? sid : "s" + sid
+      );
       await SecureStore.setItemAsync("HACpassword", HACpassword);
       Alert.alert("Success", "HAC Information saved");
     } catch (error) {
