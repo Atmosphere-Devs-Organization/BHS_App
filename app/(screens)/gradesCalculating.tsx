@@ -258,7 +258,6 @@ const gradesCalculating = () => {
             justifyContent: "space-between",
             alignContent: "center",
             marginTop: 15,
-            marginHorizontal: 10,
           }}
         >
           <TouchableOpacity
