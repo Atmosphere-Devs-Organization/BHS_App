@@ -226,7 +226,7 @@ const Grades = ({
           {/* Wrap the Text component in a View to handle background and border styling */}
           <View style={[styles.gradeContainer, { backgroundColor }]}>
             <Text style={styles.courseGrade}>
-              {item.overallGrade == -100 ? "N/A" : item.overallGrade + "%"}
+            {item.overallGrade == -100 ? "N/A" : Math.round(item.overallGrade) + "%"}
             </Text>
           </View>
         </TouchableOpacity>
@@ -360,8 +360,8 @@ const Grades = ({
           <View
             style={[styles.headerGradeBox, { borderColor, backgroundColor }]}
           >
-            <Text style={styles.headerGradeText}>{`${overallGrade}%`}</Text>
-          </View>
+<Text style={styles.headerGradeText}></Text>
+</View>
 
           <View style={{ alignContent: "center", justifyContent: "center" }}>
             <Text style={[styles.averagesTopText, { color: Colors.cfuColor }]}>

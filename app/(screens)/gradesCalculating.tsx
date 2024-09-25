@@ -413,12 +413,12 @@ const gradesCalculating = () => {
         {selectedCourse && (
           <View style={{ flex: 1 }}>
             {renderHeader()}
-            <View style={{backgroundColor: Colors.gradesCurvedView,marginLeft: 7, marginRight: 7, borderRadius: 15}}>
+            <View style={{backgroundColor: Colors.gradesCurvedView,marginLeft: 7, marginRight: 7, borderRadius: 15, marginBottom: 250, paddingBottom: 10,}}>
             <FlatList
               data={selectedCourse.grades}
               renderItem={renderGradeItem}
               showsVerticalScrollIndicator={false}
-              nestedScrollEnabled={true} // If it's nested inside another ScrollView
+//              nestedScrollEnabled={true} // If it's nested inside another ScrollView
             />
             </View>
           </View>
