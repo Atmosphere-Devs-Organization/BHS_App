@@ -406,7 +406,7 @@ const gradesCalculating = () => {
   return (
     <SafeAreaView
       style={{
-        backgroundColor: "#080402",
+        backgroundColor: "#1b1b1b",
         height: "100%",
       }}
     >
@@ -859,7 +859,7 @@ const styles = StyleSheet.create({
     justifyContent: "center", // Centers content vertically
     alignItems: "center", // Centers content horizontally
     width: 90, // Adjusts the width of the box to fit the content
-    height: 45, // Adjusts the height of the box to fit the content
+    height: 37, // Adjusts the height of the box to fit the content
   },
   courseGrade: {
     fontSize: 20,
