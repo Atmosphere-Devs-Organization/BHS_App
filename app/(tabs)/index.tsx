@@ -88,8 +88,12 @@ const Grades = () => {
                 Linking.openURL(url);
               },
             },
-          ],
-          { cancelable: false }
+            {
+              text: "Cancel",
+              onPress: () => console.log("Update cancelled"),
+              style: "cancel",  // Optional, adds a visual cue that this is a cancel action
+            },
+          ]
         );
       }
     } catch (error) {
