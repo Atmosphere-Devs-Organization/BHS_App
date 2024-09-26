@@ -44,10 +44,6 @@ const Grades = () => {
     refreshBridgelandStudent(sid, HACpassword);
   }, [sid, HACpassword]);
 
-  useEffect(() => {
-    checkForUpdate();
-  }, []);
-
   const checkForUpdate = async () => {
     try {
       const currentVersion = Application.nativeApplicationVersion;
