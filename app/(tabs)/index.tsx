@@ -39,11 +39,14 @@ const Grades = () => {
     }
   }, [isFocused]);
 
-
   useEffect(() => {
     refreshGradeData(sid, HACpassword);
     refreshBridgelandStudent(sid, HACpassword);
   }, [sid, HACpassword]);
+
+  useEffect(() => {
+    checkForUpdate();
+  }, []);
 
   const checkForUpdate = async () => {
     try {
@@ -64,10 +67,10 @@ const Grades = () => {
         );
         storeVersion = response.data.version;
       }
-      console.log("current");
-      console.log(currentVersion);
-      console.log("app store");
-      console.log(storeVersion);
+      // console.log("current");
+      // console.log(currentVersion);
+      // console.log("app store");
+      // console.log(storeVersion);
 
       if (storeVersion && currentVersion !== storeVersion) {
         // Show an alert to update the app
@@ -88,7 +91,7 @@ const Grades = () => {
             {
               text: "Cancel",
               onPress: () => console.log("Update cancelled"),
-              style: "cancel",  // Optional, adds a visual cue that this is a cancel action
+              style: "cancel", // Optional, adds a visual cue that this is a cancel action
             },
           ]
         );
