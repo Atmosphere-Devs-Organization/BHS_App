@@ -39,9 +39,6 @@ const Grades = () => {
     }
   }, [isFocused]);
 
-  useEffect(() => {
-    checkForUpdate();
-  }, []);
 
   useEffect(() => {
     refreshGradeData(sid, HACpassword);
