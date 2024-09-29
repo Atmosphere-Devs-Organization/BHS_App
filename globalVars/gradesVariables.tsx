@@ -130,9 +130,9 @@ export async function refreshGradeData(username: string, password: string) {
           );
 
           let assignmentsArr = gradesData[value]["assignments"];
-          assignmentsArr.forEach(function (assignment: any[]) {
-            let assignmentGrade = Number.parseInt(assignment[3]);
-            let maxAssignmentGrade = Number.parseInt(assignment[4]);
+          assignmentsArr.forEach(function (assignment: string[]) {
+            let assignmentGrade = Number.parseFloat(assignment[3]);
+            let maxAssignmentGrade = Number.parseFloat(assignment[4]);
             let dateArr = assignment[1].split("/");
 
             coursesData[i].addAssignment(
@@ -142,6 +142,8 @@ export async function refreshGradeData(username: string, password: string) {
                 assignmentGrade
                   ? assignmentGrade
                   : assignment[3].toLowerCase().indexOf("z") != -1
+                  ? 0
+                  : assignment[3].startsWith("0")
                   ? 0
                   : -100,
                 maxAssignmentGrade,
