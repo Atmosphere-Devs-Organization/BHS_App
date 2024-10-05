@@ -33,7 +33,7 @@ const HACNeededScreen_BHS = ({
       >
         {hacDown
           ? "HAC is not working right now. We cannot verify your login."
-          : "You must be signed into your Bridgeland High School Home Access Center account!\nAlso make sure you aren't on school wifi\nReload the app when fixed"}
+          : "You must be signed into your Bridgeland High School Home Access Center account for this part of the app!\nAlso make sure you aren't on school wifi\nReload the app when fixed"}
       </Text>
       {!hacDown && (
         <AwesomeButton
