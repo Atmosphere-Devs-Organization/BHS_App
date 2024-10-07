@@ -341,7 +341,7 @@ const Grades = ({
               href={{
                 pathname: "/(screens)/gradesCalculating",
                 params: {
-                  className: selectedCourse ? selectedCourse.name : "Dan",
+                  className: selectedCourse ? selectedCourse.name : "No Name",
                 },
               }}
               asChild
@@ -398,13 +398,36 @@ const Grades = ({
     <View style={styles.container}>
       {courses !== null ? (
         !selectedCourse ? (
-          <View style={{ paddingTop: 20 }}>
-            <FlatList
-              data={courses}
-              renderItem={renderCourseItem}
-              keyExtractor={(item) => item.name}
+          <View style={{ paddingTop: 20, marginTop: 15 }}>
+            <ScrollView // Added ScrollView here
               showsVerticalScrollIndicator={false}
-            />
+              contentContainerStyle={{ paddingBottom: 20 }} // Optional: Adds some padding at the bottom
+            >
+              <View
+                style={{
+                  backgroundColor: Colors.gradesCurvedView,
+                  borderRadius: 13,
+                  margin: 8,
+                  borderColor: "#5283b7", 
+                  borderWidth:2,
+                }}
+              >
+                <Text style={{padding: 10, color: "white", fontSize: 22, fontWeight: "bold" }}>
+                  Upcoming Assignments
+                </Text>
+                <Text style={{ color: "white", padding: 10, fontSize: 16}}>
+                  English - Critical Response - 10/08/2024
+                  {"\n"}Calculus III - Unit 2 Quiz - 10/08/2024
+                  {"\n"}Physics C- Dynamics Test - 10/12/2024
+                </Text>
+              </View>
+              <FlatList
+                data={courses}
+                renderItem={renderCourseItem}
+                keyExtractor={(item) => item.name}
+                showsVerticalScrollIndicator={false}
+              />
+            </ScrollView>
           </View>
         ) : (
           <SafeAreaView
@@ -423,9 +446,7 @@ const Grades = ({
                   <FlatList
                     data={selectedCourse.grades}
                     renderItem={renderGradeItem}
-                    keyExtractor={(item: { assignmentName: any }) =>
-                      item.assignmentName
-                    }
+                    keyExtractor={(item: { assignmentName: any }) => item.assignmentName}
                     showsVerticalScrollIndicator={false}
                   />
                 </View>
@@ -456,7 +477,7 @@ const Grades = ({
       )}
     </View>
   ) : (
-    <HACNeededScreen paddingTop={0} hacDown={hacBroken} />
+      <HACNeededScreen paddingTop={0} hacDown={hacBroken} />
   );
 };
 
@@ -568,7 +589,7 @@ const Transcript = ({
   const listRef = useRef<FlatList>(null);
 
   return transcriptData !== undefined ? (
-    <View style={{ paddingTop: 30 }}>
+    <View style={{ paddingTop: 30, marginTop: 15 }}>
       {!showingTranscriptDetails && (
         <View>
           <View

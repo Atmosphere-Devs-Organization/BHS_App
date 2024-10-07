@@ -8,25 +8,21 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react"; // Import useEffect
 import Colors from "@/constants/Colors";
 import Numbers from "@/constants/Numbers";
-import { MaterialIcons } from "@expo/vector-icons";
 
 const screenHeight = Dimensions.get("window").height;
 
 const clubCategories = [
   {
-    name: "Grades",
-    icon: "apps",
+    name: "Calculator",
   },
   {
-    name: "Calculator",
-    icon: "calculate",
+    name: "Grades",
   },
   {
     name: "Transcript",
-    icon: "stacked-bar-chart",
   },
 ];
 
@@ -36,59 +32,58 @@ interface Props {
 
 const ClubsHeader = ({ onCategoryChanged }: Props) => {
   const itemsRef = useRef<Array<TouchableOpacity | null>>([]);
-  const [activeIndex, setActiveIndex] = useState(0);
-
+  const [activeIndex, setActiveIndex] = useState(1); // Set initial index to 1 (Grades)
   const scrollRef = useRef<ScrollView>(null);
+
+  // Effect to call onCategoryChanged when the component mounts
+  useEffect(() => {
+    onCategoryChanged(clubCategories[activeIndex].name);
+  }, []); // Empty dependency array to run only once on mount
 
   const selectCategory = (index: number) => {
     const selected = itemsRef.current[index];
     setActiveIndex(index);
-
     onCategoryChanged(clubCategories[index].name);
   };
 
   return (
     <View style={{ flex: 1 }}>
       <SafeAreaView style={styles.container}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoriesScroll}
-          style={{ alignSelf: "center" }}
-          ref={scrollRef}
-        >
-          {clubCategories.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              ref={(el) => (itemsRef.current[index] = el)}
-              style={
-                activeIndex === index
-                  ? styles.categoryActiveBtn
-                  : styles.categoryBtn
-              }
-              onPress={() => selectCategory(index)}
-            >
-              <MaterialIcons
-                name={item.icon as any}
-                size={24}
-                color={
-                  activeIndex === index
-                    ? Colors.activeCatIcon
-                    : Colors.normalCatIcon
-                }
-              />
-              <Text
+        <Text style={{ color: "white", textAlign: "center", fontSize: 40, fontWeight: "bold", marginTop: screenHeight * 0.01 }}>Grades</Text>
+        <View style={{ backgroundColor: "#494547", borderRadius: 12, marginTop: screenHeight * 0.01, height: 53, marginLeft: 10, marginRight: 10,
+}}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            scrollEnabled={false}
+            contentContainerStyle={styles.categoriesScroll}
+            style={{ alignSelf: "center" }}
+            ref={scrollRef}
+          >
+            {clubCategories.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                ref={(el) => (itemsRef.current[index] = el)}
                 style={
                   activeIndex === index
-                    ? styles.categoryActiveText
-                    : styles.categoryText
+                    ? styles.categoryActiveBtn
+                    : styles.categoryBtn
                 }
+                onPress={() => selectCategory(index)}
               >
-                {item.name}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+                <Text
+                  style={
+                    activeIndex === index
+                      ? styles.categoryActiveText
+                      : styles.categoryText
+                  }
+                >
+                  {item.name}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
       </SafeAreaView>
     </View>
   );
@@ -97,54 +92,37 @@ const ClubsHeader = ({ onCategoryChanged }: Props) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.headerBGColor,
-    height: screenHeight * 0.15,
-  },
-  topRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 0,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: "#ffffff",
-    flex: 1,
-    textAlign: "center",
-    marginHorizontal: 70,
-    padding: 5,
-    borderRadius: 30,
-    marginTop: 10,
+    height: screenHeight * 0.2,
+    marginBottom: 10,
   },
   categoriesScroll: {
-    marginTop: screenHeight * 0.05,
     alignItems: "center",
-    justifyContent: "center",
-    gap: 70,
-    paddingLeft: "4%",
+    flex: 1,
+    justifyContent: "space-between",
   },
   categoryText: {
-    fontSize: 14,
+    fontSize: 16,
     paddingTop: 5,
-    color: Colors.normalCatIcon,
+    color: "white",
+    fontWeight: "bold",
   },
   categoryActiveText: {
-    fontSize: 14,
-    color: Colors.activeCatIcon,
+    fontSize: 16,
+    color: "white",
+    fontWeight: "bold",
   },
   categoryBtn: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
-    paddingBottom: 8,
+    justifyContent: "space-between",
   },
   categoryActiveBtn: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
-    paddingBottom: 10,
-    borderBottomColor: Colors.activeCatIcon,
-    borderBottomWidth: 2,
+    justifyContent: "space-between",
+    paddingVertical: 16,
+    borderRadius: 12,
+    backgroundColor: "#5283b7",
   },
 });
 
