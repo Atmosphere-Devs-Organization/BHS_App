@@ -398,7 +398,7 @@ const Grades = ({
     <View style={styles.container}>
       {courses !== null ? (
         !selectedCourse ? (
-          <View style={{ paddingTop: 20, marginTop: 15 }}>
+          <View style={{ paddingTop: 20, marginTop: 18 }}>
             <ScrollView // Added ScrollView here
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingBottom: 20 }} // Optional: Adds some padding at the bottom
@@ -408,11 +408,12 @@ const Grades = ({
                   backgroundColor: Colors.gradesCurvedView,
                   borderRadius: 13,
                   margin: 8,
+                  marginTop: 8,
                   borderColor: "#5283b7", 
                   borderWidth:2,
                 }}
               >
-                <Text style={{padding: 10, color: "white", fontSize: 22, fontWeight: "bold" }}>
+                <Text style={{padding: 10, color: "white", fontSize: 22, fontWeight: "bold", textAlign: "center", }}>
                   Upcoming Assignments
                 </Text>
                 <Text style={{ color: "white", padding: 10, fontSize: 16}}>
@@ -421,12 +422,14 @@ const Grades = ({
                   {"\n"}Physics C- Dynamics Test - 10/12/2024
                 </Text>
               </View>
+              <View style={{borderWidth: 2, borderRadius: 13, borderColor: "#5283b7"}}>
               <FlatList
                 data={courses}
                 renderItem={renderCourseItem}
                 keyExtractor={(item) => item.name}
                 showsVerticalScrollIndicator={false}
               />
+              </View>
             </ScrollView>
           </View>
         ) : (

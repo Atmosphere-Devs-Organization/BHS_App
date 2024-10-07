@@ -94,10 +94,10 @@ export default {
 
   gradeBoxBorder: "#555555",
 
-  courseGradeAColor: "#41b42d",
-  courseGradeBColor: "#33BBFF",
-  courseGradeCColor: "#f7c902",
-  courseGradeFailColor: "#cc2d2d",
+  courseGradeAColor: "#07c15b",
+  courseGradeBColor: "#56aeff",
+  courseGradeCColor: "#f6d33c",
+  courseGradeFailColor: "#ff3131",
 
   gradeGradeAColor: "#41b42d",
   gradeGradeBColor: "#33BBFF",
