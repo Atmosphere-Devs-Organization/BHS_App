@@ -405,14 +405,13 @@ const Grades = ({
             >
               <View
                 style={{
-                  backgroundColor: Colors.gradesCurvedView,
-                  borderRadius: 13,
-                  margin: 8,
-                  marginTop: 8,
-                  borderColor: "#5283b7", 
-                  borderWidth:2,
-                }}
-              >
+                  padding: 10,
+                  borderRadius: 10,
+                  margin: 3,
+                  borderColor: "#5283b7",
+                  borderWidth: 2,
+                              }}
+              > 
                 <Text style={{padding: 10, color: "white", fontSize: 22, fontWeight: "bold", textAlign: "center", }}>
                   Upcoming Assignments
                 </Text>
@@ -422,7 +421,7 @@ const Grades = ({
                   {"\n"}Physics C- Dynamics Test - 10/12/2024
                 </Text>
               </View>
-              <View style={{borderWidth: 2, borderRadius: 13, borderColor: "#5283b7"}}>
+              <View style={{borderWidth: 2, borderRadius: 13, borderColor: "#5283b7", margin: 2, marginTop: 10}}>
               <FlatList
                 data={courses}
                 renderItem={renderCourseItem}
@@ -446,6 +445,7 @@ const Grades = ({
                     selectedCourse.overallGrade,
                     selectedCourse.name
                   )}
+
                   <FlatList
                     data={selectedCourse.grades}
                     renderItem={renderGradeItem}
@@ -728,13 +728,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 15,
-    height: 85,
-    borderColor: "#363737",
-    backgroundColor: Colors.transcriptBubblesBG,
-    borderWidth: 2,
+    height: 65,
     borderRadius: 10,
-    margin: 10,
-    marginBottom: 0,
+    marginBottom: 2,
+    margin: 3,
   },
   courseName: {
     fontSize: 18,
