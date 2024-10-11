@@ -99,15 +99,15 @@ export default {
   courseGradeCColor: "#f6d33c",
   courseGradeFailColor: "#ff3131",
 
-  gradeGradeAColor: "#41b42d",
-  gradeGradeBColor: "#33BBFF",
-  gradeGradeCColor: "#f7c902",
-  gradeGradeFailColor: "#cc2d2d",
+  gradeGradeAColor: "#07c15b",
+  gradeGradeBColor: "#56aeff",
+  gradeGradeCColor: "#f6d33c",
+  gradeGradeFailColor: "#ff3131",
 
-  gradeGradeAColorBG: "#41b42d47",
-  gradeGradeBColorBG: "#33BBFF47",
-  gradeGradeCColorBG: "#f7c90247",
-  gradeGradeFailColorBG: "#cc2d2d47",
+  gradeGradeAColorBG: "#07c15b",
+  gradeGradeBColorBG: "#56aeff",
+  gradeGradeCColorBG: "#f6d33c",
+  gradeGradeFailColorBG: "#ff3131",
 
   saColor: "#e0aaff",
   cfuColor: "#90e0ef",

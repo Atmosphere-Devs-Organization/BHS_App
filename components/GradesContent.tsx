@@ -408,6 +408,7 @@ const Grades = ({
                   padding: 10,
                   borderRadius: 10,
                   margin: 3,
+                  backgroundColor: "#3c3b3c",
                   borderColor: "#5283b7",
                   borderWidth: 2,
                               }}
@@ -421,7 +422,7 @@ const Grades = ({
                   {"\n"}Physics C- Dynamics Test - 10/12/2024
                 </Text>
               </View>
-              <View style={{borderWidth: 2, borderRadius: 13, borderColor: "#5283b7", margin: 2, marginTop: 10}}>
+              <View style={{borderWidth: 2, borderRadius: 13, borderColor: "#5283b7", backgroundColor: "#3c3b3c", margin: 2, marginTop: 10}}>
               <FlatList
                 data={courses}
                 renderItem={renderCourseItem}
