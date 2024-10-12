@@ -212,21 +212,21 @@ const Grades = ({
     return (
       <View style={styles.causeWhyNot}>
         <TouchableOpacity
-  style={styles.courseItem} // Keep the existing styles for the main container
-  onPress={() =>
-    router.push({
-      pathname: "/(screens)/gradesCalculating",
-      params: {
-        className: item ? item.name : "Dan",
-      },
-    })
-  }
->
+          style={styles.courseItem} // Keep the existing styles for the main container
+          onPress={() =>
+            router.push({
+              pathname: "/(screens)/gradesCalculating",
+              params: {
+                className: item ? item.name : "Dan",
+              },
+            })
+          }
+        >
           <Text style={styles.courseName}>{item.name}</Text>
           {/* Wrap the Text component in a View to handle background and border styling */}
           <View style={[styles.gradeContainer, { backgroundColor }]}>
             <Text style={styles.courseGrade}>
-            {item.overallGrade == -100 ? "N/A" : Math.round(item.overallGrade) + "%"}
+              {item.overallGrade == -100 ? "N/A" : Math.round(item.overallGrade) + "%"}
             </Text>
           </View>
         </TouchableOpacity>
@@ -251,10 +251,10 @@ const Grades = ({
       item.assignmentType.toLowerCase() == "summative assessments"
         ? Colors.saColor
         : item.assignmentType.toLowerCase() == "relevant applications"
-        ? Colors.raColor
-        : item.assignmentType.toLowerCase() == "checking for understanding"
-        ? Colors.cfuColor
-        : "#aaa";
+          ? Colors.raColor
+          : item.assignmentType.toLowerCase() == "checking for understanding"
+            ? Colors.cfuColor
+            : "#aaa";
 
     return (
       <View style={styles.gradeRow}>
@@ -360,8 +360,8 @@ const Grades = ({
           <View
             style={[styles.headerGradeBox, { borderColor, backgroundColor }]}
           >
-<Text style={styles.headerGradeText}></Text>
-</View>
+            <Text style={styles.headerGradeText}></Text>
+          </View>
 
           <View style={{ alignContent: "center", justifyContent: "center" }}>
             <Text style={[styles.averagesTopText, { color: Colors.cfuColor }]}>
@@ -411,24 +411,28 @@ const Grades = ({
                   backgroundColor: "#3c3b3c",
                   borderColor: "#5283b7",
                   borderWidth: 2,
-                              }}
-              > 
-                <Text style={{padding: 10, color: "white", fontSize: 22, fontWeight: "bold", textAlign: "center", }}>
+                }}
+              >
+                <Text style={{ padding: 10, color: "white", fontSize: 22, fontWeight: "bold", textAlign: "center", }}>
                   Upcoming Assignments
                 </Text>
-                <Text style={{ color: "white", padding: 10, fontSize: 16}}>
-                  English - Critical Response - 10/08/2024
-                  {"\n"}Calculus III - Unit 2 Quiz - 10/08/2024
-                  {"\n"}Physics C- Dynamics Test - 10/12/2024
-                </Text>
+                <FlatList
+                  data={Grade.date} // Replace with the actual data source for upcoming assignments
+                  keyExtractor={item => item.id}
+                  renderItem={({ item }) => (
+                    <Text style={styles.assignmentText}>
+                      {item.subject} - {item.assignment} - {item.dueDate}
+                    </Text>
+                  )}
+                />
               </View>
-              <View style={{borderWidth: 2, borderRadius: 13, borderColor: "#5283b7", backgroundColor: "#3c3b3c", margin: 2, marginTop: 10}}>
-              <FlatList
-                data={courses}
-                renderItem={renderCourseItem}
-                keyExtractor={(item) => item.name}
-                showsVerticalScrollIndicator={false}
-              />
+              <View style={{ borderWidth: 2, borderRadius: 13, borderColor: "#5283b7", backgroundColor: "#3c3b3c", margin: 2, marginTop: 10 }}>
+                <FlatList
+                  data={courses}
+                  renderItem={renderCourseItem}
+                  keyExtractor={(item) => item.name}
+                  showsVerticalScrollIndicator={false}
+                />
               </View>
             </ScrollView>
           </View>
@@ -481,7 +485,7 @@ const Grades = ({
       )}
     </View>
   ) : (
-      <HACNeededScreen paddingTop={0} hacDown={hacBroken} />
+    <HACNeededScreen paddingTop={0} hacDown={hacBroken} />
   );
 };
 
@@ -839,6 +843,12 @@ const styles = StyleSheet.create({
     marginBottom: 3,
     flex: 1,
   },
+  assignmentText: {
+    color: "white",
+    padding: 10,
+    fontSize: 16,
+  },
+
   assignmentType: {
     fontSize: 14,
     //color: "#aaa", // Slightly lighter color for assignment type

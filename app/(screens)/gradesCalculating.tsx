@@ -29,7 +29,8 @@ import AutoCompleteTextInput from "@/components/AutoCompleteTextInput";
 import { ScrollView } from "react-native-reanimated/lib/typescript/Animated";
 
 const gradesCalculating = () => {
-  
+  const [selectedTab, setSelectedTab] = useState<string>("addAssignment");
+
   const { className } = useLocalSearchParams();
 
   const [originalCourse, setOriginalCourse] = useState<Course>();
@@ -48,18 +49,18 @@ const gradesCalculating = () => {
     useState<boolean>(false);
 
 
-    const [selectedType, setSelectedType] = useState<{ id: number; label: string; logo: any } | null>(null); // Track selected type
+  const [selectedType, setSelectedType] = useState<{ id: number; label: string; logo: any } | null>(null); // Track selected type
 
-    const assignmentTypes = [
-      { id: 1, label: 'Summative Assessments', logo: require('assets/images/sa.png') },
-      { id: 2, label: 'Relevant Applications', logo: require('assets/images/ra.png') },
-      { id: 3, label: 'Checking for Understanding', logo: require('assets/images/cfu.png') }
-    ];
-    
-  
+  const assignmentTypes = [
+    { id: 1, label: 'Summative Assessments', logo: require('assets/images/sa.png') },
+    { id: 2, label: 'Relevant Applications', logo: require('assets/images/ra.png') },
+    { id: 3, label: 'Checking for Understanding', logo: require('assets/images/cfu.png') }
+  ];
+
+
   const [selectedGrade, setSelectedGrade] = useState<Grade>();
 
-    
+
   async function setCoursesAsync() {
     if (!courses) {
       setCourses(await getCourses());
@@ -165,6 +166,8 @@ const gradesCalculating = () => {
       </TouchableOpacity>
     );
   };
+
+
   const renderHeader = () => {
     // Function to get the background color based on the overall grade
     const getGradeBorderColor = (grade: number) => {
@@ -219,7 +222,7 @@ const gradesCalculating = () => {
             >{`${overallCourseAverage}%`}</Text>
           </View>
 
-          <View style={{ alignContent: "center", justifyContent: "center", paddingHorizontal: 25, borderRadius: 10, borderColor: "#5283b7", borderWidth: 3, backgroundColor: Colors.resetCalcBG}}>
+          <View style={{ alignContent: "center", justifyContent: "center", paddingHorizontal: 25, borderRadius: 10, borderColor: "#5283b7", borderWidth: 3, backgroundColor: Colors.resetCalcBG }}>
             <Text style={[styles.averagesTopText, { color: Colors.saColor }]}>
               SA Average:{"     "}
               {!refreshing
@@ -333,8 +336,10 @@ const gradesCalculating = () => {
   };
 
   const [addAssignmentType, setAddAssignmentType] = useState<string>("");
+  const [desiredGrade, setDesiredGrade] = useState<string>("");
   const [addAssignmentName, setAddAssignmentName] = useState<string>("");
   const [addAssignmentGrade, setAddAssignmentGrade] = useState<string>("");
+  const [customGrade, setCustomGrade] = useState<string>(""); // Add this line
 
   const [addingError, setAddingError] = useState<string | null>(null);
 
@@ -438,128 +443,229 @@ const gradesCalculating = () => {
         animationIn={"pulse"}
         animationOut={"fadeOutDown"}
         onBackdropPress={() => setVisibleAddAssignment(false)}
-      >
+>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View
             style={{
-              height: "70%",
-              marginHorizontal: 10,
-              backgroundColor: "#121212",
+              borderColor: "#5283b7", 
               borderWidth: 3,
-              borderColor: "#444",
-              borderRadius: 10,
+              height: "80%",
+              marginHorizontal: 10,
+              backgroundColor: "#1c1c1c",
+              borderRadius: 20,
+              padding: 20,
             }}
           >
-            <TextInput
-              style={styles.infoInput}
-              placeholder="Assignment Name..."
-              placeholderTextColor={"grey"}
-              value={addAssignmentName}
-              onChangeText={setAddAssignmentName}
-            //ref={hacPasswordInputRef}
-            />
-
-{selectedType && (
-            <Image
-              source={selectedType.logo}
-              style={{ width: 180, height: 160, alignSelf: 'center', marginBottom: 40 }}
-            />
-          )}
-<View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-  {/* Top row with two buttons */}
-  <View style={{ flexDirection: 'row', gap: 20, justifyContent: "space-between", width: '100%', marginBottom: 10, marginHorizontal: 30 }}>
-    {assignmentTypes.slice(0, 2).map((type) => (
-      <TouchableOpacity
-        key={type.id}
-        onPress={() => setSelectedType(type)}
-        style={{
-          padding: 10,
-          borderWidth: 2,
-          borderRadius: 10,
-          backgroundColor: selectedType?.id === type.id ? '#5283b7' : '#494547',
-          width: '45%' // Adjusts button width
-        }}
-      >
-        <Text style={{ color: 'white', textAlign: 'center' }}>{type.label}</Text>
-      </TouchableOpacity>
-    ))}
-  </View>
-
-  {/* Bottom row with one button */}
-  <View style={{ justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-    {assignmentTypes.slice(2, 3).map((type) => (
-      <TouchableOpacity
-        key={type.id}
-        onPress={() => setSelectedType(type)}
-        style={{
-          padding: 10,
-          borderWidth: 2,
-          borderRadius: 5,
-          backgroundColor: selectedType?.id === type.id ? '#5283b7' : '#494547',
-          width: '45%' // Adjusts button width
-        }}
-      >
-        <Text style={{ color: 'white', textAlign: 'center' }}>{type.label}</Text>
-      </TouchableOpacity>
-    ))}
-  </View>
-</View>
-
-            <TextInput
-              style={styles.gradeInfoInput}
-              placeholder="Grade..."
-              placeholderTextColor={"grey"}
-              keyboardType="decimal-pad"
-              value={addAssignmentGrade}
-              onChangeText={setAddAssignmentGrade}
-            //ref={hacPasswordInputRef}
-            />
-
-            {addingError && addingError !== "" && (
-              <Text style={styles.error}>{addingError}</Text>
-            )}
-
-            <View
-              style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}
-            >
-              <View
+            {/* Tab Bar Merged into Button */}
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              marginBottom: 20,
+              backgroundColor: '#5283b7',
+              borderRadius: 10,
+              padding: 5
+            }}>
+              <TouchableOpacity
                 style={{
-                  alignContent: "center",
-                  marginHorizontal: 15,
+                  flex: 1,
+                  padding: 10,
+                  backgroundColor: selectedTab === "addAssignment" ? '#3d6a9f' : '#5283b7',
+                  borderRadius: 10,
+                  alignItems: 'center',
                 }}
+                onPress={() => setSelectedTab("addAssignment")}
               >
-                <TouchableOpacity
+                <Text style={{ color: 'white', fontWeight: 'bold' }}>Add Assignment</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                  padding: 10,
+                  backgroundColor: selectedTab === "whatDoINeed" ? '#3d6a9f' : '#5283b7',
+                  borderRadius: 10,
+                  alignItems: 'center',
+                }}
+                onPress={() => setSelectedTab("whatDoINeed")}
+              >
+                <Text style={{ color: 'white', fontWeight: 'bold' }}>What Do I Need</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Tab Content */}
+            {selectedTab === "addAssignment" ? (
+              <>
+                <TextInput
+                  style={[styles.infoInput, { height: 45, paddingHorizontal: 10, paddingBottom: 30, borderBottomWidth: 2, borderBottomColor: "#fff", textAlignVertical: 'center', color: 'white' }]}
+                  placeholder="Assignment Name..."
+                  placeholderTextColor={"grey"}
+                  value={addAssignmentName}
+                  onChangeText={setAddAssignmentName}
+                />
+
+                {/* Default Selection: Check for Understanding */}
+                <Image
+                  source={selectedType?.logo || assignmentTypes[0].logo}
                   style={{
-                    flexDirection: "row",
-                    alignContent: "center",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: 10,
-                    padding: 5,
-                    backgroundColor: "#5283b7",
+                    width: 180,
+                    height: 160,
+                    alignSelf: 'center',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginBottom: 20,
+                    resizeMode: 'contain',
                   }}
-                  onPress={() => {
-                    if (AddNewAssignment()) {
-                      setVisibleAddAssignment(false);
-                    }
-                  }}
-                >
-                  <Text
+                />
+
+                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                  {/* Assignment type buttons */}
+                  <View style={{ flexDirection: 'row', justifyContent: "space-between", width: '100%' }}>
+                    {assignmentTypes.slice(0, 2).map((type) => (
+                      <TouchableOpacity
+                        key={type.id}
+                        onPress={() => {
+                          setAddAssignmentType(type.label);
+                          setSelectedType(type);
+                        }}
+                        style={{
+                          flex: 1,
+                          marginHorizontal: 5,
+                          padding: 15,
+                          borderWidth: 2,
+                          borderRadius: 10,
+                          backgroundColor: selectedType?.id === type.id ? '#5283b7' : '#494547',
+                        }}
+                      >
+                        <Text style={{ color: 'white', textAlign: 'center' }}>{type.label}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+
+                  {/* Bottom row with one button */}
+                  <View style={{ flexDirection: 'row', justifyContent: "space-between", width: '100%', marginTop: 10 }}>
+                    {assignmentTypes.slice(2, 3).map((type) => (
+                      <TouchableOpacity
+                        key={type.id}
+                        onPress={() => {
+                          setAddAssignmentType(type.label);
+                          setSelectedType(type);
+                        }}
+                        style={{
+                          flex: 1,
+                          marginHorizontal: 5,
+                          padding: 15,
+                          borderWidth: 2,
+                          borderRadius: 10,
+                          backgroundColor: selectedType?.id === type.id ? '#5283b7' : '#494547',
+                        }}
+                      >
+                        <Text style={{ color: 'white', textAlign: 'center' }}>{type.label}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+
+                <TextInput
+                  style={[styles.gradeInfoInput, { height: 65, paddingHorizontal: 10, paddingBottom: 22, borderBottomWidth: 3, borderBottomColor: "#fff", textAlignVertical: 'top', color: 'white' }]}
+                  placeholder="Grade..."
+                  placeholderTextColor={"grey"}
+                  keyboardType="decimal-pad"
+                  value={addAssignmentGrade}
+                  onChangeText={setAddAssignmentGrade}
+                />
+
+                {addingError && addingError !== "" && (
+                  <Text style={styles.error}>{addingError}</Text>
+                )}
+
+                {/* Add Assignment Button */}
+                <View style={{ marginTop: -5, alignItems: 'center' }}>
+                  <TouchableOpacity
                     style={{
-                      alignContent: "center",
-                      justifyContent: "center",
-                      alignItems: "center",  
-                      color: "#ffffff",
-                      fontSize: 20,
-                      fontWeight: "bold",
-                      paddingVertical:4,
+                      padding: 15,
+                      borderRadius: 10,
+                      backgroundColor: "#5283b7",
+                      width: '100%',
+                      alignItems: 'center',
+                    }}
+                    onPress={() => {
+                      if (AddNewAssignment()) {
+                        setVisibleAddAssignment(false);
+                      }
                     }}
                   >
-                    Add Assignment
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+                    <Text
+                      style={{
+                        color: "#ffffff",
+                        fontSize: 20,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Add Assignment
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            ) : (
+              // What Do I Need Tab Content
+              <>
+                <View style={{ justifyContent: 'center', alignItems: 'center', marginBottom: 20 }}>
+                  <Text style={{ color: 'white', marginTop: 20, marginBottom: 20, fontSize: 24, fontWeight: "bold" }}>Select Desired Grade:</Text>
+
+                  {/* Grade Options */}
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
+                    {["90", "80", "70"].map((grade) => (
+                      <TouchableOpacity
+                        key={grade}
+                        onPress={() => setDesiredGrade(grade)}
+                        style={{
+                          padding: 15,
+                          borderWidth: 2,
+                          borderRadius: 10,
+                          backgroundColor: desiredGrade === grade ? '#5283b7' : '#494547',
+                          flex: 1,
+                          alignItems: 'center',
+                          height: 60,  // Added fixed height to match custom grade height
+                        }}
+                      >
+                        <Text style={{ color: 'white', textAlign: 'center', verticalAlign: "middle", fontSize: 17, fontWeight: "bold" }}>{grade}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+
+                  {/* Custom Grade (on next line) */}
+                  <View style={{ flexDirection: 'row', width: '100%', padding: 20 }}>
+                    <TouchableOpacity
+                      style={{
+                        padding: 15,
+                        borderWidth: 2,
+                        borderRadius: 10,
+                        backgroundColor: desiredGrade === "custom" ? '#5283b7' : '#494547',
+                        alignItems: 'center',
+                        width: '100%',
+                        height: 60,  // Same height as top row buttons
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <TextInput
+                        style={{ color: 'white', textAlign: 'center', width: '100%', padding: 0, fontSize: 17, fontWeight: "bold" }} // Removed extra padding for consistency
+                        placeholder="Custom Grade"
+                        placeholderTextColor="grey"
+                        keyboardType="decimal-pad"
+                        value={customGrade}
+                        onChangeText={setCustomGrade}
+                        onFocus={() => setDesiredGrade("custom")}
+                        onBlur={() => setDesiredGrade(customGrade ? "custom" : "")}
+                      />
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={{ marginTop: 20, borderBottomWidth: 2, borderBottomColor: "#fff" }}>
+                    <Text style={{ color: 'white', fontSize: 28 }}>You need a:</Text>
+                    <Text style={{ color: 'white', fontSize: 28, textAlign: "center", marginTop: 8, marginBottom: 8, }}>{Math.floor(Math.random() * 100)}%</Text>
+                  </View>
+                </View>
+              </>
+            )}
           </View>
         </TouchableWithoutFeedback>
       </Modal>
