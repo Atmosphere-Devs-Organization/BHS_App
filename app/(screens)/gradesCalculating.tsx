@@ -23,6 +23,7 @@ import {
   Course,
   getCourses,
   Grade,
+  neededScore,
 } from "@/globalVars/gradesVariables";
 import Modal from "react-native-modal";
 import AutoCompleteTextInput from "@/components/AutoCompleteTextInput";
@@ -340,6 +341,8 @@ const gradesCalculating = () => {
   const [addAssignmentName, setAddAssignmentName] = useState<string>("");
   const [addAssignmentGrade, setAddAssignmentGrade] = useState<string>("");
   const [customGrade, setCustomGrade] = useState<string>(""); // Add this line
+
+  
 
   const [addingError, setAddingError] = useState<string | null>(null);
 
@@ -661,7 +664,7 @@ const gradesCalculating = () => {
 
                   <View style={{ marginTop: 20, borderBottomWidth: 2, borderBottomColor: "#fff" }}>
                     <Text style={{ color: 'white', fontSize: 28 }}>You need a:</Text>
-                    <Text style={{ color: 'white', fontSize: 28, textAlign: "center", marginTop: 8, marginBottom: 8, }}>{Math.floor(Math.random() * 100)}%</Text>
+                    <Text style={{ color: 'white', fontSize: 28, textAlign: "center", marginTop: 8, marginBottom: 8, }}>{neededScore(selectedCourse, parseFloat(desiredGrade), "checking for understanding")}%</Text>
                   </View>
                 </View>
               </>
