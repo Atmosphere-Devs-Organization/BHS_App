@@ -16,7 +16,7 @@ import {
   SafeAreaView,
   Platform,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { Entypo, MaterialIcons } from "@expo/vector-icons"; // Import MaterialIcons
 import { buttons, Button } from "@/components/ButtonData"; // Your button data
 import * as SecureStore from "expo-secure-store";
@@ -199,6 +199,8 @@ const Home: React.FC = () => {
               <Text style={styles.reportButtonText}>Report an Issue</Text>
             </TouchableOpacity>
           </View>
+
+          <Link href="./teacherPortal">teacherPortal</Link>
         </ScrollView>
       </TouchableWithoutFeedback>
     </View>
