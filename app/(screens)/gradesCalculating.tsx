@@ -443,11 +443,11 @@ const gradesCalculating = () => {
         animationIn={"pulse"}
         animationOut={"fadeOutDown"}
         onBackdropPress={() => setVisibleAddAssignment(false)}
->
+      >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View
             style={{
-              borderColor: "#5283b7", 
+              borderColor: "#5283b7",
               borderWidth: 3,
               height: "80%",
               marginHorizontal: 10,
@@ -678,27 +678,38 @@ const gradesCalculating = () => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View
             style={{
-              height: "65%",
-              marginHorizontal: 20,
-              backgroundColor: "#121212",
-              borderRadius: 10,
+              borderColor: "#5283b7",
+              borderWidth: 3,
+              height: "80%",
+              marginHorizontal: 10,
+              backgroundColor: "#1c1c1c",
+              borderRadius: 20,
+              padding: 20,
             }}
           >
-            <TouchableOpacity
-              onPress={() => setLookingAtAssignmentOptions(false)}
-              style={styles.close_button}
-            >
-              <Ionicons name="close-sharp" size={24} color="white" />
-            </TouchableOpacity>
+            <Text style={{
+              color: "white",
+              fontSize: 25,
+              fontFamily: "Times-New-Roman",
+              marginTop: 20,
+              textAlign: "center",
+              alignSelf: "center",
+              marginBottom: 22,
+              width: "90%",
+              fontWeight: "bold",
+            }}>
+              {addAssignmentName}
+            </Text>
+            <Text style={{
+              color: "white",
+              fontSize: 17,
+              marginBottom: 15,
+              fontFamily: "Times-New-Roman",
+              textAlign: "center",
+              alignSelf: "center",
+              fontWeight: "bold",
+            }}>Type</Text>
 
-            <TextInput
-              style={styles.infoInput}
-              placeholder="Assignment Name..."
-              placeholderTextColor={"grey"}
-              value={addAssignmentName}
-              onChangeText={setAddAssignmentName}
-            //ref={hacPasswordInputRef}
-            />
 
             <AutoCompleteTextInput
               style={styles.textInput}
@@ -706,7 +717,7 @@ const gradesCalculating = () => {
               value={addAssignmentType}
               keyboardType="default"
               placeholder="Assignment Type..."
-              placeholderTextColor="grey"
+              placeholderTextColor="white"
               possibleInputs={
                 new Array(
                   "Summative Assessments",
@@ -716,15 +727,117 @@ const gradesCalculating = () => {
               }
             />
 
-            <TextInput
-              style={styles.gradeInfoInput}
-              placeholder="Grade..."
-              placeholderTextColor={"grey"}
-              keyboardType="decimal-pad"
-              value={addAssignmentGrade}
-              onChangeText={setAddAssignmentGrade}
-            //ref={hacPasswordInputRef}
-            />
+            <Text style={{
+              color: "white",
+              fontSize: 17,
+              marginBottom: 25,
+              marginTop: 30,
+              fontFamily: "Times-New-Roman",
+              textAlign: "center",
+              alignSelf: "center",
+              fontWeight: "bold",
+            }}>Due Date</Text>
+            <View style={{
+              backgroundColor: "#5283b7",
+              padding: 15,
+              width: "50%",
+              alignContent: "center",
+              alignItems: "center",
+              alignSelf: "center",
+              borderRadius: 13,
+            }}>
+              <Text style={{
+                fontSize: 17,
+                color: "white", // Lighter color for date
+                fontWeight: "bold",
+                textAlign: "center",
+              }}>{selectedGrade?.date.toLocaleDateString()}</Text>
+            </View>
+
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between', // Adjust space between columns
+              padding: 10, // Optional padding for better appearance
+              marginTop: 20,
+            }}>
+              <View style={styles.column}>
+                <Text style={{
+                  color: "white",
+                  fontSize: 17,
+                  marginBottom: 25,
+                  fontFamily: "Times-New-Roman",
+                  textAlign: "center",
+                  alignSelf: "center",
+                  fontWeight: "bold",
+                }}>Score</Text>
+                <View style={{
+                  backgroundColor: "#5283b7",
+                  padding: 15,
+                  paddingHorizontal: 20,
+                  width: "90%",
+                  flexDirection: "row",
+                  alignSelf: "center",
+                  alignContent: "center",
+                  justifyContent: "space-between",
+                  borderRadius: 13,
+                }}>
+                  <Ionicons
+                    name="pencil-outline"
+                    size={20}
+                    color="#ffffff"
+                  />
+
+                  <TextInput
+                    style={{
+                      color: "white",
+                      fontSize: 17,
+                      alignSelf: "center",
+                      fontWeight: "bold",
+                      textAlign: "center",
+                      marginRight: 10,
+                    }}
+                    placeholder="---"
+                    placeholderTextColor={"white"}
+                    keyboardType="decimal-pad"
+                    value={addAssignmentGrade}
+                    onChangeText={setAddAssignmentGrade}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.column}>
+                <Text style={{
+                  color: "white",
+                  fontSize: 17,
+                  marginBottom: 25,
+                  fontFamily: "Times-New-Roman",
+                  textAlign: "center",
+                  alignSelf: "center",
+                  fontWeight: "bold",
+                }}>Max Points</Text>
+                <View style={{
+                  backgroundColor: "#5283b7",
+                  padding: 15,
+                  paddingHorizontal: 20,
+                  width: "90%",
+                  alignContent: "center",
+                  alignItems: "center",
+                  alignSelf: "center",
+                  borderRadius: 13,
+                }}>
+
+                  <Text
+                    style={{
+                      color: "white",
+                      fontSize: 18,
+                      alignSelf: "center",
+                      fontWeight: "bold",
+                      textAlign: "center",
+                    }}
+                  >JAK</Text>
+                </View>
+              </View>
+            </View>
 
             <View
               style={{ flex: 1, justifyContent: "flex-end", marginBottom: 20 }}
@@ -735,52 +848,23 @@ const gradesCalculating = () => {
                   justifyContent: "space-between",
                   alignContent: "center",
                   marginTop: 15,
+                  borderTopColor: "white",
+                  borderTopWidth: 2,
+                  paddingTop: 18,
                   marginHorizontal: 10,
                 }}
               >
-                <TouchableOpacity
+                                <TouchableOpacity
                   style={{
                     flexDirection: "row",
                     alignContent: "center",
-                    borderRadius: 10,
-                    padding: 5,
-                    width: 150,
-                    height: 40,
+                    justifyContent: "space-between",
+                    paddingHorizontal: 20,
+                    borderRadius: 13,
+                    padding: 15,
                     alignItems: "center",
-                    alignSelf: "center",
-                    backgroundColor: Colors.saveAssignmentBG,
-                  }}
-                  onPress={() => {
-                    SaveAssignmentEdits();
-                    setLookingAtAssignmentOptions(false);
-                  }}
-                >
-                  <Ionicons
-                    name="save-outline"
-                    size={20}
-                    color="#ffffff"
-                    style={{ paddingRight: 5 }}
-                  />
-                  <Text
-                    style={{
-                      color: "#ffffff",
-                      fontSize: 16,
-                      fontWeight: "bold",
-                      alignItems: "center",
-                    }}
-                  >
-                    Save
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{
-                    flexDirection: "row",
-                    alignContent: "center",
-                    borderRadius: 10,
-                    padding: 5,
-                    alignItems: "center",
-                    width: 150,
-                    backgroundColor: Colors.deleteAssignmentBG,
+                    width: "45%",
+                    backgroundColor: "#5283b7",
                   }}
                   onPress={() => {
                     selectedCourse?.deleteAssignment(selectedGrade);
@@ -791,7 +875,6 @@ const gradesCalculating = () => {
                     name="minus"
                     size={20}
                     color="#ffffff"
-                    style={{ paddingRight: 5 }}
                   />
                   <Text
                     style={{
@@ -801,6 +884,40 @@ const gradesCalculating = () => {
                     }}
                   >
                     Delete
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={{
+                    flexDirection: "row",
+                    alignContent: "center",
+                    justifyContent: "space-between",
+                    paddingHorizontal: 20,
+                    borderRadius: 13,
+                    padding: 15,
+                    alignItems: "center",
+                    width: "45%",
+                    backgroundColor: "#5283b7",
+                  }}
+                  onPress={() => {
+                    SaveAssignmentEdits();
+                    setLookingAtAssignmentOptions(false);
+                  }}
+                >
+                  <Ionicons
+                    name="save-outline"
+                    size={20}
+                    color="#ffffff"
+                  />
+                  <Text
+                    style={{
+                      color: "#ffffff",
+                      fontSize: 16,
+                      fontWeight: "bold",
+                      alignItems: "center",
+                    }}
+                  >
+                    Save
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -820,14 +937,14 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
   textInput: {
-    width: "70%",
-    marginVertical: 7,
-    backgroundColor: "#41b42d",
-    borderRadius: 10,
-    padding: 10,
+    width: "80%",
+    backgroundColor: "#5283b7",
+    borderRadius: 13,
+    padding: 15,
     color: "#ffffff",
     alignSelf: "center",
     textAlign: "center",
+    
   },
   gradeInfoInput: {
     color: "white",
@@ -847,7 +964,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     borderBottomWidth: 1,
     borderBottomColor: "white",
-    marginBottom: 50,
+    marginBottom: 5,
     fontFamily: "Times-New-Roman",
     marginTop: 20,
     textAlign: "center",
@@ -857,6 +974,23 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     flex: 1,
   },
+
+  infotype: {
+    color: "white",
+    fontSize: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "white",
+    marginBottom: 5,
+    fontFamily: "Times-New-Roman",
+    marginTop: 5,
+    textAlign: "center",
+    paddingBottom: 3,
+    alignSelf: "center",
+    width: 300,
+    fontWeight: "bold",
+    flex: 1,
+  },
+
   averagesTopText: {
     fontSize: 16,
     fontWeight: "bold",
@@ -910,6 +1044,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
   },
+  column: {
+    flex: 1, // This makes each column take up equal space
+    height: 100, // Optional: set a fixed height for each column
+  },
+
   causeWhyNot: {
     borderRadius: 10,
   },
