@@ -854,16 +854,14 @@ const gradesCalculating = () => {
                   marginHorizontal: 10,
                 }}
               >
-                                <TouchableOpacity
+                <TouchableOpacity
                   style={{
-                    flexDirection: "row",
                     alignContent: "center",
-                    justifyContent: "space-between",
                     paddingHorizontal: 20,
                     borderRadius: 13,
                     padding: 15,
                     alignItems: "center",
-                    width: "45%",
+                    width: "48%",
                     backgroundColor: "#5283b7",
                   }}
                   onPress={() => {
@@ -871,15 +869,10 @@ const gradesCalculating = () => {
                     setLookingAtAssignmentOptions(false);
                   }}
                 >
-                  <Entypo
-                    name="minus"
-                    size={20}
-                    color="#ffffff"
-                  />
                   <Text
                     style={{
                       color: "#ffffff",
-                      fontSize: 16,
+                      fontSize: 17,
                       fontWeight: "bold",
                     }}
                   >
@@ -889,14 +882,12 @@ const gradesCalculating = () => {
 
                 <TouchableOpacity
                   style={{
-                    flexDirection: "row",
                     alignContent: "center",
-                    justifyContent: "space-between",
                     paddingHorizontal: 20,
                     borderRadius: 13,
                     padding: 15,
                     alignItems: "center",
-                    width: "45%",
+                    width: "48%",
                     backgroundColor: "#5283b7",
                   }}
                   onPress={() => {
@@ -904,15 +895,10 @@ const gradesCalculating = () => {
                     setLookingAtAssignmentOptions(false);
                   }}
                 >
-                  <Ionicons
-                    name="save-outline"
-                    size={20}
-                    color="#ffffff"
-                  />
                   <Text
                     style={{
                       color: "#ffffff",
-                      fontSize: 16,
+                      fontSize: 17,
                       fontWeight: "bold",
                       alignItems: "center",
                     }}
@@ -944,7 +930,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     alignSelf: "center",
     textAlign: "center",
-    
+
   },
   gradeInfoInput: {
     color: "white",
