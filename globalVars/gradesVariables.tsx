@@ -289,6 +289,116 @@ export function calculateAssignmentTypePercentages(
 
   return new Array(cfuPercent, raPercent, saPercent);
 }
+export function neededScore(
+  course: Course | null | undefined, 
+  endAvg: number, 
+  category: string 
+): number | null {
+  if (!course) {
+    return null;
+  }
+  endAvg = endAvg - .5;
+  let cfuTotal = 0;
+  let cfuMaxTotal = 0;
+  let raTotal = 0;
+  let raMaxTotal = 0;
+  let saTotal = 0;
+  let saMaxTotal = 0;
+
+  // Calculate totals for each category
+  for (const grade of course.grades) {
+    if (grade.grade >= 0) {
+      switch (grade.assignmentType.toLowerCase()) {
+        case "checking for understanding":
+          cfuTotal += grade.grade;
+          cfuMaxTotal += grade.maxGrade;
+          break;
+        case "relevant applications":
+          raTotal += grade.grade;
+          raMaxTotal += grade.maxGrade;
+          break;
+        case "summative assessments":
+          saTotal += grade.grade;
+          saMaxTotal += grade.maxGrade;
+          break;
+      }
+    }
+  }
+
+  const cfuPercent = cfuMaxTotal > 0 ? (cfuTotal / cfuMaxTotal) * 100 : 0;
+  const raPercent = raMaxTotal > 0 ? (raTotal / raMaxTotal) * 100 : 0;
+  const saPercent = saMaxTotal > 0 ? (saTotal / saMaxTotal) * 100 : 0;
+  console.log(course.cfuPercent)
+  console.log(course.raPercent)
+  console.log(course.saPercent)
+
+  //this part calculates the total weight we will be using 
+  let totalUsing = 0; 
+  if (category.toLowerCase() === "checking for understanding" || cfuMaxTotal !== 0)
+  {
+    if(course.cfuPercent <= 0){
+      return null;
+    }
+    totalUsing += course.cfuPercent;
+  }
+  if (category.toLowerCase() === "relevant applications" || raMaxTotal !== 0)
+  {
+    if(course.raPercent <= 0){
+      return null;
+    }
+    totalUsing += course.raPercent;
+  }
+  if (category.toLowerCase() === "summative assessments" || saMaxTotal !== 0)
+  {
+    if(course.saPercent <= 0){
+      return null;
+    }
+    totalUsing += course.saPercent;
+  }
+  console.log(totalUsing);
+
+  //now we will cut out the other categories so that 
+  //we can find out the end weight we need the selected category to end up with
+  let neededWeight = endAvg * totalUsing;
+  if (category.toLowerCase() !== "checking for understanding" && course.cfuPercent > 0)
+  {
+    console.log("cfu");
+    neededWeight -= cfuPercent * course.cfuPercent;
+  }
+  if (category.toLowerCase() !== "relevant applications" && course.raPercent > 0)
+  {
+    console.log("ra");
+    neededWeight -= raPercent * course.raPercent;
+  }
+  if (category.toLowerCase() !== "summative assessments" && course.saPercent > 0)
+  {
+    console.log("sa");
+    neededWeight -= saPercent * course.saPercent;
+  }
+
+  let returning = 0;
+  if (category.toLowerCase() === "checking for understanding")
+    {
+      console.log("want cfu");
+      let neededPercent =  neededWeight / course.cfuPercent  / 100;
+      console.log("needed percentage");
+      console.log(neededPercent);
+      returning = neededPercent * (cfuMaxTotal + 100) - cfuTotal;
+    }
+    if (category.toLowerCase() === "relevant applications" )
+    {
+      console.log("want cfu");
+      let neededPercent =  neededWeight / course.raPercent / 100;
+      returning = neededPercent * (raMaxTotal + 100) - raTotal;    }
+    if (category.toLowerCase() === "summative assessments")
+    {
+      console.log("want cfu");
+      let neededPercent =  neededWeight / course.saPercent / 100;
+      returning = neededPercent * (saMaxTotal + 100) - saTotal;   
+    }
+    return returning;
+
+}
 
 export function CalculateOverallAverage(
   course: Course | null | undefined,
