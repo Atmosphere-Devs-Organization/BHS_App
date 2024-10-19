@@ -1,191 +1,45 @@
 import {
-    View,
-    Text,
-    FlatList,
-    ListRenderItem,
-    StyleSheet,
-    TouchableOpacity,
-    ImageBackground,
-    ActivityIndicator,
-  } from "react-native";
-  import React, { useEffect, useRef, useState } from "react";
-  import { Club } from "@/interfaces/club";
-  import { Link } from "expo-router";
-  import Colors from "@/constants/Colors";
-  import { FIREBASE_DB, FIREBASE_AUTH } from "@/FirebaseConfig";
-  import { doc, getDoc } from "firebase/firestore";
-  import { useClubContext } from "@/components/ClubContext"; // Import the custom hook
-  import { onAuthStateChanged } from "firebase/auth"; // Firebase Auth
-  
-  const ClubListPage = () => {
-    const listRef = useRef<FlatList>(null);
-    const [filteredClubs, setFilteredClubs] = useState<Club[]>([]);
-    const [loading, setLoading] = useState(true);
-    const { clubsCache, setClubsCache } = useClubContext(); // Use context
-    const [userName, setUserName] = useState<string | null>(null); // Store user's Firebase name
-    const [userEmail, setUserEmail] = useState<string | null>(null); // Store user's email
-  
-    useEffect(() => {
-      // Get current Firebase user information
-      const fetchUserNameAndEmail = async () => {
-        const user = FIREBASE_AUTH.currentUser;
-        if (user) {
-          setUserEmail(user.email); // Set user's email
-          const userDocRef = doc(FIREBASE_DB, "users", user.uid);
-          const userSnap = await getDoc(userDocRef);
-          const userData = userSnap.data();
-          setUserName(userData?.name || null); // Set the userName state
-        }
-      };
-  
-      fetchUserNameAndEmail();
-    }, []);
-  
-    useEffect(() => {
-      const fetchClubs = async () => {
-        if (!userName) {
-          setLoading(false); // Exit if userName is not set yet
-          return;
-        }
-  
-        if (clubsCache.length > 0) {
-          // Use cached data if available
-          const filtered = clubsCache.filter(
-            (club) => club.sponsorEmail === userName // Filter clubs by sponsor
-          );
-          setFilteredClubs(filtered);
-          setLoading(false);
-          return;
-        }
-  
-        try {
-          // Fetch cached clubs data from Firestore
-          const adminCacheRef = doc(FIREBASE_DB, "admin", "CachedClubs");
-          const adminCacheSnap = await getDoc(adminCacheRef);
-          const cachedClubsData = adminCacheSnap.data()?.clubs || [];
-  
-          if (cachedClubsData.length === 0) {
-            setLoading(false);
-            return;
-          }
-  
-          // Cache the fetched clubs data in the context
-          setClubsCache(cachedClubsData);
-          // Filter clubs by sponsor
-          const filtered = cachedClubsData.filter(
-            (club: Club) => club.sponsorEmail === userName // Filter by sponsor
-          );
-          setFilteredClubs(filtered);
-        } catch (error) {
-          // Handle error
-        } finally {
-          setLoading(false);
-        }
-      };
-  
-      fetchClubs();
-    }, [userName, clubsCache, setClubsCache]);
-  
-    const renderRow: ListRenderItem<Club> = ({ item }) => (
-      <View style={styles.clubContainer}>
-        <TouchableOpacity>
-          <View style={styles.club}>
-            <ImageBackground
-              source={{ uri: item.imageURL }}
-              style={styles.image}
-              resizeMode="cover"
-              imageStyle={{ borderRadius: 15 }}
-            >
-              <Text style={styles.nameText}>{item.name}</Text>
-            </ImageBackground>
-          </View>
-        </TouchableOpacity>
-        <Link href={`/clubEdit/${item.name}`} asChild>
-          <TouchableOpacity style={styles.editButton}>
-            <Text style={styles.editButtonText}>Edit</Text>
-          </TouchableOpacity>
-        </Link>
-      </View>
-    );
+  View,
+  ImageBackground,
+  StyleSheet,
+  ActivityIndicator,
+  Text,
+} from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { Stack } from "expo-router";
+import ClubsHeader from "@/components/ClubsHeader";
+import TeacherClubList from "@/components/teacherClubList";
+import clubData from "@/assets/data/clubs-data.json";
+import Numbers from "@/constants/Numbers";
+
+
+const teacherPortal = () => {
   
     return (
-      <View style={{ marginBottom: 100 }}>
-        <Text style={styles.welcomeText}>Welcome, {userEmail}</Text>
-        {loading ? (
-          <ActivityIndicator
-            size="large"
-            color="#ff4d00"
-            style={{ alignSelf: "center", marginTop: 100 }}
-          />
-        ) : (
-          <FlatList
-            data={filteredClubs}
-            ref={listRef}
-            renderItem={renderRow}
-            keyExtractor={(item) => item.name} // Ensure each item has a unique key
-          />
-        )}
+    <View style={styles.BG_Color}>
+      <View style={{ flex: 1, marginTop: 190 }}>
+        <TeacherClubList/>
       </View>
-    );
-  };
+    </View>
+  ) 
+}
+const styles = StyleSheet.create({
   
-  const styles = StyleSheet.create({
-    welcomeText: {
-      fontSize: 20,
-      fontWeight: "bold",
-      marginTop: 20,
-      marginBottom: 20,
-      textAlign: "center",
-      color: Colors.primary,
-    },
-    clubContainer: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginHorizontal: 25,
-      marginVertical: 10,
-    },
-    club: {
-      flex: 1,
-    },
-    image: {
-      alignSelf: "center",
-      width: "100%",
-      borderWidth: 5,
-      borderRadius: 20,
-      borderColor: "orange",
-      backgroundColor: "white",
-      justifyContent: "center",
-      flex: 1,
-      flexDirection: "column",
-    },
-    nameText: {
-      fontSize: 25,
-      fontWeight: "bold",
-      color: Colors.clubListName,
-      textAlign: "center",
-      alignSelf: "center",
-      marginBottom: 80,
-      marginTop: 10,
-      marginHorizontal: 10,
-      textShadowColor: "#000",
-      textShadowOffset: { width: 2, height: 2 },
-      textShadowRadius: 10,
-      elevation: 10,
-      padding: 6,
-    },
-    editButton: {
-      backgroundColor: "#ff4d00",
-      padding: 10,
-      borderRadius: 10,
-    },
-    editButtonText: {
-      color: "white",
-      fontWeight: "bold",
-      fontSize: 16,
-      textAlign: "center",
-    },
-  });
-  
-  export default ClubListPage;
-  
+  BG_Color: {
+    flex: 1,
+    backgroundColor: "#121212",
+  },
+  profile_button: {
+    marginVertical: 25,
+    alignContent: "center",
+    alignSelf: "center",
+  },
+  profile_text: {
+    fontSize: Numbers.loginTextFontSize,
+    color: "#422500",
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+});
+
+export default teacherPortal;

@@ -198,9 +198,14 @@ const Home: React.FC = () => {
             >
               <Text style={styles.reportButtonText}>Report an Issue</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push("/(modals)/teacherPortal")}
+              style={styles.reportButton}
+            >
+              <Text style={styles.reportButtonText}>Teacher Portal</Text>
+            </TouchableOpacity>
           </View>
 
-          <Link href="./teacherPortal">teacherPortal</Link>
         </ScrollView>
       </TouchableWithoutFeedback>
     </View>
