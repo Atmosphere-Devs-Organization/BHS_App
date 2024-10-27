@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
   ImageBackground,
   Image,
+  KeyboardAvoidingView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useLocalSearchParams, router } from "expo-router";
@@ -28,6 +29,10 @@ import {
 import Modal from "react-native-modal";
 import AutoCompleteTextInput from "@/components/AutoCompleteTextInput";
 import { ScrollView } from "react-native-reanimated/lib/typescript/Animated";
+import { LinearGradient } from 'expo-linear-gradient'; // Import LinearGradient
+import Svg, { G, Circle, Line } from 'react-native-svg';
+
+
 
 const gradesCalculating = () => {
   const [selectedTab, setSelectedTab] = useState<string>("addAssignment");
@@ -52,11 +57,11 @@ const gradesCalculating = () => {
 
   const [selectedType, setSelectedType] = useState<{ id: number; label: string; logo: any } | null>(null); // Track selected type
 
-  const assignmentTypes = [
-    { id: 1, label: 'Summative Assessments', logo: require('assets/images/sa.png') },
-    { id: 2, label: 'Relevant Applications', logo: require('assets/images/ra.png') },
-    { id: 3, label: 'Checking for Understanding', logo: require('assets/images/cfu.png') }
-  ];
+const assignmentTypes = [
+  { id: 1, label: "SA" },
+  { id: 2, label: "CFU" },
+  { id: 3, label: "RA" },
+];
 
 
   const [selectedGrade, setSelectedGrade] = useState<Grade>();
@@ -118,45 +123,79 @@ const gradesCalculating = () => {
       if (grade >= 70) return Colors.gradeGradeCColor; // Yellow for C
       return Colors.gradeGradeFailColor; // Red for failing grades
     };
-
+  
     // Grade background color
     const backgroundColor =
       item.grade === -100
         ? "#444"
         : getGradeBackgroundColor((item.grade / item.maxGrade) * 100);
-
-    const color =
-      item.assignmentType.toLowerCase() == "summative assessments"
+  
+    // Function to convert assignment type to abbreviation
+    const getAssignmentTypeAbbreviation = (type: string) => {
+      switch (type.toLowerCase()) {
+        case "summative assessments":
+          return "SA";
+        case "relevant applications":
+          return "RA";
+        case "checking for understanding":
+          return "CFU";
+        default:
+          return type;
+      }
+    };
+  
+    const typeColor =
+      item.assignmentType.toLowerCase() === "summative assessments"
         ? Colors.saColor
-        : item.assignmentType.toLowerCase() == "relevant applications"
-          ? Colors.raColor
-          : item.assignmentType.toLowerCase() == "checking for understanding"
-            ? Colors.cfuColor
-            : "#aaa";
-
+        : item.assignmentType.toLowerCase() === "relevant applications"
+        ? Colors.raColor
+        : item.assignmentType.toLowerCase() === "checking for understanding"
+        ? Colors.cfuColor
+        : "#aaa";
+  
     return (
       <TouchableOpacity
         onPress={() => {
           setSelectedGrade(item);
           setAddAssignmentName(item.assignmentName);
-          setAddAssignmentGrade("" + (item.grade == -100 ? "N/A" : item.grade));
+          setAddAssignmentGrade("" + (item.grade === -100 ? "N/A" : item.grade));
           setAddAssignmentType(item.assignmentType);
           setLookingAtAssignmentOptions(true);
         }}
         style={{}}
       >
         <View style={styles.gradeRow}>
-          {/* Left side: assignment name, type, and date */}
+          {/* Middle: assignment name, tag for type, and date */}
           <View style={styles.assignmentInfo}>
             <Text numberOfLines={1} style={styles.assignmentName}>
               {item.assignmentName}
             </Text>
-            <Text style={[styles.assignmentType, { color }]}>
-              {item.assignmentType}
-            </Text>
-            <Text style={styles.date}>{item.date.toLocaleDateString()}</Text>
-          </View>
+  
+            {/* Date and assignment type tag on the same line */}
+            <View style={{ flexDirection: "row", alignItems: "center", marginTop: 5 }}>
+              <Text style={styles.date}>{item.date.toLocaleDateString()}</Text>
+              
+              {/* Tag for assignment type */}
+              <View
+                style={{
+                  backgroundColor: typeColor,
+                  borderRadius: 15,
+                  paddingHorizontal: 10,
+                  marginTop: -2,
+                  paddingVertical: 3,
+                  marginRight: 10, // Space between date and tag
+                  marginLeft: 10,
+                }}
+              >
+                <Text style={{ color: "white", fontSize: 12, fontWeight: "bold" }}>
+                  {getAssignmentTypeAbbreviation(item.assignmentType)}
+                </Text>
+              </View>
 
+              
+            </View>
+          </View>
+  
           {/* Right side: grade box */}
           <View style={[styles.gradeBox, { backgroundColor }]}>
             <Text style={styles.gradeText}>
@@ -167,33 +206,44 @@ const gradesCalculating = () => {
       </TouchableOpacity>
     );
   };
+  
+  
+  
 
 
   const renderHeader = () => {
-    // Function to get the background color based on the overall grade
     const getGradeBorderColor = (grade: number) => {
       if (grade >= 90) return Colors.gradeGradeAColor; // Green for A
       if (grade >= 80) return Colors.gradeGradeBColor; // Blue for B
       if (grade >= 70) return Colors.gradeGradeCColor; // Yellow for C
       return Colors.gradeGradeFailColor; // Red for failing grades
     };
+  
     const getGradeBackgroundColor = (grade: number) => {
       if (grade >= 90) return Colors.gradeGradeAColorBG; // Green for A
       if (grade >= 80) return Colors.gradeGradeBColorBG; // Blue for B
       if (grade >= 70) return Colors.gradeGradeCColorBG; // Yellow for C
       return Colors.gradeGradeFailColorBG; // Red for failing grades
     };
-
-
+  
     let percentagesArray = calculateAssignmentTypePercentages(selectedCourse);
     let overallCourseAverage = Math.round(
       CalculateOverallAverage(selectedCourse, percentagesArray)
     );
-
-    // Grade background color
-    const borderColor = getGradeBorderColor(overallCourseAverage);
-    const backgroundColor = getGradeBackgroundColor(overallCourseAverage);
-
+  
+    const getGradeColor = (grade: number) => {
+      if (grade >= 90) return { border: Colors.gradeGradeAColor, background: Colors.gradeGradeAColorBG };
+      if (grade >= 80) return { border: Colors.gradeGradeBColor, background: Colors.gradeGradeBColorBG };
+      if (grade >= 70) return { border: Colors.gradeGradeCColor, background: Colors.gradeGradeCColorBG };
+      return { border: Colors.gradeGradeFailColor, background: Colors.gradeGradeFailColorBG };
+    };
+    
+    const circleColor = getGradeColor(overallCourseAverage);
+    const radius = 60;
+    const strokeWidth = 10;
+    const circleCircumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circleCircumference * (1 - overallCourseAverage / 100);
+  
     return (
       <View style={styles.headerContainer}>
         <View
@@ -212,50 +262,121 @@ const gradesCalculating = () => {
             </Text>
           </View>
         </View>
-
-        <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+    
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
           {/* Overall Grade Box */}
-          <View
-            style={styles.headerGradeBox}
-          >
-            <Text
-              style={[styles.headerGradeText, { color: backgroundColor }]}
-            >{`${overallCourseAverage}%`}</Text>
-          </View>
-
-          <View style={{ alignContent: "center", justifyContent: "center", paddingHorizontal: 25, borderRadius: 10, borderColor: "#5283b7", borderWidth: 3, backgroundColor: Colors.resetCalcBG }}>
-            <Text style={[styles.averagesTopText, { color: Colors.saColor }]}>
-              SA Average:{"     "}
-              {!refreshing
-                ? percentagesArray
-                  ? percentagesArray[2] == -100
-                    ? "N/A"
-                    : "" + percentagesArray[2].toFixed(2)
-                  : "N/A"
-                : "Loading..."}
-            </Text>
-            <Text style={[styles.averagesTopText, { color: Colors.raColor }]}>
-              RA Average:{"     "}
-              {!refreshing
-                ? percentagesArray
-                  ? percentagesArray[1] == -100
-                    ? "N/A"
-                    : "" + percentagesArray[1].toFixed(2)
-                  : "N/A"
-                : "Loading..."}
-            </Text>
-            <Text style={[styles.averagesTopText, { color: Colors.cfuColor }]}>
-              CFU Average:{"  "}
-              {!refreshing
-                ? percentagesArray
-                  ? percentagesArray[0] == -100
-                    ? "N/A"
-                    : "" + percentagesArray[0].toFixed(2)
-                  : "N/A"
-                : "Loading..."}
-            </Text>
+          <View style={{ alignItems: 'center', marginTop: 20 }}>
+          <Svg height="140" width="140">
+            <Circle
+              cx="70"
+              cy="70"
+              r={radius}
+              stroke={circleColor.border}
+              strokeWidth={strokeWidth}
+              fill="none"
+              strokeOpacity={0.3} // Lighter background circle
+            />
+            <Circle
+              cx="70"
+              cy="70"
+              r={radius}
+              stroke={circleColor.border}
+              strokeWidth={strokeWidth}
+              fill="none"
+              strokeDasharray={`${circleCircumference}, ${circleCircumference}`}
+              strokeDashoffset={overallCourseAverage >= 0 ? strokeDashoffset : circleCircumference}
+              strokeLinecap="round"
+            />
+          </Svg>
+          <Text style={[styles.headerGradeText, { color: "white", position: 'absolute', fontSize: 24, top: 50 }]}>
+            {overallCourseAverage >= 0 ? `${overallCourseAverage}%` : "N/A"}
+          </Text>
+        </View>
+    
+          {/* Averages Container */}
+          <View style={{ flexDirection: "column", marginTop: 25, marginLeft: 20 }}>
+            <View
+              style={{
+                borderRadius: 10,
+                padding: 10,
+                borderColor: "#1b1b1b",
+                borderWidth: 2,
+                backgroundColor: "#1b1b1b",
+                width: 210,
+              }}
+            >
+              {/* SA Average Card */}
+              <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 5 }}>
+                <View
+                  style={{
+                    height: 35,
+                    width: 25,
+                    backgroundColor: Colors.saColor,
+                    borderColor: "white",
+                    borderWidth: 2,
+                    borderRadius: 10,
+                    marginRight: 10,
+                  }}
+                />
+                <Text style={{ color: "white", fontWeight: "bold" }}>
+                  SA Average:    {"   "}
+                  {!refreshing
+                    ? percentagesArray && percentagesArray[2] !== -100
+                      ? percentagesArray[2].toFixed(2)
+                      : "N/A"
+                    : "Loading..."}
+                </Text>
+              </View>
+    
+              {/* RA Average Card */}
+              <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 5 }}>
+                <View
+                  style={{
+                    height: 35,
+                    width: 25,
+                    backgroundColor: Colors.raColor,
+                    borderColor: "white",
+                    borderWidth: 2,
+                    borderRadius: 10,
+                    marginRight: 10,
+                  }}
+                />
+                <Text style={{ color: "white", fontWeight: "bold" }}>
+                  RA Average:    {"   "}
+                  {!refreshing
+                    ? percentagesArray && percentagesArray[1] !== -100
+                      ? percentagesArray[1].toFixed(2)
+                      : "N/A"
+                    : "Loading..."}
+                </Text>
+              </View>
+    
+              {/* CFU Average Card */}
+              <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 5 }}>
+                <View
+                  style={{
+                    height: 35,
+                    width: 25,
+                    backgroundColor: Colors.cfuColor,
+                    borderColor: "white",
+                    borderWidth: 2,
+                    borderRadius: 10,
+                    marginRight: 10,
+                  }}
+                />
+                <Text style={{ color: "white", fontWeight: "bold" }}>
+                  CFU Average:   {" "}  
+                  {!refreshing
+                    ? percentagesArray && percentagesArray[0] !== -100
+                      ? percentagesArray[0].toFixed(2)
+                      : "N/A"
+                    : "Loading..."}
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
+    
         <View
           style={{
             flexDirection: "row",
@@ -269,46 +390,38 @@ const gradesCalculating = () => {
               alignContent: "center",
               justifyContent: "center",
               borderRadius: 10,
-              borderWidth: 3,
-              borderColor: "#5283b7",
+              //borderWidth: 2,
+              borderColor: "white",
               padding: 5,
               height: 40,
-              width: "48%",
+              width: "45%",
               paddingVertical: 8,
               alignItems: "center",
               alignSelf: "center",
-              backgroundColor: Colors.resetCalcBG,
+              backgroundColor: "#1b1b1b",
             }}
             onPress={() => ResetCalculator()}
           >
-            <Ionicons
-              name="refresh-sharp"
-              size={20}
-              color="#ffffff"
-              style={{ paddingRight: 3 }}
-            />
-            <Text
-              style={{ color: "#ffffff", fontSize: 16, fontWeight: "bold" }}
-            >
-              Reset Calculator
+            <Ionicons name="refresh-sharp" size={20} color="#ffffff" style={{ paddingRight: 3 }} />
+            <Text style={{ color: "#ffffff", fontSize: 14, fontWeight: "bold" }}>
+              Reset
             </Text>
-            <Text> </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={{
               flexDirection: "row",
               alignContent: "center",
+              justifyContent: "center",
+              borderRadius: 10,
+              //borderWidth: 2,
+              borderColor: "white",
+              padding: 5,
+              height: 40,
+              width: "53%",
+              paddingVertical: 8,
               alignItems: "center",
               alignSelf: "center",
-              justifyContent: "space-between",
-              borderWidth: 3,
-              borderColor: "#5283b7",
-              width: "48%",
-              borderRadius: 10,
-              paddingVertical: 8,
-              height: 40,
-              padding: 5,
-              backgroundColor: Colors.resetCalcBG,
+              backgroundColor: "#0D92F4",
             }}
             onPress={() => {
               setAddingError(null);
@@ -318,23 +431,19 @@ const gradesCalculating = () => {
               setVisibleAddAssignment(true);
             }}
           >
-            <Ionicons
-              name="calculator"
-              size={20}
-              color="#ffffff"
-              style={{ paddingRight: 3 }}
-            />
-            <Text
-              style={{ color: "#ffffff", fontSize: 16, fontWeight: "bold" }}
-            >
-              Calculate
-            </Text>
-            <Text> </Text>
+            <Ionicons name="calculator" size={20} color="#ffffff" style={{ paddingRight: 3 }} />
+            <Text style={{ color: "#ffffff", fontSize: 14, fontWeight: "bold" }}>Calculator</Text>
           </TouchableOpacity>
         </View>
       </View>
     );
+    
+    
   };
+  
+
+  
+  
 
   const [addAssignmentType, setAddAssignmentType] = useState<string>("");
   const [desiredGrade, setDesiredGrade] = useState<string>("");
@@ -342,6 +451,19 @@ const gradesCalculating = () => {
   const [addAssignmentGrade, setAddAssignmentGrade] = useState<string>("");
   const [customGrade, setCustomGrade] = useState<string>(""); // Add this line
 
+  const getColorByType = (label: string, isSelected = true) => {
+    const colors = {
+      saColor: "#f4c60d",
+      cfuColor: "#4688f2",
+      raColor: "#810df4",
+    };
+  
+    // You can match label with the keys to return the appropriate color
+    if (label === "SA") return isSelected ? colors.saColor : '#494547'; // Adjust to your actual assignment type
+    if (label === "CFU") return isSelected ? colors.cfuColor : '#494547'; // Adjust to your actual assignment type
+    if (label === "RA") return isSelected ? colors.raColor : '#494547'; // Adjust to your actual assignment type
+    return '#494547'; // Default color if none match
+  };
   
 
   const [addingError, setAddingError] = useState<string | null>(null);
@@ -430,7 +552,7 @@ const gradesCalculating = () => {
         {selectedCourse && (
           <View style={{ flex: 1 }}>
             {renderHeader()}
-            <View style={{ backgroundColor: Colors.gradesCurvedView, marginLeft: 7, marginRight: 7, borderRadius: 15, marginBottom: 250, paddingBottom: 10, }}>
+            <View style={{ backgroundColor: Colors.gradesCurvedView, marginBottom: 300, marginLeft: 7, marginRight: 7, borderRadius: 15, paddingBottom: 10, }}>
               <FlatList
                 data={selectedCourse.grades}
                 renderItem={renderGradeItem}
@@ -447,12 +569,13 @@ const gradesCalculating = () => {
         animationOut={"fadeOutDown"}
         onBackdropPress={() => setVisibleAddAssignment(false)}
       >
+
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View
             style={{
-              borderColor: "#5283b7",
+              borderColor: Colors.tabActiveTint,
               borderWidth: 3,
-              height: "80%",
+              height: "55%",
               marginHorizontal: 10,
               backgroundColor: "#1c1c1c",
               borderRadius: 20,
@@ -464,15 +587,17 @@ const gradesCalculating = () => {
               flexDirection: 'row',
               justifyContent: 'center',
               marginBottom: 20,
-              backgroundColor: '#5283b7',
-              borderRadius: 10,
-              padding: 5
+              backgroundColor: "#494547",
+              borderRadius: 16,
+              borderColor: "#b3b3b3",
+              borderWidth: 1,
+              padding: 5,
             }}>
               <TouchableOpacity
                 style={{
                   flex: 1,
                   padding: 10,
-                  backgroundColor: selectedTab === "addAssignment" ? '#3d6a9f' : '#5283b7',
+                  backgroundColor: selectedTab === "addAssignment" ? Colors.tabActiveTint : Colors.tabBarBG,
                   borderRadius: 10,
                   alignItems: 'center',
                 }}
@@ -484,7 +609,7 @@ const gradesCalculating = () => {
                 style={{
                   flex: 1,
                   padding: 10,
-                  backgroundColor: selectedTab === "whatDoINeed" ? '#3d6a9f' : '#5283b7',
+                  backgroundColor: selectedTab === "whatDoINeed" ? Colors.tabActiveTint : Colors.tabBarBG,
                   borderRadius: 10,
                   alignItems: 'center',
                 }}
@@ -494,146 +619,137 @@ const gradesCalculating = () => {
               </TouchableOpacity>
             </View>
 
-            {/* Tab Content */}
-            {selectedTab === "addAssignment" ? (
-              <>
-                <TextInput
-                  style={[styles.infoInput, { height: 45, paddingHorizontal: 10, paddingBottom: 30, borderBottomWidth: 2, borderBottomColor: "#fff", textAlignVertical: 'center', color: 'white' }]}
-                  placeholder="Assignment Name..."
-                  placeholderTextColor={"grey"}
-                  value={addAssignmentName}
-                  onChangeText={setAddAssignmentName}
-                />
+{/* Tab Content */}
+{selectedTab === "addAssignment" ? (
+  <>
+    <TextInput
+      style={[styles.infoInput, { height: 10, paddingHorizontal: 10, textAlignVertical: 'center', color: 'white', marginBottom: 5 }]} // Remove paddingBottom and add marginBottom
+      placeholder="Assignment Name"
+      placeholderTextColor={"grey"}
+      value={addAssignmentName}
+      onChangeText={setAddAssignmentName}
+    />
 
-                {/* Default Selection: Check for Understanding */}
-                <Image
-                  source={selectedType?.logo || assignmentTypes[0].logo}
-                  style={{
-                    width: 180,
-                    height: 160,
-                    alignSelf: 'center',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginBottom: 20,
-                    resizeMode: 'contain',
-                  }}
-                />
+    <TextInput
+      style={[styles.gradeInfoInput, { height: 10, paddingHorizontal: 10, textAlignVertical: 'top', color: 'white', marginBottom: 5 }]} // Move grade here and condense
+      placeholder="Grade"
+      placeholderTextColor={"grey"}
+      keyboardType="decimal-pad"
+      value={addAssignmentGrade}
+      onChangeText={setAddAssignmentGrade}
+    />
 
-                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                  {/* Assignment type buttons */}
-                  <View style={{ flexDirection: 'row', justifyContent: "space-between", width: '100%' }}>
-                    {assignmentTypes.slice(0, 2).map((type) => (
-                      <TouchableOpacity
-                        key={type.id}
-                        onPress={() => {
-                          setAddAssignmentType(type.label);
-                          setSelectedType(type);
-                        }}
-                        style={{
-                          flex: 1,
-                          marginHorizontal: 5,
-                          padding: 15,
-                          borderWidth: 2,
-                          borderRadius: 10,
-                          backgroundColor: selectedType?.id === type.id ? '#5283b7' : '#494547',
-                        }}
-                      >
-                        <Text style={{ color: 'white', textAlign: 'center' }}>{type.label}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
+    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+      {/* Assignment type buttons */}
+      <View style={{ flexDirection: 'row', justifyContent: "space-between", width: '100%', marginBottom: 5 }}>
+        {assignmentTypes.map((type) => (
+          <TouchableOpacity
+            key={type.id}
+            onPress={() => {
+              setAddAssignmentType(type.label);
+              setSelectedType(type);
+            }}
+            style={{
+              flex: 1,
+              marginHorizontal: 5,
+              paddingVertical: 7,
+              paddingHorizontal: 3,
+              borderWidth: 2,
+              borderColor: selectedType?.id === type.id ? 'white' : 'transparent', // White outline for selected
+              borderRadius: 25,
+              backgroundColor: selectedType?.id === type.id ? getColorByType(type.label) : getColorByType(type.label, false), // Function to get appropriate color
+            }}
+          >
+            <Text style={{ color: 'white', textAlign: 'center', fontWeight: "bold" }}>{type.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
 
-                  {/* Bottom row with one button */}
-                  <View style={{ flexDirection: 'row', justifyContent: "space-between", width: '100%', marginTop: 10 }}>
-                    {assignmentTypes.slice(2, 3).map((type) => (
-                      <TouchableOpacity
-                        key={type.id}
-                        onPress={() => {
-                          setAddAssignmentType(type.label);
-                          setSelectedType(type);
-                        }}
-                        style={{
-                          flex: 1,
-                          marginHorizontal: 5,
-                          padding: 15,
-                          borderWidth: 2,
-                          borderRadius: 10,
-                          backgroundColor: selectedType?.id === type.id ? '#5283b7' : '#494547',
-                        }}
-                      >
-                        <Text style={{ color: 'white', textAlign: 'center' }}>{type.label}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                </View>
+    {addingError && addingError !== "" && (
+      <Text style={styles.error}>{addingError}</Text>
+    )}
 
-                <TextInput
-                  style={[styles.gradeInfoInput, { height: 65, paddingHorizontal: 10, paddingBottom: 22, borderBottomWidth: 3, borderBottomColor: "#fff", textAlignVertical: 'top', color: 'white' }]}
-                  placeholder="Grade..."
-                  placeholderTextColor={"grey"}
-                  keyboardType="decimal-pad"
-                  value={addAssignmentGrade}
-                  onChangeText={setAddAssignmentGrade}
-                />
-
-                {addingError && addingError !== "" && (
-                  <Text style={styles.error}>{addingError}</Text>
-                )}
-
-                {/* Add Assignment Button */}
-                <View style={{ marginTop: -5, alignItems: 'center' }}>
-                  <TouchableOpacity
-                    style={{
-                      padding: 15,
-                      borderRadius: 10,
-                      backgroundColor: "#5283b7",
-                      width: '100%',
-                      alignItems: 'center',
-                    }}
-                    onPress={() => {
-                      if (AddNewAssignment()) {
-                        setVisibleAddAssignment(false);
-                      }
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: "#ffffff",
-                        fontSize: 20,
-                        fontWeight: "bold",
-                      }}
-                    >
-                      Add Assignment
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </>
-            ) : (
+    {/* Add Assignment Button */}
+    <View style={{ marginTop: 10, alignItems: 'center' }}>
+      <TouchableOpacity
+        style={{
+          padding: 15,
+          borderRadius: 10,
+          backgroundColor: Colors.tabActiveTint,
+          width: '100%',
+          alignItems: 'center',
+        }}
+        onPress={() => {
+          if (AddNewAssignment()) {
+            setVisibleAddAssignment(false);
+          }
+        }}
+      >
+        <Text
+          style={{
+            color: "#ffffff",
+            fontSize: 20,
+            fontWeight: "bold",
+          }}
+        >
+          Add Assignment
+        </Text>
+      </TouchableOpacity>
+    </View>
+  </>
+) : (
               // What Do I Need Tab Content
               <>
                 <View style={{ justifyContent: 'center', alignItems: 'center', marginBottom: 20 }}>
-                  <Text style={{ color: 'white', marginTop: 20, marginBottom: 20, fontSize: 24, fontWeight: "bold" }}>Select Desired Grade:</Text>
+                  <Text style={{ color: 'white', marginTop: 20, marginBottom: 20, fontSize: 24, fontWeight: "bold" }}>Desired Grade</Text>
 
                   {/* Grade Options */}
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
-                    {["90", "80", "70"].map((grade) => (
-                      <TouchableOpacity
-                        key={grade}
-                        onPress={() => setDesiredGrade(grade)}
-                        style={{
-                          padding: 15,
-                          borderWidth: 2,
-                          borderRadius: 10,
-                          backgroundColor: desiredGrade === grade ? '#5283b7' : '#494547',
-                          flex: 1,
-                          alignItems: 'center',
-                          height: 60,  // Added fixed height to match custom grade height
-                        }}
-                      >
-                        <Text style={{ color: 'white', textAlign: 'center', verticalAlign: "middle", fontSize: 17, fontWeight: "bold" }}>{grade}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
+                      {["90", "80", "70"].map((grade) => {
+                        // Determine the background color based on the selected grade
+                        let backgroundColor;
+                        if (desiredGrade === grade) {
+                          switch (grade) {
+                            case "90":
+                              backgroundColor = Colors.courseGradeAColor; // Color for 90
+                              break;
+                            case "80":
+                              backgroundColor = Colors.courseGradeBColor; // Color for 80
+                              break;
+                            case "70":
+                              backgroundColor = Colors.courseGradeCColor; // Color for 70
+                              break;
+                            default:
+                              backgroundColor = '#494547'; // Fallback color if needed
+                          }
+                        } else {
+                          backgroundColor = '#494547'; // Unselected color
+                        }
+
+                        return (
+                          <TouchableOpacity
+                            key={grade}
+                            onPress={() => setDesiredGrade(grade)}
+                            style={{
+                              borderWidth: 2,
+                              borderColor: desiredGrade === grade ? "white" : "transparent", // Outline only when selected
+                              borderRadius: 25,
+                              marginHorizontal: 5,
+                              paddingVertical: 2,
+                              width: "10%",
+                              backgroundColor: backgroundColor, // Set dynamic background color
+                              flex: 1,
+                              alignItems: 'center',
+                            }}
+                          >
+                            <Text style={{ color: 'white', textAlign: 'center', verticalAlign: "middle", fontSize: 17, fontWeight: "bold" }}>
+                              {grade}
+                            </Text>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
 
                   {/* Custom Grade (on next line) */}
                   <View style={{ flexDirection: 'row', width: '100%', padding: 20 }}>
@@ -641,12 +757,13 @@ const gradesCalculating = () => {
                       style={{
                         padding: 15,
                         borderWidth: 2,
-                        borderRadius: 10,
-                        backgroundColor: desiredGrade === "custom" ? '#5283b7' : '#494547',
+                        borderRadius: 17,
+                        backgroundColor: '#494547',
                         alignItems: 'center',
-                        width: '100%',
-                        height: 60,  // Same height as top row buttons
+                        width: '60%',
+                        height: 50,
                         justifyContent: 'center',
+                        flex: 1,
                       }}
                     >
                       <TextInput
@@ -663,7 +780,7 @@ const gradesCalculating = () => {
                   </View>
 
                   <View style={{ marginTop: 20, borderBottomWidth: 2, borderBottomColor: "#fff" }}>
-                    <Text style={{ color: 'white', fontSize: 28 }}>You need a:</Text>
+                    <Text style={{ color: 'white', fontSize: 28, fontWeight: "bold" }}>Required Grade</Text>
                     <Text style={{ color: 'white', fontSize: 28, textAlign: "center", marginTop: 8, marginBottom: 8, }}>{neededScore(selectedCourse, parseFloat(desiredGrade), "checking for understanding")}%</Text>
                   </View>
                 </View>
@@ -693,7 +810,7 @@ const gradesCalculating = () => {
             <Text style={{
               color: "white",
               fontSize: 25,
-              fontFamily: "Times-New-Roman",
+            
               marginTop: 20,
               textAlign: "center",
               alignSelf: "center",
@@ -707,7 +824,7 @@ const gradesCalculating = () => {
               color: "white",
               fontSize: 17,
               marginBottom: 15,
-              fontFamily: "Times-New-Roman",
+            
               textAlign: "center",
               alignSelf: "center",
               fontWeight: "bold",
@@ -735,7 +852,7 @@ const gradesCalculating = () => {
               fontSize: 17,
               marginBottom: 25,
               marginTop: 30,
-              fontFamily: "Times-New-Roman",
+            
               textAlign: "center",
               alignSelf: "center",
               fontWeight: "bold",
@@ -768,7 +885,7 @@ const gradesCalculating = () => {
                   color: "white",
                   fontSize: 17,
                   marginBottom: 25,
-                  fontFamily: "Times-New-Roman",
+                
                   textAlign: "center",
                   alignSelf: "center",
                   fontWeight: "bold",
@@ -813,7 +930,7 @@ const gradesCalculating = () => {
                   color: "white",
                   fontSize: 17,
                   marginBottom: 25,
-                  fontFamily: "Times-New-Roman",
+                
                   textAlign: "center",
                   alignSelf: "center",
                   fontWeight: "bold",
@@ -937,12 +1054,11 @@ const styles = StyleSheet.create({
   },
   gradeInfoInput: {
     color: "white",
-    fontSize: 18,
-    borderBottomWidth: 1,
-    borderBottomColor: "white",
-    marginVertical: 50,
-    paddingBottom: 3,
+    fontSize: 25,
+    //marginVertical: -20,
+    //paddingBottom: 3,
     alignSelf: "center",
+    height: 20,
     width: 90,
     fontWeight: "bold",
     textAlign: "center",
@@ -951,10 +1067,7 @@ const styles = StyleSheet.create({
   infoInput: {
     color: "white",
     fontSize: 25,
-    borderBottomWidth: 1,
-    borderBottomColor: "white",
     marginBottom: 5,
-    fontFamily: "Times-New-Roman",
     marginTop: 20,
     textAlign: "center",
     paddingBottom: 3,
@@ -970,7 +1083,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "white",
     marginBottom: 5,
-    fontFamily: "Times-New-Roman",
+  
     marginTop: 5,
     textAlign: "center",
     paddingBottom: 3,
@@ -1037,7 +1150,6 @@ const styles = StyleSheet.create({
     flex: 1, // This makes each column take up equal space
     height: 100, // Optional: set a fixed height for each column
   },
-
   causeWhyNot: {
     borderRadius: 10,
   },
@@ -1047,13 +1159,20 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     borderBottomWidth: 1, // Border for separating the header from the items
     borderBottomColor: "#444", // Border color
+    backgroundColor: "#1c1c1c",
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
     padding: 20,
   },
   headerTitleBox: {
     position: "absolute", // Positioning it freely within the parent container
-    left: 0, // Ensure it takes full width
+    left: 0, 
     right: 0,
     alignItems: "center", // Center text horizontally within this container
+    //backgroundColor: "#0D92F4",
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 10,
   },
   headerTitleText: {
     fontSize: 33, // Larger font for the course title
@@ -1070,10 +1189,10 @@ const styles = StyleSheet.create({
     width: 140,
     borderColor: "#5283b7",
     borderWidth: 3,
-    backgroundColor: Colors.resetCalcBG
+    backgroundColor: 'white',
   },
   headerGradeText: {
-    fontSize: 30, // Larger font for the overall grade
+    fontSize: 40, // Larger font for the overall grade
     fontWeight: "bold",
   },
   extratext: {
@@ -1126,7 +1245,8 @@ const styles = StyleSheet.create({
     paddingStart: 15,
     paddingEnd: 15,
     borderBottomWidth: 1, // Border for separating the items
-    borderBottomColor: "#444", // Border color
+    borderBottomColor: "#858585", // Border color
+    backgroundColor: "#2a2a2a",
   },
   assignmentInfo: {
     flex: 1, // Takes up most of the row width
@@ -1140,13 +1260,13 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   assignmentType: {
-    fontSize: 14,
+    fontSize: 9,
     fontWeight: "bold",
     marginBottom: 5,
     //color: "#aaa", // Slightly lighter color for assignment type
   },
   date: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#ffffff", // Lighter color for date
     fontWeight: "bold",
   },
@@ -1166,7 +1286,7 @@ const styles = StyleSheet.create({
     height: 55, // Adjust the height of the box to fit the content
   },
   gradeText: {
-    fontSize: 19,
+    fontSize: 20,
     fontWeight: "bold",
     color: "white",
   },

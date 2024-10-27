@@ -234,8 +234,8 @@ const renderHeader = (overallGrade: number, courseTitle: string) => {
                 : "" + percentagesArray[1].toFixed(2)
                 : "N/A"}
             </Text>
-            <Text style={[styles.averagesTopText, { color: Colors.saColor }]}>
-            SA Average:{"     "}
+            <Text style={[styles.averagesTopText, { color: "Colors.saColor" }]}>
+            SA Average:{"    "}
             {percentagesArray
                 ? percentagesArray[2] == -100
                 ? "N/A"

@@ -2,7 +2,7 @@ export default {
   overallBackground: "#121212",
 
   //Tab Bar
-  tabActiveTint: "#ff4800",
+  tabActiveTint: "#0D92F4",
   tabInactiveTint: "#ced4da",
 
   tabBarBG: "#ffffff00",
@@ -109,9 +109,9 @@ export default {
   gradeGradeCColorBG: "#f6d33c",
   gradeGradeFailColorBG: "#ff3131",
 
-  saColor: "#e0aaff",
-  cfuColor: "#90e0ef",
-  raColor: "#ffee99",
+  saColor: "#f4c60d",
+  cfuColor: "#4688f2",
+  raColor: "#810df4",
 
   addAssignmentBG: "#3b9f2a",
   whatDoINeedBG: "#3c9f2ac7",

@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   ScrollView,
   SafeAreaView,
+  Dimensions,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
@@ -31,6 +32,7 @@ import { Link, router } from "expo-router";
 interface Props {
   category: string;
 }
+const screenHeight = Dimensions.get("window").height;
 
 const GradesContent = ({ category }: Props) => {
   const [username, setUsername] = useState<string | null>(null);
@@ -233,7 +235,10 @@ const Grades = ({
       </View>
     );
   };
-
+  const formatGrade = (grade: number) => {
+    if (grade === -100) return "N/A";
+    return grade >= 100 ? `${grade}.0` : `${grade.toFixed(2)}`;
+  };
   const renderGradeItem = ({ item }: { item: Grade }) => {
     // Function to get the background color based on the grade
     const getGradeBackgroundColor = (grade: number) => {
@@ -278,6 +283,8 @@ const Grades = ({
       </View>
     );
   };
+
+  
   const renderHeader = (overallGrade: number, courseTitle: string) => {
     // Function to get the background color based on the overall grade
     const getGradeBorderColor = (grade: number) => {
@@ -394,100 +401,6 @@ const Grades = ({
     );
   };
 
-  return courses !== undefined ? (
-    <View style={styles.container}>
-      {courses !== null ? (
-        !selectedCourse ? (
-          <View style={{ paddingTop: 20, marginTop: 18 }}>
-            <ScrollView // Added ScrollView here
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 20 }} // Optional: Adds some padding at the bottom
-            >
-              <View
-                style={{
-                  padding: 10,
-                  borderRadius: 10,
-                  margin: 3,
-                  backgroundColor: "#3c3b3c",
-                  borderColor: "#5283b7",
-                  borderWidth: 2,
-                }}
-              >
-                <Text style={{ padding: 10, color: "white", fontSize: 22, fontWeight: "bold", textAlign: "center", }}>
-                  Upcoming Assignments
-                </Text>
-                <FlatList
-                  data={Grade.date} // Replace with the actual data source for upcoming assignments
-                  keyExtractor={item => item.id}
-                  renderItem={({ item }) => (
-                    <Text style={styles.assignmentText}>
-                      {item.subject} - {item.assignment} - {item.dueDate}
-                    </Text>
-                  )}
-                />
-              </View>
-              <View style={{ borderWidth: 2, borderRadius: 13, borderColor: "#5283b7", backgroundColor: "#3c3b3c", margin: 2, marginTop: 10 }}>
-                <FlatList
-                  data={courses}
-                  renderItem={renderCourseItem}
-                  keyExtractor={(item) => item.name}
-                  showsVerticalScrollIndicator={false}
-                />
-              </View>
-            </ScrollView>
-          </View>
-        ) : (
-          <SafeAreaView
-            style={{
-              backgroundColor: Colors.overallBackground,
-              height: "100%",
-            }}
-          >
-            <View style={{ padding: 5 }}>
-              {selectedCourse && (
-                <View style={{ marginBottom: 405 }}>
-                  {renderHeader(
-                    selectedCourse.overallGrade,
-                    selectedCourse.name
-                  )}
-
-                  <FlatList
-                    data={selectedCourse.grades}
-                    renderItem={renderGradeItem}
-                    keyExtractor={(item: { assignmentName: any }) => item.assignmentName}
-                    showsVerticalScrollIndicator={false}
-                  />
-                </View>
-              )}
-            </View>
-          </SafeAreaView>
-        )
-      ) : (
-        <View>
-          <ActivityIndicator
-            size="large"
-            color="#ff4d00"
-            style={{ alignSelf: "center", marginTop: 100 }}
-          />
-          <Text
-            style={{
-              color: "#ff4d00",
-              alignSelf: "center",
-              paddingVertical: 40,
-              textAlign: "center",
-              paddingHorizontal: 20,
-              fontSize: 16,
-            }}
-          >
-            Make sure you are not on school wifi
-          </Text>
-        </View>
-      )}
-    </View>
-  ) : (
-    <HACNeededScreen paddingTop={0} hacDown={hacBroken} />
-  );
-};
 
 const Calculator = ({
   hacBroken,
@@ -693,6 +606,45 @@ const Transcript = ({
   );
 };
 
+return courses !== undefined ? (
+  <View style={styles.container}>
+    {courses !== null ? (
+      <View style={{ paddingTop: 20, marginTop: screenHeight * 0.06 }}>
+        <FlatList
+          data={courses}
+          renderItem={renderCourseItem}
+          keyExtractor={(item) => item.name}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 20 }} // Add padding at the bottom
+        />
+      </View>
+    ) : (
+      <View>
+        <ActivityIndicator
+          size="large"
+          color="#0D92F4"
+          style={{ alignSelf: "center", marginTop: 100 }}
+        />
+        <Text
+          style={{
+            color: "white",
+            alignSelf: "center",
+            paddingVertical: 40,
+            textAlign: "center",
+            paddingHorizontal: 20,
+            fontSize: 16,
+          }}
+        >
+          Just a moment... magic takes time
+        </Text>
+      </View>
+    )}
+  </View>
+) : (
+  <HACNeededScreen paddingTop={0} hacDown={hacBroken} />
+);
+};
+
 const styles = StyleSheet.create({
   averagesTopText: {
     fontSize: 16,
@@ -721,6 +673,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     height: "93%",
+    backgroundColor: "#1c1c1c", // Dark background for better contrast
   },
   header: {
     fontSize: 20,
@@ -732,62 +685,70 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 15,
-    height: 65,
-    borderRadius: 10,
-    marginBottom: 2,
+    padding: 10, // Reduced padding
+    height: 80, // Decreased height for thinner boxes
+    borderRadius: 10, // Slightly adjusted radius for consistency
+    marginBottom: 10,
     margin: 3,
+    backgroundColor: "#2a2a2a",
+    borderColor: "#858585",
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1, // Adjusted shadow height for thinner appearance
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2, // Reduced shadow radius
+    elevation: 2, // Reduced elevation for thinner look
   },
   courseName: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 20,
+    fontWeight: "600",
     color: "white",
   },
   causeWhyNot: {
     borderRadius: 10,
   },
   headerContainer: {
-    marginBottom: 20, // Add spacing below the header
-    paddingTop: 5, // Add padding to make the header box taller
+    marginBottom: 20,
+    paddingTop: 5,
     paddingBottom: 15,
-    borderBottomWidth: 1, // Border for separating the header from the items
-    borderBottomColor: "#444", // Border color
+    borderBottomWidth: 1,
+    borderBottomColor: "#444",
   },
   headerTitleBox: {
-    // position: "absolute", // Positioning it freely within the parent container
-    // left: 0, // Ensure it takes full width
-    // right: 0,
     marginLeft: 10,
-    alignItems: "center", // Center text horizontally within this container
+    alignItems: "center",
     justifyContent: "center",
   },
   headerCalcButtonBox: {
-    position: "absolute", // Positioning it freely within the parent container
-    left: 0, // Ensure it takes full width
+    position: "absolute",
+    left: 0,
     right: 0,
-    alignItems: "flex-end", // Center text horizontally within this container
+    alignItems: "flex-end",
   },
   headerTitleText: {
-    fontSize: 24, // Larger font for the course title
+    fontSize: 24,
     fontWeight: "bold",
     color: "white",
     textAlign: "center",
   },
   headerGradeBox: {
-    borderRadius: 10, // Rounded corners for the grade box
-    justifyContent: "center", // Center the grade text
-    alignItems: "center", // Center the grade text horizontally
-    height: 100,
-    width: 130,
-    borderWidth: 5,
-    marginLeft: 5,
+    borderRadius: 8, // Adjusted radius
+    justifyContent: "center",
+    alignItems: "center",
+    height: 70, // Decreased height for a thinner box
+    width: 120, // You can adjust width as needed
+    borderWidth: 2,
+    borderColor: Colors.gradeBoxBorder,
+    backgroundColor: "#3c3b3c",
   },
   headerGradeText: {
-    fontSize: 30, // Larger font for the overall grade
+    fontSize: 32, // Larger font for better visibility
     fontWeight: "bold",
     color: "white",
   },
-
   gradeItem: {
     backgroundColor: Colors.transcriptBubblesBG,
     paddingVertical: 5,
@@ -801,14 +762,14 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   gradeContainer: {
-    borderRadius: 10, // Curved borders for the colored box
-    justifyContent: "center", // Centers content vertically
-    alignItems: "center", // Centers content horizontally
-    width: 90, // Adjusts the width of the box to fit the content
-    height: 55, // Adjusts the height of the box to fit the content
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 90,
+    height: 55,
   },
   courseGrade: {
-    fontSize: 20,
+    fontSize: 22, // Slightly larger for clarity
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
@@ -823,18 +784,18 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   gradeRow: {
-    flexDirection: "row", // Row format for left and right sides
-    justifyContent: "space-between", // Space between left and right
-    alignItems: "center", // Vertically center the content
-    paddingVertical: 10, // Padding for spacing
-    paddingHorizontal: 5, // Horizontal padding
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 5,
     borderBottomWidth: 1,
-    borderBottomColor: "#444", // Border color
+    borderBottomColor: "#444",
     gap: 10,
   },
   assignmentInfo: {
-    flex: 1, // Takes up most of the row width
-    justifyContent: "flex-start", // Aligns content to the start
+    flex: 1,
+    justifyContent: "flex-start",
   },
   assignmentName: {
     fontSize: 16,
@@ -848,33 +809,32 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16,
   },
-
   assignmentType: {
     fontSize: 14,
-    //color: "#aaa", // Slightly lighter color for assignment type
     marginBottom: 3,
   },
   date: {
     fontSize: 12,
-    color: "#888", // Lighter color for date
+    color: "#888",
   },
   gradeBox: {
-    borderRadius: 12, // Rounded corners for grade box
-    borderWidth: 2,
+    borderRadius: 10,
+    borderWidth: 1, // Adjusted border width
     borderColor: Colors.gradeBoxBorder,
-    justifyContent: "center", // Center the grade text
-    alignItems: "center", // Center the grade text horizontally
-    paddingVertical: 15, // Padding inside the box
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 10, // Reduced vertical padding
     width: 80,
-    minWidth: 60, // Ensure a minimum width for the grade box
+    minWidth: 60,
+    backgroundColor: "#3c3b3c",
   },
   gradeText: {
-    fontSize: 19,
+    fontSize: 20, // Adjusted for better visibility
     fontWeight: "bold",
     color: "white",
   },
   back_button: {
-    zIndex: 2, // Ensure the back button stays on top
+    zIndex: 2,
   },
 });
 
