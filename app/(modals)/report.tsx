@@ -91,7 +91,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#121212",
   },
   title: {
-    fontFamily: "mon-b",
     fontSize: 32,
     fontWeight: "bold",
     textAlign: "center",
@@ -106,7 +105,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingLeft: 10,
     borderRadius: 10,
-    fontFamily: "mon",
     marginLeft: 15,
     marginRight: 15,
     textAlignVertical: "top",
