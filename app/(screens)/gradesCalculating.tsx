@@ -447,6 +447,7 @@ const assignmentTypes = [
 
   const [addAssignmentType, setAddAssignmentType] = useState<string>("");
   const [desiredGrade, setDesiredGrade] = useState<string>("");
+  const [desiredCategory, setDesiredCategory] = useState<string>("");
   const [addAssignmentName, setAddAssignmentName] = useState<string>("");
   const [addAssignmentGrade, setAddAssignmentGrade] = useState<string>("");
   const [customGrade, setCustomGrade] = useState<string>(""); // Add this line
@@ -772,16 +773,74 @@ const assignmentTypes = [
                         placeholderTextColor="grey"
                         keyboardType="decimal-pad"
                         value={customGrade}
-                        onChangeText={setCustomGrade}
-                        onFocus={() => setDesiredGrade("custom")}
-                        onBlur={() => setDesiredGrade(customGrade ? "custom" : "")}
+                        onChangeText={(text) => 
+                          {
+                            setCustomGrade(text); 
+                            setDesiredGrade(text ? text : "");
+                          }
+                        }
+                        
                       />
                     </TouchableOpacity>
                   </View>
 
+                  <Text style={{ color: 'white', marginTop: 20, marginBottom: 20, fontSize: 24, fontWeight: "bold" }}>Desired Grade</Text>
+
+                  {/* category Options */}
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
+                      {["CFU", "RA", "SA"].map((cat) => {
+                        // Determine the background color based on the selected grade
+                        let backgroundColor;
+                        if (desiredCategory === cat) {
+                          switch (cat) {
+                            case "cfu":
+                              backgroundColor = Colors.courseGradeAColor; // Color for 90
+                              break;
+                            case "ra":
+                              backgroundColor = Colors.courseGradeBColor; // Color for 80
+                              break;
+                            case "sa":
+                              backgroundColor = Colors.courseGradeCColor; // Color for 70
+                              break;
+                            default:
+                              backgroundColor = '#494547'; // Fallback color if needed
+                          }
+                        } else {
+                          backgroundColor = '#494547'; // Unselected color
+                        }
+
+                        return (
+                          <TouchableOpacity
+                            key={cat}
+                            onPress={() => 
+                              setDesiredCategory(cat)
+                            }
+                            style={{
+                              borderWidth: 2,
+                              borderColor: desiredGrade === cat ? "white" : "transparent", // Outline only when selected
+                              borderRadius: 25,
+                              marginHorizontal: 5,
+                              paddingVertical: 2,
+                              width: "10%",
+                              backgroundColor: backgroundColor, // Set dynamic background color
+                              flex: 1,
+                              alignItems: 'center',
+                            }}
+                          >
+                            <Text style={{ color: 'white', textAlign: 'center', verticalAlign: "middle", fontSize: 17, fontWeight: "bold" }}>
+                              {cat}
+                            </Text>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
+
+
+
+
                   <View style={{ marginTop: 20, borderBottomWidth: 2, borderBottomColor: "#fff" }}>
                     <Text style={{ color: 'white', fontSize: 28, fontWeight: "bold" }}>Required Grade</Text>
-                    <Text style={{ color: 'white', fontSize: 28, textAlign: "center", marginTop: 8, marginBottom: 8, }}>{neededScore(selectedCourse, parseFloat(desiredGrade), "checking for understanding")}%</Text>
+                    <Text style={{ color: 'white', fontSize: 28, textAlign: "center", marginTop: 8, marginBottom: 8, }}>{neededScore(selectedCourse, parseFloat(desiredGrade), desiredCategory) + " " + desiredGrade + " " + desiredCategory}%</Text>
                   </View>
                 </View>
               </>

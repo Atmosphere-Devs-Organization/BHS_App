@@ -297,6 +297,7 @@ export function neededScore(
   if (!course) {
     return null;
   }
+
   endAvg = endAvg - .5;
   let cfuTotal = 0;
   let cfuMaxTotal = 0;
@@ -304,6 +305,22 @@ export function neededScore(
   let raMaxTotal = 0;
   let saTotal = 0;
   let saMaxTotal = 0;
+  //changing category to be fully written out 
+  if(category === "CFU")
+  {
+    category = "checking for understanding";
+    console.log("here" + category);
+    console.log();
+
+  }
+  if(category === "RA")
+  {
+    category = "relevant applications";
+  }
+  if(category === "SA")
+  {
+    category = "summative assessments";
+  }
 
   // Calculate totals for each category
   for (const grade of course.grades) {
