@@ -6,12 +6,14 @@ import {
   SafeAreaView,
   ScrollView,
   Dimensions,
+  useWindowDimensions,
 } from "react-native";
 import React, { useRef, useState, useEffect } from "react"; 
 import Colors from "@/constants/Colors"; // Ensure Colors is used correctly
 import Numbers from "@/constants/Numbers"; // Ensure Numbers is used correctly
 
 const screenHeight = Dimensions.get("window").height;
+console.log(screenHeight);
 
 const clubCategories = [
   {
@@ -87,7 +89,7 @@ const ClubsHeader = ({ onCategoryChanged }: Props) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#0D92F4", // Main header color
-    height: screenHeight * 0.23, // Height of the header
+    height: 200, // Height of the header
     justifyContent: "center",
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
