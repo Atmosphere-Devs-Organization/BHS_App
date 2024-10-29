@@ -29,9 +29,8 @@ import {
 import Modal from "react-native-modal";
 import AutoCompleteTextInput from "@/components/AutoCompleteTextInput";
 import { ScrollView } from "react-native-reanimated/lib/typescript/Animated";
-import { LinearGradient } from 'expo-linear-gradient'; // Import LinearGradient
-import Svg, { G, Circle, Line } from 'react-native-svg';
-
+import { LinearGradient } from "expo-linear-gradient"; // Import LinearGradient
+import Svg, { G, Circle, Line } from "react-native-svg";
 
 const gradesCalculating = () => {
   const [selectedTab, setSelectedTab] = useState<string>("addAssignment");
@@ -53,18 +52,19 @@ const gradesCalculating = () => {
   const [assignmentOptionsModalVisible, setLookingAtAssignmentOptions] =
     useState<boolean>(false);
 
+  const [selectedType, setSelectedType] = useState<{
+    id: number;
+    label: string;
+    logo: any;
+  } | null>(null); // Track selected type
 
-  const [selectedType, setSelectedType] = useState<{ id: number; label: string; logo: any } | null>(null); // Track selected type
-
-const assignmentTypes = [
-  { id: 1, label: "SA" },
-  { id: 2, label: "CFU" },
-  { id: 3, label: "RA" },
-];
-
+  const assignmentTypes = [
+    { id: 1, label: "SA" },
+    { id: 2, label: "CFU" },
+    { id: 3, label: "RA" },
+  ];
 
   const [selectedGrade, setSelectedGrade] = useState<Grade>();
-
 
   async function setCoursesAsync() {
     if (!courses) {
@@ -122,13 +122,13 @@ const assignmentTypes = [
       if (grade >= 70) return Colors.gradeGradeCColor; // Yellow for C
       return Colors.gradeGradeFailColor; // Red for failing grades
     };
-  
+
     // Grade background color
     const backgroundColor =
       item.grade === -100
         ? "#444"
         : getGradeBackgroundColor((item.grade / item.maxGrade) * 100);
-  
+
     // Function to convert assignment type to abbreviation
     const getAssignmentTypeAbbreviation = (type: string) => {
       switch (type.toLowerCase()) {
@@ -142,7 +142,7 @@ const assignmentTypes = [
           return type;
       }
     };
-  
+
     const typeColor =
       item.assignmentType.toLowerCase() === "summative assessments"
         ? Colors.saColor
@@ -151,13 +151,15 @@ const assignmentTypes = [
         : item.assignmentType.toLowerCase() === "checking for understanding"
         ? Colors.cfuColor
         : "#aaa";
-  
+
     return (
       <TouchableOpacity
         onPress={() => {
           setSelectedGrade(item);
           setAddAssignmentName(item.assignmentName);
-          setAddAssignmentGrade("" + (item.grade === -100 ? "N/A" : item.grade));
+          setAddAssignmentGrade(
+            "" + (item.grade === -100 ? "N/A" : item.grade)
+          );
           setAddAssignmentType(item.assignmentType);
           setLookingAtAssignmentOptions(true);
         }}
@@ -169,11 +171,17 @@ const assignmentTypes = [
             <Text numberOfLines={1} style={styles.assignmentName}>
               {item.assignmentName}
             </Text>
-  
+
             {/* Date and assignment type tag on the same line */}
-            <View style={{ flexDirection: "row", alignItems: "center", marginTop: 5 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: 5,
+              }}
+            >
               <Text style={styles.date}>{item.date.toLocaleDateString()}</Text>
-              
+
               {/* Tag for assignment type */}
               <View
                 style={{
@@ -186,15 +194,15 @@ const assignmentTypes = [
                   marginLeft: 10,
                 }}
               >
-                <Text style={{ color: "white", fontSize: 12, fontWeight: "bold" }}>
+                <Text
+                  style={{ color: "white", fontSize: 12, fontWeight: "bold" }}
+                >
                   {getAssignmentTypeAbbreviation(item.assignmentType)}
                 </Text>
               </View>
-
-              
             </View>
           </View>
-  
+
           {/* Right side: grade box */}
           <View style={[styles.gradeBox, { backgroundColor }]}>
             <Text style={styles.gradeText}>
@@ -205,31 +213,42 @@ const assignmentTypes = [
       </TouchableOpacity>
     );
   };
-  
-  
-  
-
 
   const renderHeader = () => {
-  
     let percentagesArray = calculateAssignmentTypePercentages(selectedCourse);
     let overallCourseAverage = Math.round(
       CalculateOverallAverage(selectedCourse, percentagesArray)
     );
-  
+
     const getGradeColor = (grade: number) => {
-      if (grade >= 90) return { border: Colors.gradeGradeAColor, background: Colors.gradeGradeAColorBG };
-      if (grade >= 80) return { border: Colors.gradeGradeBColor, background: Colors.gradeGradeBColorBG };
-      if (grade >= 70) return { border: Colors.gradeGradeCColor, background: Colors.gradeGradeCColorBG };
-      return { border: Colors.gradeGradeFailColor, background: Colors.gradeGradeFailColorBG };
+      if (grade >= 90)
+        return {
+          border: Colors.gradeGradeAColor,
+          background: Colors.gradeGradeAColorBG,
+        };
+      if (grade >= 80)
+        return {
+          border: Colors.gradeGradeBColor,
+          background: Colors.gradeGradeBColorBG,
+        };
+      if (grade >= 70)
+        return {
+          border: Colors.gradeGradeCColor,
+          background: Colors.gradeGradeCColorBG,
+        };
+      return {
+        border: Colors.gradeGradeFailColor,
+        background: Colors.gradeGradeFailColorBG,
+      };
     };
-    
+
     const circleColor = getGradeColor(overallCourseAverage);
     const radius = 60;
     const strokeWidth = 10;
     const circleCircumference = 2 * Math.PI * radius;
-    const strokeDashoffset = circleCircumference * (1 - overallCourseAverage / 100);
-  
+    const strokeDashoffset =
+      circleCircumference * (1 - overallCourseAverage / 100);
+
     return (
       <View style={styles.headerContainer}>
         <View
@@ -248,39 +267,50 @@ const assignmentTypes = [
             </Text>
           </View>
         </View>
-    
+
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           {/* Overall Grade Box */}
-          <View style={{ alignItems: 'center', marginTop: 20 }}>
-          <Svg height="140" width="140">
-            <Circle
-              cx="70"
-              cy="70"
-              r={radius}
-              stroke={circleColor.border}
-              strokeWidth={strokeWidth}
-              fill="none"
-              strokeOpacity={0.3} // Lighter background circle
-            />
-            <Circle
-              cx="70"
-              cy="70"
-              r={radius}
-              stroke={circleColor.border}
-              strokeWidth={strokeWidth}
-              fill="none"
-              strokeDasharray={`${circleCircumference}, ${circleCircumference}`}
-              strokeDashoffset={overallCourseAverage >= 0 ? strokeDashoffset : circleCircumference}
-              strokeLinecap="round"
-            />
-          </Svg>
-          <Text style={[styles.headerGradeText, { color: "white", position: 'absolute', fontSize: 24, top: 50 }]}>
-            {overallCourseAverage >= 0 ? `${overallCourseAverage}%` : "N/A"}
-          </Text>
-        </View>
-    
+          <View style={{ alignItems: "center", marginTop: 20 }}>
+            <Svg height="140" width="140">
+              <Circle
+                cx="70"
+                cy="70"
+                r={radius}
+                stroke={circleColor.border}
+                strokeWidth={strokeWidth}
+                fill="none"
+                strokeOpacity={0.3} // Lighter background circle
+              />
+              <Circle
+                cx="70"
+                cy="70"
+                r={radius}
+                stroke={circleColor.border}
+                strokeWidth={strokeWidth}
+                fill="none"
+                strokeDasharray={`${circleCircumference}, ${circleCircumference}`}
+                strokeDashoffset={
+                  overallCourseAverage >= 0
+                    ? strokeDashoffset
+                    : circleCircumference
+                }
+                strokeLinecap="round"
+              />
+            </Svg>
+            <Text
+              style={[
+                styles.headerGradeText,
+                { color: "white", position: "absolute", fontSize: 24, top: 50 },
+              ]}
+            >
+              {overallCourseAverage >= 0 ? `${overallCourseAverage}%` : "N/A"}
+            </Text>
+          </View>
+
           {/* Averages Container */}
-          <View style={{ flexDirection: "column", marginTop: 25, marginLeft: 20 }}>
+          <View
+            style={{ flexDirection: "column", marginTop: 25, marginLeft: 20 }}
+          >
             <View
               style={{
                 borderRadius: 10,
@@ -292,7 +322,13 @@ const assignmentTypes = [
               }}
             >
               {/* SA Average Card */}
-              <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 5 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginBottom: 5,
+                }}
+              >
                 <View
                   style={{
                     height: 35,
@@ -305,7 +341,7 @@ const assignmentTypes = [
                   }}
                 />
                 <Text style={{ color: "white", fontWeight: "bold" }}>
-                  SA Average:    {"   "}
+                  SA Average: {"   "}
                   {!refreshing
                     ? percentagesArray && percentagesArray[2] !== -100
                       ? percentagesArray[2].toFixed(2)
@@ -313,9 +349,15 @@ const assignmentTypes = [
                     : "Loading..."}
                 </Text>
               </View>
-    
+
               {/* RA Average Card */}
-              <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 5 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginBottom: 5,
+                }}
+              >
                 <View
                   style={{
                     height: 35,
@@ -328,7 +370,7 @@ const assignmentTypes = [
                   }}
                 />
                 <Text style={{ color: "white", fontWeight: "bold" }}>
-                  RA Average:    {"   "}
+                  RA Average: {"   "}
                   {!refreshing
                     ? percentagesArray && percentagesArray[1] !== -100
                       ? percentagesArray[1].toFixed(2)
@@ -336,9 +378,15 @@ const assignmentTypes = [
                     : "Loading..."}
                 </Text>
               </View>
-    
+
               {/* CFU Average Card */}
-              <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 5 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginBottom: 5,
+                }}
+              >
                 <View
                   style={{
                     height: 35,
@@ -351,7 +399,7 @@ const assignmentTypes = [
                   }}
                 />
                 <Text style={{ color: "white", fontWeight: "bold" }}>
-                  CFU Average:   {" "}  
+                  CFU Average:{" "}
                   {!refreshing
                     ? percentagesArray && percentagesArray[0] !== -100
                       ? percentagesArray[0].toFixed(2)
@@ -362,7 +410,7 @@ const assignmentTypes = [
             </View>
           </View>
         </View>
-    
+
         <View
           style={{
             flexDirection: "row",
@@ -388,8 +436,15 @@ const assignmentTypes = [
             }}
             onPress={() => ResetCalculator()}
           >
-            <Ionicons name="refresh-sharp" size={20} color="#ffffff" style={{ paddingRight: 3 }} />
-            <Text style={{ color: "#ffffff", fontSize: 14, fontWeight: "bold" }}>
+            <Ionicons
+              name="refresh-sharp"
+              size={20}
+              color="#ffffff"
+              style={{ paddingRight: 3 }}
+            />
+            <Text
+              style={{ color: "#ffffff", fontSize: 14, fontWeight: "bold" }}
+            >
               Reset Calculator
             </Text>
           </TouchableOpacity>
@@ -417,23 +472,31 @@ const assignmentTypes = [
               setVisibleAddAssignment(true);
             }}
           >
-            <Ionicons name="calculator" size={20} color="#ffffff" style={{ paddingRight: 3 }} />
-            <Text style={{ color: "#ffffff", fontSize: 14, fontWeight: "bold" }}>Calculator</Text>
+            <Ionicons
+              name="calculator"
+              size={20}
+              color="#ffffff"
+              style={{ paddingRight: 3 }}
+            />
+            <Text
+              style={{ color: "#ffffff", fontSize: 14, fontWeight: "bold" }}
+            >
+              Calculator
+            </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.infoBox}>
-          <Ionicons name="bulb-outline" size={20} color="#f4c60d" style={{ paddingRight: 3 }} />
+          <Ionicons
+            name="bulb-outline"
+            size={20}
+            color="#f4c60d"
+            style={{ paddingRight: 3 }}
+          />
           <Text style={styles.infoText}>Tap on an assignment to edit</Text>
         </View>
       </View>
     );
-    
-    
   };
-  
-
-  
-  
 
   const [addAssignmentType, setAddAssignmentType] = useState<string>("");
   const [desiredGrade, setDesiredGrade] = useState<string>("");
@@ -448,14 +511,13 @@ const assignmentTypes = [
       cfuColor: "#4688f2",
       raColor: "#810df4",
     };
-  
+
     // You can match label with the keys to return the appropriate color
-    if (label === "SA") return isSelected ? colors.saColor : '#494547'; // Adjust to your actual assignment type
-    if (label === "CFU") return isSelected ? colors.cfuColor : '#494547'; // Adjust to your actual assignment type
-    if (label === "RA") return isSelected ? colors.raColor : '#494547'; // Adjust to your actual assignment type
-    return '#494547'; // Default color if none match
+    if (label === "SA") return isSelected ? colors.saColor : "#494547"; // Adjust to your actual assignment type
+    if (label === "CFU") return isSelected ? colors.cfuColor : "#494547"; // Adjust to your actual assignment type
+    if (label === "RA") return isSelected ? colors.raColor : "#494547"; // Adjust to your actual assignment type
+    return "#494547"; // Default color if none match
   };
-  
 
   const [addingError, setAddingError] = useState<string | null>(null);
 
@@ -540,7 +602,7 @@ const assignmentTypes = [
       case "SA":
         return Colors.saColor;
       default:
-        return '#494547';
+        return "#494547";
     }
   };
   return (
@@ -554,12 +616,21 @@ const assignmentTypes = [
         {selectedCourse && (
           <View style={{ flex: 1 }}>
             {renderHeader()}
-            <View style={{ backgroundColor: Colors.gradesCurvedView, marginBottom: 300, marginLeft: 7, marginRight: 7, borderRadius: 15, paddingBottom: 10, }}>
+            <View
+              style={{
+                backgroundColor: Colors.gradesCurvedView,
+                marginBottom: 300,
+                marginLeft: 7,
+                marginRight: 7,
+                borderRadius: 15,
+                paddingBottom: 10,
+              }}
+            >
               <FlatList
                 data={selectedCourse.grades}
                 renderItem={renderGradeItem}
                 showsVerticalScrollIndicator={false}
-              //              nestedScrollEnabled={true} // If it's nested inside another ScrollView
+                //              nestedScrollEnabled={true} // If it's nested inside another ScrollView
               />
             </View>
           </View>
@@ -571,7 +642,6 @@ const assignmentTypes = [
         animationOut={"fadeOutDown"}
         onBackdropPress={() => setVisibleAddAssignment(false)}
       >
-
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View
             style={{
@@ -585,272 +655,428 @@ const assignmentTypes = [
             }}
           >
             {/* Tab Bar Merged into Button */}
-            <View style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              marginBottom: 20,
-              backgroundColor: "#494547",
-              borderRadius: 16,
-              borderColor: "#b3b3b3",
-              borderWidth: 1,
-              padding: 5,
-            }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                marginBottom: 20,
+                backgroundColor: "#494547",
+                borderRadius: 16,
+                borderColor: "#b3b3b3",
+                borderWidth: 1,
+                padding: 5,
+              }}
+            >
               <TouchableOpacity
                 style={{
                   flex: 1,
                   padding: 10,
-                  backgroundColor: selectedTab === "addAssignment" ? Colors.tabActiveTint : Colors.tabBarBG,
+                  backgroundColor:
+                    selectedTab === "addAssignment"
+                      ? Colors.tabActiveTint
+                      : Colors.tabBarBG,
                   borderRadius: 10,
-                  alignItems: 'center',
+                  alignItems: "center",
                 }}
                 onPress={() => setSelectedTab("addAssignment")}
               >
-                <Text style={{ color: 'white', fontWeight: 'bold' }}>Add Assignment</Text>
+                <Text style={{ color: "white", fontWeight: "bold" }}>
+                  Add Assignment
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={{
                   flex: 1,
                   padding: 10,
-                  backgroundColor: selectedTab === "whatDoINeed" ? Colors.tabActiveTint : Colors.tabBarBG,
+                  backgroundColor:
+                    selectedTab === "whatDoINeed"
+                      ? Colors.tabActiveTint
+                      : Colors.tabBarBG,
                   borderRadius: 10,
-                  alignItems: 'center',
+                  alignItems: "center",
                 }}
                 onPress={() => setSelectedTab("whatDoINeed")}
               >
-                <Text style={{ color: 'white', fontWeight: 'bold' }}>What Do I Need</Text>
+                <Text style={{ color: "white", fontWeight: "bold" }}>
+                  What Do I Need
+                </Text>
               </TouchableOpacity>
             </View>
 
-{/* Tab Content */}
-{selectedTab === "addAssignment" ? (
-  <>
-    <TextInput
-      style={[styles.infoInput, { height: 10, paddingHorizontal: 10, textAlignVertical: 'center', color: 'white', marginBottom: 5 }]} // Remove paddingBottom and add marginBottom
-      placeholder="Assignment Name"
-      placeholderTextColor={"grey"}
-      value={addAssignmentName}
-      onChangeText={setAddAssignmentName}
-    />
+            {/* Tab Content */}
+            {selectedTab === "addAssignment" ? (
+              <>
+                <TextInput
+                  style={[
+                    styles.infoInput,
+                    {
+                      height: 10,
+                      paddingHorizontal: 10,
+                      textAlignVertical: "center",
+                      color: "white",
+                      marginBottom: 5,
+                    },
+                  ]} // Remove paddingBottom and add marginBottom
+                  placeholder="Assignment Name"
+                  placeholderTextColor={"grey"}
+                  value={addAssignmentName}
+                  onChangeText={setAddAssignmentName}
+                />
 
-    <TextInput
-      style={[styles.gradeInfoInput, { height: 10, paddingHorizontal: 10, textAlignVertical: 'top', color: 'white', marginBottom: 5 }]} // Move grade here and condense
-      placeholder="Grade"
-      placeholderTextColor={"grey"}
-      keyboardType="decimal-pad"
-      value={addAssignmentGrade}
-      onChangeText={setAddAssignmentGrade}
-    />
+                <TextInput
+                  style={[
+                    styles.gradeInfoInput,
+                    {
+                      height: 10,
+                      paddingHorizontal: 10,
+                      textAlignVertical: "top",
+                      color: "white",
+                      marginBottom: 5,
+                    },
+                  ]} // Move grade here and condense
+                  placeholder="Grade"
+                  placeholderTextColor={"grey"}
+                  keyboardType="decimal-pad"
+                  value={addAssignmentGrade}
+                  onChangeText={setAddAssignmentGrade}
+                />
 
-    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-      {/* Assignment type buttons */}
-      <View style={{ flexDirection: 'row', justifyContent: "space-between", width: '100%', marginBottom: 5 }}>
-        {assignmentTypes.map((type) => (
-          <TouchableOpacity
-            key={type.id}
-            onPress={() => {
-              setAddAssignmentType(type.label);
-              setSelectedType(type);
-            }}
-            style={{
-              flex: 1,
-              marginHorizontal: 5,
-              paddingVertical: 7,
-              paddingHorizontal: 3,
-              borderWidth: 2,
-              borderColor: selectedType?.id === type.id ? 'white' : 'transparent', // White outline for selected
-              borderRadius: 25,
-              backgroundColor: selectedType?.id === type.id ? getColorByType(type.label) : getColorByType(type.label, false), // Function to get appropriate color
-            }}
-          >
-            <Text style={{ color: 'white', textAlign: 'center', fontWeight: "bold" }}>{type.label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </View>
+                <View
+                  style={{ justifyContent: "center", alignItems: "center" }}
+                >
+                  {/* Assignment type buttons */}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      marginBottom: 5,
+                    }}
+                  >
+                    {assignmentTypes.map((type) => (
+                      <TouchableOpacity
+                        key={type.id}
+                        onPress={() => {
+                          setAddAssignmentType(type.label);
+                          setSelectedType(type);
+                        }}
+                        style={{
+                          flex: 1,
+                          marginHorizontal: 5,
+                          paddingVertical: 7,
+                          paddingHorizontal: 3,
+                          borderWidth: 2,
+                          borderColor:
+                            selectedType?.id === type.id
+                              ? "white"
+                              : "transparent", // White outline for selected
+                          borderRadius: 25,
+                          backgroundColor:
+                            selectedType?.id === type.id
+                              ? getColorByType(type.label)
+                              : getColorByType(type.label, false), // Function to get appropriate color
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: "white",
+                            textAlign: "center",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {type.label}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
 
-    {addingError && addingError !== "" && (
-      <Text style={styles.error}>{addingError}</Text>
-    )}
+                {addingError && addingError !== "" && (
+                  <Text style={styles.error}>{addingError}</Text>
+                )}
 
-    {/* Add Assignment Button */}
-    <View style={{ marginTop: 10, alignItems: 'center' }}>
-      <TouchableOpacity
-        style={{
-          padding: 15,
-          borderRadius: 10,
-          backgroundColor: Colors.tabActiveTint,
-          width: '100%',
-          alignItems: 'center',
-        }}
-        onPress={() => {
-          if (AddNewAssignment()) {
-            setVisibleAddAssignment(false);
-          }
-        }}
-      >
-        <Text
-          style={{
-            color: "#ffffff",
-            fontSize: 20,
-            fontWeight: "bold",
-          }}
-        >
-          Add Assignment
-        </Text>
-      </TouchableOpacity>
-    </View>
-  </>
-  ) : (
-      // What Do I Need Tab Content
-      <>
-        <View style={{ justifyContent: 'center', alignItems: 'center', marginBottom: 20 }}>
-          <Text style={{ color: 'white', marginTop: 20, marginBottom: 20, fontSize: 24, fontWeight: "bold" }}>Desired Grade</Text>
-
-          {/* Grade Options */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
-            {["90", "80", "70"].map((grade) => {
-              let backgroundColor;
-              if (desiredGrade === grade) {
-                switch (grade) {
-                  case "90":
-                    backgroundColor = Colors.courseGradeAColor;
-                    break;
-                  case "80":
-                    backgroundColor = Colors.courseGradeBColor;
-                    break;
-                  case "70":
-                    backgroundColor = Colors.courseGradeCColor;
-                    break;
-                  default:
-                    backgroundColor = '#494547';
-                }
-              } else {
-                backgroundColor = '#494547';
-              }
-
-              return (
-                <TouchableOpacity
-                  key={grade}
-                  onPress={() => setDesiredGrade(grade)}
+                {/* Add Assignment Button */}
+                <View style={{ marginTop: 10, alignItems: "center" }}>
+                  <TouchableOpacity
+                    style={{
+                      padding: 15,
+                      borderRadius: 10,
+                      backgroundColor: Colors.tabActiveTint,
+                      width: "100%",
+                      alignItems: "center",
+                    }}
+                    onPress={() => {
+                      if (AddNewAssignment()) {
+                        setVisibleAddAssignment(false);
+                      }
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "#ffffff",
+                        fontSize: 20,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Add Assignment
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            ) : (
+              // What Do I Need Tab Content
+              <>
+                <View
                   style={{
-                    borderWidth: 2,
-                    borderColor: desiredGrade === grade ? "white" : "transparent",
-                    borderRadius: 25,
-                    marginHorizontal: 5,
-                    paddingVertical: 2,
-                    width: "10%",
-                    backgroundColor: backgroundColor,
-                    flex: 1,
-                    alignItems: 'center',
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginBottom: 20,
                   }}
                 >
-                  <Text style={{ color: 'white', textAlign: 'center', verticalAlign: "middle", fontSize: 17, fontWeight: "bold" }}>
-                    {grade}
+                  <Text
+                    style={{
+                      color: "white",
+                      marginTop: 20,
+                      marginBottom: 20,
+                      fontSize: 24,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Desired Grade
                   </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
 
-          {/* Custom Grade */}
-          <View style={{ flexDirection: 'row', width: '100%', padding: 20 }}>
-            <TouchableOpacity
-              style={{
-                padding: 15,
-                borderWidth: 2,
-                borderRadius: 17,
-                backgroundColor: '#494547',
-                alignItems: 'center',
-                width: '60%',
-                height: 50,
-                justifyContent: 'center',
-                flex: 1,
-              }}
-            >
-              <TextInput
-                style={{ color: 'white', textAlign: 'center', width: '100%', padding: 0, fontSize: 17, fontWeight: "bold" }}
-                placeholder="Custom Grade"
-                placeholderTextColor="grey"
-                keyboardType="decimal-pad"
-                value={customGrade}
-                onChangeText={(text) => {
-                  setCustomGrade(text);
-                  setDesiredGrade(text ? text : "");
-                }}
-              />
-            </TouchableOpacity>
-          </View>
+                  {/* Grade Options */}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      width: "100%",
+                    }}
+                  >
+                    {["90", "80", "70"].map((grade) => {
+                      let backgroundColor;
+                      if (desiredGrade === grade) {
+                        switch (grade) {
+                          case "90":
+                            backgroundColor = Colors.courseGradeAColor;
+                            break;
+                          case "80":
+                            backgroundColor = Colors.courseGradeBColor;
+                            break;
+                          case "70":
+                            backgroundColor = Colors.courseGradeCColor;
+                            break;
+                          default:
+                            backgroundColor = "#494547";
+                        }
+                      } else {
+                        backgroundColor = "#494547";
+                      }
 
-          <Text style={{ color: 'white', marginTop: 20, marginBottom: 20, fontSize: 24, fontWeight: "bold" }}>Grade Type</Text>
+                      return (
+                        <TouchableOpacity
+                          key={grade}
+                          onPress={() => setDesiredGrade(grade)}
+                          style={{
+                            borderWidth: 2,
+                            borderColor:
+                              desiredGrade === grade ? "white" : "transparent",
+                            borderRadius: 25,
+                            marginHorizontal: 5,
+                            paddingVertical: 2,
+                            width: "10%",
+                            backgroundColor: backgroundColor,
+                            flex: 1,
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: "white",
+                              textAlign: "center",
+                              verticalAlign: "middle",
+                              fontSize: 17,
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {grade}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
 
-          {/* Category Options */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
-            {["CFU", "RA", "SA"].map((cat) => {
-              let backgroundColor;
-              if (desiredCategory === cat) {
-                switch (cat) {
-                  case "CFU":
-                    backgroundColor = Colors.cfuColor;
-                    break;
-                  case "RA":
-                    backgroundColor = Colors.raColor;
-                    break;
-                  case "SA":
-                    backgroundColor = Colors.saColor;
-                    break;
-                  default:
-                    backgroundColor = '#494547';
-                }
-              } else {
-                backgroundColor = '#494547';
-              }
+                  {/* Custom Grade */}
+                  <View
+                    style={{ flexDirection: "row", width: "100%", padding: 20 }}
+                  >
+                    <TouchableOpacity
+                      style={{
+                        padding: 15,
+                        borderWidth: 2,
+                        borderRadius: 17,
+                        backgroundColor: "#494547",
+                        alignItems: "center",
+                        width: "60%",
+                        height: 50,
+                        justifyContent: "center",
+                        flex: 1,
+                      }}
+                    >
+                      <TextInput
+                        style={{
+                          color: "white",
+                          textAlign: "center",
+                          width: "100%",
+                          padding: 0,
+                          fontSize: 17,
+                          fontWeight: "bold",
+                        }}
+                        placeholder="Custom Grade"
+                        placeholderTextColor="grey"
+                        keyboardType="decimal-pad"
+                        value={customGrade}
+                        onChangeText={(text) => {
+                          setCustomGrade(text);
+                          setDesiredGrade(text ? text : "");
+                        }}
+                      />
+                    </TouchableOpacity>
+                  </View>
 
-              return (
-                <TouchableOpacity
-                  key={cat}
-                  onPress={() => setDesiredCategory(cat)}
-                  style={{
-                    borderWidth: 2,
-                    borderColor: desiredCategory === cat ? "white" : "transparent",
-                    borderRadius: 25,
-                    marginHorizontal: 5,
-                    paddingVertical: 2,
-                    width: "30%",
-                    backgroundColor: backgroundColor,
-                    flex: 1,
-                    alignItems: 'center',
-                  }}
-                >
-                  <Text style={{ color: 'white', textAlign: 'center', verticalAlign: "middle", fontSize: 17, fontWeight: "bold" }}>
-                    {cat}
+                  <Text
+                    style={{
+                      color: "white",
+                      marginTop: 20,
+                      marginBottom: 20,
+                      fontSize: 24,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Grade Type
                   </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
 
-          {/* Required Grade Section */}
-          <View style={{ marginTop: 20 }}>
-            <Text style={{ color: 'white', fontSize: 28, fontWeight: "bold" }}>Required Grade</Text>
-            <Text style={{ color: 'white', fontSize: 22, textAlign: "center", marginTop: 8, marginBottom: 8 }}>
-              {neededScore(selectedCourse, parseFloat(desiredGrade), desiredCategory)?.toString() ?? "You need at least one pre-existing grade in this category to make a calculation."}
-            </Text>
+                  {/* Category Options */}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      width: "100%",
+                    }}
+                  >
+                    {["CFU", "RA", "SA"].map((cat) => {
+                      let backgroundColor;
+                      if (desiredCategory === cat) {
+                        switch (cat) {
+                          case "CFU":
+                            backgroundColor = Colors.cfuColor;
+                            break;
+                          case "RA":
+                            backgroundColor = Colors.raColor;
+                            break;
+                          case "SA":
+                            backgroundColor = Colors.saColor;
+                            break;
+                          default:
+                            backgroundColor = "#494547";
+                        }
+                      } else {
+                        backgroundColor = "#494547";
+                      }
 
-            {/* Conditional Message */}
-              {neededScore(selectedCourse, parseFloat(desiredGrade), desiredCategory) != null && (
-                <Text style={{ color: 'white', fontSize: 18, textAlign: "center", marginTop: 10 }}>
-                  {neededScore(selectedCourse, parseFloat(desiredGrade), desiredCategory)! > 100
-                    ? "Uh oh..."
-                    : neededScore(selectedCourse, parseFloat(desiredGrade), desiredCategory)! < 0
-                    ? "You're in good hands."
-                    : "You got this!"}
-                </Text>
-              )}
-          </View>
-        </View>
-      </>
+                      return (
+                        <TouchableOpacity
+                          key={cat}
+                          onPress={() => setDesiredCategory(cat)}
+                          style={{
+                            borderWidth: 2,
+                            borderColor:
+                              desiredCategory === cat ? "white" : "transparent",
+                            borderRadius: 25,
+                            marginHorizontal: 5,
+                            paddingVertical: 2,
+                            width: "30%",
+                            backgroundColor: backgroundColor,
+                            flex: 1,
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: "white",
+                              textAlign: "center",
+                              verticalAlign: "middle",
+                              fontSize: 17,
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {cat}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
 
+                  {/* Required Grade Section */}
+                  <View style={{ marginTop: 20 }}>
+                    <Text
+                      style={{
+                        color: "white",
+                        fontSize: 28,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Required Grade
+                    </Text>
+                    <Text
+                      style={{
+                        color: "white",
+                        fontSize: 22,
+                        textAlign: "center",
+                        marginTop: 8,
+                        marginBottom: 8,
+                      }}
+                    >
+                      {neededScore(
+                        selectedCourse,
+                        parseFloat(desiredGrade),
+                        desiredCategory
+                      )?.toString() ??
+                        "You need at least one pre-existing grade in this category to make a calculation."}
+                    </Text>
 
+                    {/* Conditional Message */}
+                    {neededScore(
+                      selectedCourse,
+                      parseFloat(desiredGrade),
+                      desiredCategory
+                    ) != null && (
+                      <Text
+                        style={{
+                          color: "white",
+                          fontSize: 18,
+                          textAlign: "center",
+                          marginTop: 10,
+                        }}
+                      >
+                        {neededScore(
+                          selectedCourse,
+                          parseFloat(desiredGrade),
+                          desiredCategory
+                        )! > 100
+                          ? "Uh oh..."
+                          : neededScore(
+                              selectedCourse,
+                              parseFloat(desiredGrade),
+                              desiredCategory
+                            )! < 0
+                          ? "You're in good hands."
+                          : "You got this!"}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+              </>
             )}
           </View>
         </TouchableWithoutFeedback>
@@ -872,28 +1098,34 @@ const assignmentTypes = [
               borderRadius: 20,
               padding: 20,
             }}
-          >  
-            <Text style={{
-              color: "white",
-              fontSize: 25,
-            
-              marginTop: 20,
-              textAlign: "center",
-              alignSelf: "center",
-              marginBottom: 14,
-              width: "90%",
-              fontWeight: "bold",
-            }}>
+          >
+            <Text
+              style={{
+                color: "white",
+                fontSize: 25,
+
+                marginTop: 20,
+                textAlign: "center",
+                alignSelf: "center",
+                marginBottom: 14,
+                width: "90%",
+                fontWeight: "bold",
+              }}
+            >
               {addAssignmentName}
             </Text>
 
-            <Text style={{
+            <Text
+              style={{
                 fontSize: 17,
                 color: "white", // Lighter color for date
                 fontWeight: "bold",
                 textAlign: "center",
                 marginBottom: 20,
-              }}>{selectedGrade?.date.toLocaleDateString()}</Text>
+              }}
+            >
+              {selectedGrade?.date.toLocaleDateString()}
+            </Text>
 
             <AutoCompleteTextInput
               style={styles.textInput}
@@ -911,42 +1143,51 @@ const assignmentTypes = [
               }
             />
             <View style={styles.infoBox}>
-              <Ionicons name="bulb-outline" size={20} color="#f4c60d" style={{ paddingRight: 3}} />
+              <Ionicons
+                name="bulb-outline"
+                size={20}
+                color="#f4c60d"
+                style={{ paddingRight: 3 }}
+              />
               <Text style={styles.infoText}>Tap to edit</Text>
             </View>
 
-            <View style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between', // Adjust space between columns
-              padding: 10, // Optional padding for better appearance
-              marginTop: 15,
-            }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between", // Adjust space between columns
+                padding: 10, // Optional padding for better appearance
+                marginTop: 15,
+              }}
+            >
               <View style={styles.column}>
-                <Text style={{
-                  color: "white",
-                  fontSize: 17,
-                  marginBottom: 15,
-                  textAlign: "center",
-                  alignSelf: "center",
-                  fontWeight: "bold",
-                }}>Score</Text>
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: 17,
+                    marginBottom: 15,
+                    textAlign: "center",
+                    alignSelf: "center",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Score
+                </Text>
 
-                <View style={{
-                  backgroundColor: "#0D92F4",
-                  padding: 15,
-                  paddingHorizontal: 20,
-                  width: "90%",
-                  flexDirection: "row",
-                  alignSelf: "center",
-                  alignContent: "center",
-                  justifyContent: "space-between",
-                  borderRadius: 13,
-                }}>
-                  <Ionicons
-                    name="pencil-outline"
-                    size={20}
-                    color="#ffffff"
-                  />
+                <View
+                  style={{
+                    backgroundColor: "#0D92F4",
+                    padding: 15,
+                    paddingHorizontal: 20,
+                    width: "90%",
+                    flexDirection: "row",
+                    alignSelf: "center",
+                    alignContent: "center",
+                    justifyContent: "space-between",
+                    borderRadius: 13,
+                  }}
+                >
+                  <Ionicons name="pencil-outline" size={20} color="#ffffff" />
 
                   <TextInput
                     style={{
@@ -967,26 +1208,31 @@ const assignmentTypes = [
               </View>
 
               <View style={styles.column}>
-                <Text style={{
-                  color: "white",
-                  fontSize: 17,
-                  marginBottom: 15,
-                
-                  textAlign: "center",
-                  alignSelf: "center",
-                  fontWeight: "bold",
-                }}>Max Points</Text>
-                <View style={{
-                  backgroundColor: "#0D92F4",
-                  padding: 15,
-                  paddingHorizontal: 20,
-                  width: "90%",
-                  alignContent: "center",
-                  alignItems: "center",
-                  alignSelf: "center",
-                  borderRadius: 13,
-                }}>
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: 17,
+                    marginBottom: 15,
 
+                    textAlign: "center",
+                    alignSelf: "center",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Max Points
+                </Text>
+                <View
+                  style={{
+                    backgroundColor: "#0D92F4",
+                    padding: 15,
+                    paddingHorizontal: 20,
+                    width: "90%",
+                    alignContent: "center",
+                    alignItems: "center",
+                    alignSelf: "center",
+                    borderRadius: 13,
+                  }}
+                >
                   <Text
                     style={{
                       color: "white",
@@ -995,14 +1241,21 @@ const assignmentTypes = [
                       fontWeight: "bold",
                       textAlign: "center",
                     }}
-                  >JAK</Text>
+                  >
+                    {selectedGrade?.maxGrade}
+                  </Text>
                 </View>
-              </View> 
+              </View>
             </View>
             <View style={[styles.infoBox, { marginTop: -18 }]}>
-            <Ionicons name="bulb-outline" size={20} color="#f4c60d" style={{ paddingRight: 3}} />
-                <Text style={styles.infoText}>Tap to edit</Text>
-              </View>
+              <Ionicons
+                name="bulb-outline"
+                size={20}
+                color="#f4c60d"
+                style={{ paddingRight: 3 }}
+              />
+              <Text style={styles.infoText}>Tap to edit</Text>
+            </View>
             <View
               style={{ flex: 1, justifyContent: "flex-end", marginBottom: 10 }}
             >
@@ -1094,7 +1347,6 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     alignSelf: "center",
     textAlign: "center",
-
   },
   gradeInfoInput: {
     color: "white",
@@ -1127,7 +1379,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "white",
     marginBottom: 5,
-  
+
     marginTop: 5,
     textAlign: "center",
     paddingBottom: 3,
@@ -1210,7 +1462,7 @@ const styles = StyleSheet.create({
   },
   headerTitleBox: {
     position: "absolute", // Positioning it freely within the parent container
-    left: 0, 
+    left: 0,
     right: 0,
     alignItems: "center", // Center text horizontally within this container
     //backgroundColor: "#0D92F4",
@@ -1233,7 +1485,7 @@ const styles = StyleSheet.create({
     width: 140,
     borderColor: "#0D92F4",
     borderWidth: 3,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   headerGradeText: {
     fontSize: 40, // Larger font for the overall grade
@@ -1339,17 +1591,17 @@ const styles = StyleSheet.create({
   },
   infoBox: {
     padding: 10,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: -2,
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   infoText: {
-    color: 'white',
+    color: "white",
     fontSize: 14,
-    fontWeight: 'bold',
-  },  
+    fontWeight: "bold",
+  },
 });
 export default gradesCalculating;
