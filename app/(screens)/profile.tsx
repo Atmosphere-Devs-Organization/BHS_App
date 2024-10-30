@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   },
   save_button: {
     marginTop: 10,
-    backgroundColor: "orange",
+    backgroundColor: Colors.primary,
     padding: 5,
     borderRadius: 5,
   },

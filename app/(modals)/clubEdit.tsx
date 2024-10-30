@@ -13,6 +13,7 @@ import {
   import { doc, getDoc, updateDoc } from "firebase/firestore";
   import { FIREBASE_DB, FIREBASE_AUTH } from "@/FirebaseConfig";
   import { Club } from "@/interfaces/club";
+import Colors from "@/constants/Colors";
   
   const ClubEdit = () => {
     const [clubData, setClubData] = useState<Club | null>(null);
@@ -73,7 +74,7 @@ import {
     };
   
     if (loading) {
-      return <ActivityIndicator size="large" color="#ff4d00" style={{ marginTop: 100 }} />;
+      return <ActivityIndicator size="large" color={Colors.primary} style={{ marginTop: 100 }} />;
     }
   
     return (

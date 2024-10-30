@@ -20,7 +20,6 @@ import Colors from "@/constants/Colors";
 
 const Clubs = () => {
   const [HACBroken, setHACBroken] = useState<boolean>(false);
-
   const [hasAccess, setAccess] = useState<boolean>(false);
   const [loadingInfo, setLoadingInfo] = useState<boolean>(false);
 
@@ -56,7 +55,7 @@ const Clubs = () => {
       />
       <ActivityIndicator
         size="large"
-        color="#ff4d00"
+        color={Colors.primary}
         style={{ alignSelf: "center", marginTop: 300 }}
       />
       <Text

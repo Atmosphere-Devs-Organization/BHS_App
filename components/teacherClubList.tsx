@@ -123,7 +123,7 @@ import {
         {loading ? (
           <ActivityIndicator
             size="large"
-            color="#ff4d00"
+            color={Colors.primary}
             style={{ alignSelf: "center", marginTop: 100 }}
           />
         ) : (
@@ -145,7 +145,7 @@ import {
       marginTop: 20,
       marginBottom: 20,
       textAlign: "center",
-      color: 'orange',
+      color: Colors.primary,
     },
     clubContainer: {
       flexDirection: "row",
@@ -162,7 +162,7 @@ import {
       width: "100%",
       borderWidth: 5,
       borderRadius: 20,
-      borderColor: "orange",
+      borderColor: Colors.primary,
       backgroundColor: "white",
       justifyContent: "center",
       flex: 1,

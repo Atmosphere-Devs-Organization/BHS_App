@@ -1,3 +1,4 @@
+import Colors from "@/constants/Colors";
 import Numbers from "@/constants/Numbers";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -23,7 +24,7 @@ const HACNeededScreen_BHS = ({
       <Text
         style={{
           marginTop: 100,
-          color: "#ff6600",
+          color: Colors.primary,
           textAlign: "center",
           fontSize: 30,
           fontWeight: "bold",
@@ -38,8 +39,8 @@ const HACNeededScreen_BHS = ({
       {!hacDown && (
         <AwesomeButton
           style={styles.profile_button}
-          backgroundColor={"#ff9100"}
-          backgroundDarker={"#c26e00"}
+          backgroundColor={Colors.primary}
+          backgroundDarker={"#0787e6"}
           height={100}
           width={320}
           raiseLevel={20}

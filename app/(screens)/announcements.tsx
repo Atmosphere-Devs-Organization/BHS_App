@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
 import { doc, getDoc } from "firebase/firestore";
 import { FIREBASE_DB } from "@/FirebaseConfig"; // Update with your Firebase config import
+import Colors from "@/constants/Colors";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -47,7 +48,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   announcementBox: {
-    backgroundColor: "orange",
+    backgroundColor: Colors.primary,
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,

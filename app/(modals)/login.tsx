@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   box: {
     backgroundColor: "#1e1e1e",
-    borderColor: "orange",
+    borderColor: Colors.primary,
     borderWidth: 2,
     borderRadius: 8,
     padding: 16,

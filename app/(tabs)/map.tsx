@@ -323,12 +323,12 @@ const MapPage = () => {
     <View style={{ backgroundColor: "#121212", height: "100%", width: "100%" }}>
       <ActivityIndicator
         size="large"
-        color="#ff4d00"
+        color={Colors.primary}
         style={{ alignSelf: "center", marginTop: 300 }}
       />
       <Text
         style={{
-          color: "#ff4d00",
+          color: Colors.primary,
           alignSelf: "center",
           textAlign: "center",
           fontSize: 16,

@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   calendarInfo: {
-    color: "orange",
+    color: Colors.primary,
     fontWeight: "bold",
     fontSize: 20,
     marginBottom: 10,

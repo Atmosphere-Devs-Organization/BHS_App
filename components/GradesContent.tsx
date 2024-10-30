@@ -462,7 +462,7 @@ const Transcript = ({
             <View>
               <ActivityIndicator
                 size="large"
-                color="#ff4d00"
+                color={Colors.primary}
                 style={{ alignSelf: "center", marginTop: 100 }}
               />
               <Text
