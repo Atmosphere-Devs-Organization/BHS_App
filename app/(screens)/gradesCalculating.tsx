@@ -541,6 +541,26 @@ const gradesCalculating = () => {
       return false;
     }
 
+    if (
+      selectedCourse?.cfuPercent == 0 &&
+      addAssignmentType == "Checking for Understanding"
+    ) {
+      setAddingError("This assignment type doesn't have a weight");
+      return false;
+    } else if (
+      selectedCourse?.raPercent == 0 &&
+      addAssignmentType == "Relevant Applications"
+    ) {
+      setAddingError("This assignment type doesn't have a weight");
+      return false;
+    } else if (
+      selectedCourse?.saPercent == 0 &&
+      addAssignmentType == "Summative Assessments"
+    ) {
+      setAddingError("This assignment type doesn't have a weight");
+      return false;
+    }
+
     selectedCourse?.addAssignment(
       new Grade(
         addAssignmentType,
