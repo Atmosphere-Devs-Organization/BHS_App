@@ -1107,7 +1107,7 @@ const gradesCalculating = () => {
                         }}
                         placeholder="Custom Grade"
                         placeholderTextColor="grey"
-                        keyboardType="decimal-pad"
+                        keyboardType="number-pad"
                         value={customGrade}
                         onChangeText={(text) => {
                           setCustomGrade(text);
@@ -1214,7 +1214,7 @@ const gradesCalculating = () => {
                         selectedCourse,
                         parseFloat(desiredGrade),
                         desiredCategory
-                      )?.toString() ??
+                      )?.toFixed(1) ??
                         "You need at least one pre-existing grade in this category to make a calculation."}
                     </Text>
 
