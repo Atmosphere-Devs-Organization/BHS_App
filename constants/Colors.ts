@@ -1,4 +1,6 @@
 export default {
+  primary: "#ced4da",
+  
   overallBackground: "#121212",
 
   //Tab Bar
