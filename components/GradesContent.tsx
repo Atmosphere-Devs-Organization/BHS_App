@@ -164,7 +164,7 @@ const GradesContent = ({ category }: Props) => {
             showHideTransition="slide"
             hidden={false}
           />
-          <Calculator hacBroken={HACBroken} courses={courses} />
+          <CalculatorPage hacBroken={HACBroken} courses={courses} />
         </View>
       );
     }
@@ -228,7 +228,9 @@ const Grades = ({
           {/* Wrap the Text component in a View to handle background and border styling */}
           <View style={[styles.gradeContainer, { backgroundColor }]}>
             <Text style={styles.courseGrade}>
-              {item.overallGrade == -100 ? "N/A" : Math.round(item.overallGrade) + "%"}
+              {item.overallGrade == -100
+                ? "N/A"
+                : Math.round(item.overallGrade) + "%"}
             </Text>
           </View>
         </TouchableOpacity>
@@ -256,10 +258,10 @@ const Grades = ({
       item.assignmentType.toLowerCase() == "summative assessments"
         ? Colors.saColor
         : item.assignmentType.toLowerCase() == "relevant applications"
-          ? Colors.raColor
-          : item.assignmentType.toLowerCase() == "checking for understanding"
-            ? Colors.cfuColor
-            : "#aaa";
+        ? Colors.raColor
+        : item.assignmentType.toLowerCase() == "checking for understanding"
+        ? Colors.cfuColor
+        : "#aaa";
 
     return (
       <View style={styles.gradeRow}>
@@ -284,132 +286,43 @@ const Grades = ({
     );
   };
 
-  
-  const renderHeader = (overallGrade: number, courseTitle: string) => {
-    // Function to get the background color based on the overall grade
-    const getGradeBorderColor = (grade: number) => {
-      if (grade >= 90) return Colors.gradeGradeAColor; // Green for A
-      if (grade >= 80) return Colors.gradeGradeBColor; // Blue for B
-      if (grade >= 70) return Colors.gradeGradeCColor; // Yellow for C
-      return Colors.gradeGradeFailColor; // Red for failing grades
-    };
-    const getGradeBackgroundColor = (grade: number) => {
-      if (grade >= 90) return Colors.gradeGradeAColorBG; // Green for A
-      if (grade >= 80) return Colors.gradeGradeBColorBG; // Blue for B
-      if (grade >= 70) return Colors.gradeGradeCColorBG; // Yellow for C
-      return Colors.gradeGradeFailColorBG; // Red for failing grades
-    };
-
-    // Grade background color
-    const borderColor = getGradeBorderColor(overallGrade);
-    const backgroundColor = getGradeBackgroundColor(overallGrade);
-
-    let percentagesArray = calculateAssignmentTypePercentages(selectedCourse);
-
-    return (
-      <View style={styles.headerContainer}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignContent: "center",
-            borderBottomWidth: 1, // Border for separating the header from the items
-            borderBottomColor: "#444", // Border color
-            marginBottom: 15,
-            paddingBottom: 10,
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => setSelectedCourse(null)}
-            style={styles.back_button}
-          >
-            <Ionicons
-              name="arrow-back-sharp"
-              size={Numbers.backButtonSize}
-              color={Colors.backButton}
-            />
-          </TouchableOpacity>
-          {/* Course Title */}
-          <View style={styles.headerTitleBox}>
-            <Text style={styles.headerTitleText}>{courseTitle}</Text>
-          </View>
-
-          <View
+  return courses !== undefined ? (
+    <View style={styles.container}>
+      {courses !== null ? (
+        <View style={{ paddingTop: 20, marginTop: screenHeight * 0.06 }}>
+          <FlatList
+            data={courses}
+            renderItem={renderCourseItem}
+            keyExtractor={(item) => item.name}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 20 }} // Add padding at the bottom
+          />
+        </View>
+      ) : (
+        <View>
+          <ActivityIndicator
+            size="large"
+            color="#0D92F4"
+            style={{ alignSelf: "center", marginTop: 100 }}
+          />
+          <Text
             style={{
+              color: "white",
               alignSelf: "center",
-              backgroundColor: borderColor,
-              padding: 10,
-              borderRadius: 10,
-              borderWidth: 2,
-              borderColor: "#000000",
+              paddingVertical: 40,
+              textAlign: "center",
+              paddingHorizontal: 20,
+              fontSize: 16,
             }}
           >
-            <Link
-              href={{
-                pathname: "/(screens)/gradesCalculating",
-                params: {
-                  className: selectedCourse ? selectedCourse.name : "No Name",
-                },
-              }}
-              asChild
-            >
-              <Text
-                style={{ fontSize: 14, fontWeight: "bold", color: "#000000" }}
-              >
-                Calculator
-              </Text>
-            </Link>
-          </View>
+            Just a moment... magic takes time
+          </Text>
         </View>
-
-        <View style={{ flexDirection: "row", gap: 25 }}>
-          {/* Overall Grade Box */}
-          <View
-            style={[styles.headerGradeBox, { borderColor, backgroundColor }]}
-          >
-            <Text style={styles.headerGradeText}></Text>
-          </View>
-
-          <View style={{ alignContent: "center", justifyContent: "center" }}>
-            <Text style={[styles.averagesTopText, { color: Colors.cfuColor }]}>
-              CFU Average:{"  "}
-              {percentagesArray
-                ? percentagesArray[0] == -100
-                  ? "N/A"
-                  : "" + percentagesArray[0].toFixed(2)
-                : "N/A"}
-            </Text>
-            <Text style={[styles.averagesTopText, { color: Colors.raColor }]}>
-              RA Average:{"     "}
-              {percentagesArray
-                ? percentagesArray[1] == -100
-                  ? "N/A"
-                  : "" + percentagesArray[1].toFixed(2)
-                : "N/A"}
-            </Text>
-            <Text style={[styles.averagesTopText, { color: Colors.saColor }]}>
-              SA Average:{"     "}
-              {percentagesArray
-                ? percentagesArray[2] == -100
-                  ? "N/A"
-                  : "" + percentagesArray[2].toFixed(2)
-                : "N/A"}
-            </Text>
-          </View>
-        </View>
-      </View>
-    );
-  };
-
-
-const Calculator = ({
-  hacBroken,
-  courses,
-}: {
-  hacBroken: boolean;
-  courses: Course[] | null | undefined;
-}) => {
-  return <><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text></Text><Text style={{ fontSize: 30, color: "white", textAlign: "center", fontWeight: "bold", fontFamily: "times-new-roman" }}>Tools Like Final Calculator and GPA Calculator Come Soon!</Text></>;
+      )}
+    </View>
+  ) : (
+    <HACNeededScreen paddingTop={0} hacDown={hacBroken} />
+  );
 };
 
 const Transcript = ({
@@ -463,12 +376,14 @@ const Transcript = ({
     }));
 
     return (
-      <ScrollView
-        style={{ flex: 1, padding: 10 }}
-        showsVerticalScrollIndicator={false}
-      >
-        <CourseCard courses={courses} />
-      </ScrollView>
+      <View>
+        <ScrollView
+          style={{ flex: 1, padding: 10 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <CourseCard courses={courses} />
+        </ScrollView>
+      </View>
     );
   };
 
@@ -604,45 +519,6 @@ const Transcript = ({
   ) : (
     <HACNeededScreen paddingTop={0} hacDown={hacBroken} />
   );
-};
-
-return courses !== undefined ? (
-  <View style={styles.container}>
-    {courses !== null ? (
-      <View style={{ paddingTop: 20, marginTop: screenHeight * 0.06 }}>
-        <FlatList
-          data={courses}
-          renderItem={renderCourseItem}
-          keyExtractor={(item) => item.name}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 20 }} // Add padding at the bottom
-        />
-      </View>
-    ) : (
-      <View>
-        <ActivityIndicator
-          size="large"
-          color="#0D92F4"
-          style={{ alignSelf: "center", marginTop: 100 }}
-        />
-        <Text
-          style={{
-            color: "white",
-            alignSelf: "center",
-            paddingVertical: 40,
-            textAlign: "center",
-            paddingHorizontal: 20,
-            fontSize: 16,
-          }}
-        >
-          Just a moment... magic takes time
-        </Text>
-      </View>
-    )}
-  </View>
-) : (
-  <HACNeededScreen paddingTop={0} hacDown={hacBroken} />
-);
 };
 
 const styles = StyleSheet.create({
