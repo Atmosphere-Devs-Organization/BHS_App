@@ -22,6 +22,7 @@ import { ScrollView } from "react-native-virtualized-view";
 import HACNeededScreen from "@/components/HACNeededScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useClubContext } from "@/components/ClubContext"; // Import the custom hook
+import Colors from "@/constants/Colors";
 
 const Calendar = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -205,7 +206,7 @@ const NormalCalendar = () => {
       <View style={styles.calendarContainer}>
         <View style={styles.centered}>
           <TouchableOpacity onPress={fetchEvents} style={styles.refreshButton}>
-            <Ionicons name="refresh" size={24} color="orange" />
+            <Ionicons name="refresh" size={24} color={Colors.primary} />
           </TouchableOpacity>
         </View>
         <View style={styles.headerContainer}>
@@ -375,7 +376,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   eventDayBox: {
-    borderColor: "#FF8500",
+    borderColor: "#0D92F4",
     borderWidth: 2,
     borderRadius: 50,
   },

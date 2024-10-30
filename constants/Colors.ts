@@ -1,5 +1,5 @@
 export default {
-  primary: "#ced4da",
+  primary: "#0D92F4",
   
   overallBackground: "#121212",
 
@@ -81,18 +81,18 @@ export default {
 
   autoCompleteBG: "#ffffff72",
 
-  mapSubmitButton: "#ff4d00",
+  mapSubmitButton: "#0D92F4",
   mapSubmitButtonDark: "#cc3d00",
 
-  elevatorNeededButton: "#ff4d00",
+  elevatorNeededButton: "#0D92F4",
 
   mapTitleBorderColor: "#929292",
 
   //Grades
-  topText: "#ff4d00",
+  topText: "#0D92F4",
   gradesCurvedView: "#ffffff24",
   transcriptBubblesBG: "#ffffff24",
-  transcriptBubbleText: "#ff4d00",
+  transcriptBubbleText: "#0D92F4",
 
   gradeBoxBorder: "#555555",
 

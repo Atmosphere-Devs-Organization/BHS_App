@@ -16,6 +16,7 @@ import {
   getBHSStudentLoadingStatus,
 } from "@/globalVars/gradesVariables";
 import HACNeededScreen_BHS from "@/components/HACNeededScreen_BHS";
+import Colors from "@/constants/Colors";
 
 const Clubs = () => {
   const [HACBroken, setHACBroken] = useState<boolean>(false);
@@ -60,7 +61,7 @@ const Clubs = () => {
       />
       <Text
         style={{
-          color: "#ff4d00",
+          color: Colors.primary,
           alignSelf: "center",
           textAlign: "center",
           fontSize: 16,
@@ -69,7 +70,7 @@ const Clubs = () => {
         }}
       >
         {
-          "Make sure you are not on school wifi\nMake sure your HAC info is correct"
+          "Make sure your HAC info is correct"
         }
       </Text>
     </View>

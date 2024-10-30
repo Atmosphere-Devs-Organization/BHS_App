@@ -95,7 +95,7 @@ const ClubList = ({ category }: Props) => {
       {loading ? (
         <ActivityIndicator
           size="large"
-          color="#ff4d00"
+          color={Colors.primary}
           style={{ alignSelf: "center", marginTop: 100 }}
         />
       ) : (
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     width: "100%",
     borderWidth: 5,
     borderRadius: 20,
-    borderColor: "orange",
+    borderColor: Colors.primary,
     backgroundColor: "white",
     justifyContent: "center",
     flex: 1,

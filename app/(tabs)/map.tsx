@@ -384,7 +384,7 @@ const MapPage = () => {
             </View>
             <AwesomeButton
               backgroundColor={Colors.mapSubmitButton}
-              backgroundDarker={Colors.mapSubmitButtonDark}
+              backgroundDarker={"#0787e6"}
               height={60}
               width={150}
               raiseLevel={10}

@@ -467,7 +467,7 @@ const Transcript = ({
               />
               <Text
                 style={{
-                  color: "#ff4d00",
+                  color: Colors.primary,
                   alignSelf: "center",
                   paddingVertical: 40,
                   textAlign: "center",

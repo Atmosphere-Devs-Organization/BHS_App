@@ -184,7 +184,7 @@ import {
       padding: 6,
     },
     editButton: {
-      backgroundColor: "#ff4d00",
+      backgroundColor: Colors.primary,
       padding: 10,
       borderRadius: 10,
     },

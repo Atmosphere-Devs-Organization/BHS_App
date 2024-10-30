@@ -24,10 +24,11 @@ import {
   refreshBridgelandStudent,
   refreshGradeData,
 } from "@/globalVars/gradesVariables";
-import bannerImage from "assets/images/banner.png";
+import bannerImage from "assets/images/banner.jpg";
 import axios from "axios";
 import * as Application from "expo-application";
 import LinearGradient from "react-native-linear-gradient";
+import Colors from "@/constants/Colors";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -104,7 +105,7 @@ const Home: React.FC = () => {
             source={bannerImage}
             style={styles.image}
             resizeMode="contain" // Resize mode set to 'contain'
-            imageStyle={{ borderRadius: 15 }}
+            imageStyle={{ borderRadius: 15, marginVertical: 10,}}
           ></ImageBackground>
         </View>
       </SafeAreaView>
@@ -316,7 +317,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   infoLabel: {
-    color: "#2176ff",
+    color: Colors.primary,
     fontSize: 18,
     fontWeight: "bold",
   },
@@ -330,7 +331,7 @@ const styles = StyleSheet.create({
   },
   save_button: {
     marginTop: 10,
-    backgroundColor: "orange",
+    backgroundColor: Colors.primary,
     padding: 5,
     borderRadius: 5,
   },
@@ -370,6 +371,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flex: 1,
     flexDirection: "column",
+    marginLeft: 40,
+    paddingHorizontal: 20,
   },
   gradient: {
     flex: 1,
