@@ -522,112 +522,140 @@ const gradesCalculating = () => {
 
   const [addingError, setAddingError] = useState<string | null>(null);
 
-
-function AddNewAssignment(): boolean {
-  try {
-    Number.parseFloat(addAssignmentGrade);
-  } catch {
-    setAddingError("Please input a grade");
-    return false;
-  }
-  if(addAssignmentType === "CFU")
-    {
-      setAddAssignmentType("Checking for Understanding");
-    }
-    if(addAssignmentType === "RA")
-    {
-      setAddAssignmentType("Relevant Applications");
-    }
-    if(addAssignmentType === "SA")
-    {
-      setAddAssignmentType("Summative Assessments");
-    }
-  
-  if (addAssignmentGrade === "") {
-    setAddingError("Please input a grade");
-    return false;
-  }
-
-  if (
-    addAssignmentType !== "Summative Assessments" &&
-    addAssignmentType !== "Relevant Applications" &&
-    addAssignmentType !== "Checking for Understanding"
-  ) {
-    setAddingError("Please input a correct assignment type");
-    return false;
-  }
-
-  const checkAndSetWeight = (type: string, weight: number | undefined, setWeight: (value: number) => void) => {
-    if (weight === 0) {
-      Alert.prompt(
-        "Missing Weight",
-        `Please enter a weight for ${type} out of 100:`,
-        [
-          {
-            text: "Cancel",
-            style: "cancel",
-            onPress: () => setAddingError("Assignment type weight is required"),
-          },
-          {
-            text: "OK",
-            onPress: (input) => {
-              const parsedWeight = Number.parseFloat(input);
-              if (isNaN(parsedWeight) || parsedWeight <= 0) {
-                setAddingError("Please input a valid weight.");
-              } else {
-                setWeight(parsedWeight);
-              }
-            },
-          },
-        ],
-        "plain-text"
-      );
+  function AddNewAssignment(): boolean {
+    try {
+      Number.parseFloat(addAssignmentGrade);
+    } catch {
+      setAddingError("Please input a grade");
       return false;
     }
+
+    let tempAssignmentType;
+
+    if (addAssignmentType === "CFU") {
+      tempAssignmentType = "Checking for Understanding";
+    }
+    if (addAssignmentType === "RA") {
+      tempAssignmentType = "Relevant Applications";
+    }
+    if (addAssignmentType === "SA") {
+      tempAssignmentType = "Summative Assessments";
+    }
+
+    if (addAssignmentGrade === "") {
+      setAddingError("Please input a grade");
+      return false;
+    }
+
+    if (
+      tempAssignmentType !== "Checking for Understanding" &&
+      tempAssignmentType !== "Relevant Applications" &&
+      tempAssignmentType !== "Summative Assessments"
+    ) {
+      setAddingError("Please input a correct assignment type");
+      return false;
+    }
+
+    const checkAndSetWeight = (
+      type: string,
+      weight: number | undefined,
+      setWeight: (value: number) => void
+    ) => {
+      if (weight === 0) {
+        Alert.prompt(
+          "Missing Weight",
+          `Please enter a weight for ${type} out of 100:`,
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+              onPress: () =>
+                setAddingError("Assignment type weight is required"),
+            },
+            {
+              text: "OK",
+              onPress: (input) => {
+                const parsedWeight = Number.parseFloat(input);
+                if (isNaN(parsedWeight) || parsedWeight <= 0) {
+                  setAddingError("Please input a valid weight.");
+                } else {
+                  setWeight(parsedWeight);
+                }
+              },
+            },
+          ],
+          "plain-text"
+        );
+        return false;
+      }
+      return true;
+    };
+
+    // Check each type and prompt for a weight if missing
+    if (
+      tempAssignmentType === "Checking for Understanding" &&
+      !checkAndSetWeight(
+        "Checking for Understanding",
+        selectedCourse?.cfuPercent,
+        (weight) => {
+          selectedCourse!.cfuPercent = weight;
+        }
+      )
+    ) {
+      return false;
+    } else if (
+      tempAssignmentType === "Relevant Applications" &&
+      !checkAndSetWeight(
+        "Relevant Applications",
+        selectedCourse?.raPercent,
+        (weight) => {
+          selectedCourse!.raPercent = weight;
+        }
+      )
+    ) {
+      return false;
+    } else if (
+      tempAssignmentType === "Summative Assessments" &&
+      !checkAndSetWeight(
+        "Summative Assessments",
+        selectedCourse?.saPercent,
+        (weight) => {
+          selectedCourse!.saPercent = weight;
+        }
+      )
+    ) {
+      return false;
+    }
+
+    selectedCourse?.addAssignment(
+      new Grade(
+        tempAssignmentType,
+        addAssignmentName === "" ? "New Assignment" : addAssignmentName,
+        Number.parseFloat(addAssignmentGrade),
+        100,
+        new Date()
+      )
+    );
+
     return true;
-  };
-
-  // Check each type and prompt for a weight if missing
-  if (
-    addAssignmentType === "Checking for Understanding" &&
-    !checkAndSetWeight("Checking for Understanding", selectedCourse?.cfuPercent, (weight) => {
-      selectedCourse!.cfuPercent = weight;
-    })
-  ) {
-    return false;
-  } else if (
-    addAssignmentType === "Relevant Applications" &&
-    !checkAndSetWeight("Relevant Applications", selectedCourse?.raPercent, (weight) => {
-      selectedCourse!.raPercent = weight;
-    })
-  ) {
-    return false;
-  } else if (
-    addAssignmentType === "Summative Assessments" &&
-    !checkAndSetWeight("Summative Assessments", selectedCourse?.saPercent, (weight) => {
-      selectedCourse!.saPercent = weight;
-    })
-  ) {
-    return false;
   }
-
-  selectedCourse?.addAssignment(
-    new Grade(
-      addAssignmentType,
-      addAssignmentName === "" ? "New Assignment" : addAssignmentName,
-      Number.parseFloat(addAssignmentGrade),
-      100,
-      new Date()
-    )
-  );
-
-  return true;
-}
 
   function SaveAssignmentEdits() {
     let changeName = true;
     let changeType = true;
     let changeGrade = true;
+
+    let tempAssignmentType = "";
+
+    if (addAssignmentType === "CFU") {
+      tempAssignmentType = "Checking for Understanding";
+    }
+    if (addAssignmentType === "RA") {
+      tempAssignmentType = "Relevant Applications";
+    }
+    if (addAssignmentType === "SA") {
+      tempAssignmentType = "Summative Assessments";
+    }
 
     if (addAssignmentName === "") {
       changeName = false;
@@ -649,6 +677,77 @@ function AddNewAssignment(): boolean {
       changeType = false;
     }
 
+    const checkAndSetWeight = (
+      type: string,
+      weight: number | undefined,
+      setWeight: (value: number) => void
+    ) => {
+      if (weight === 0) {
+        Alert.prompt(
+          "Missing Weight",
+          `Please enter a weight for ${type} out of 100, then re-edit your grade:`,
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+              onPress: () =>
+                setAddingError("Assignment type weight is required"),
+            },
+            {
+              text: "OK",
+              onPress: (input) => {
+                const parsedWeight = Number.parseFloat(input);
+                if (isNaN(parsedWeight) || parsedWeight <= 0) {
+                  setAddingError("Please input a valid weight.");
+                } else {
+                  setWeight(parsedWeight);
+                }
+              },
+            },
+          ],
+          "plain-text"
+        );
+        return false;
+      }
+      return true;
+    };
+
+    // Check each type and prompt for a weight if missing
+    if (
+      addAssignmentType === "Checking for Understanding" &&
+      !checkAndSetWeight(
+        "Checking for Understanding",
+        selectedCourse?.cfuPercent,
+        (weight) => {
+          selectedCourse!.cfuPercent = weight;
+        }
+      )
+    ) {
+      return false;
+    } else if (
+      addAssignmentType === "Relevant Applications" &&
+      !checkAndSetWeight(
+        "Relevant Applications",
+        selectedCourse?.raPercent,
+        (weight) => {
+          selectedCourse!.raPercent = weight;
+        }
+      )
+    ) {
+      return false;
+    } else if (
+      addAssignmentType === "Summative Assessments" &&
+      !checkAndSetWeight(
+        "Summative Assessments",
+        selectedCourse?.saPercent,
+        (weight) => {
+          selectedCourse!.saPercent = weight;
+        }
+      )
+    ) {
+      return false;
+    }
+
     if (selectedGrade) {
       if (changeName) {
         selectedGrade.assignmentName = addAssignmentName;
@@ -660,6 +759,8 @@ function AddNewAssignment(): boolean {
         selectedGrade.grade = Number.parseFloat(addAssignmentGrade);
       }
     }
+
+    return true;
   }
 
   function ResetCalculator() {
@@ -1380,8 +1481,9 @@ function AddNewAssignment(): boolean {
                     backgroundColor: Colors.gradeGradeAColor,
                   }}
                   onPress={() => {
-                    SaveAssignmentEdits();
-                    setLookingAtAssignmentOptions(false);
+                    if (SaveAssignmentEdits()) {
+                      setLookingAtAssignmentOptions(false);
+                    }
                   }}
                 >
                   <Text
