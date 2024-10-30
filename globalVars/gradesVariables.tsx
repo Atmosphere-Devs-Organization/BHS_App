@@ -1,6 +1,7 @@
 import { deepCopy } from "@/components/deep-copy";
 import axios from "axios";
 import { useState } from "react";
+import { Alert } from "react-native";
 
 export class Grade {
   constructor(
@@ -308,8 +309,6 @@ export function neededScore(
   //changing category to be fully written out
   if (category === "CFU") {
     category = "checking for understanding";
-    console.log("here" + category);
-    console.log();
   }
   if (category === "RA") {
     category = "relevant applications";
@@ -317,6 +316,87 @@ export function neededScore(
   if (category === "SA") {
     category = "summative assessments";
   }
+  //try to get the weight
+  const checkAndSetWeight = (
+    type: string,
+    weight: number | undefined,
+    setWeight: (value: number) => void
+  ) => {
+    console.log("hereth");
+    if (weight === 0) {
+      const promptUserForWeight = () => {
+        Alert.prompt(
+          "Missing Weight",
+          `Please enter a weight for ${type} out of 100:`,
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+            {
+              text: "OK",
+              onPress: (input) => {
+                const parsedWeight = Number.parseFloat(input);
+                console.log(parsedWeight);
+
+                // Validate the input
+                if (isNaN(parsedWeight) || parsedWeight <= 0) {
+                  console.log("here");
+                  // If it's invalid, prompt again
+                  promptUserForWeight();
+                } else {
+                  setWeight(parsedWeight);
+                  
+                }
+              },
+            },
+          ],
+          "plain-text"
+        );
+      };
+  
+      // Call the function to prompt the user
+      promptUserForWeight();
+      return false;
+    }
+    return true;
+  };
+  // Check each type and prompt for a weight if missing
+  if (
+    category === "checking for understanding" &&
+    !checkAndSetWeight(
+      "Checking for Understanding",
+      course?.cfuPercent,
+      (weight) => {
+        course!.cfuPercent = weight;
+      }
+    )
+  ) {
+    console.log("temp");
+  } else if (
+    category === "relevant applications" &&
+    !checkAndSetWeight(
+      "Relevant Applications",
+      course?.raPercent,
+      (weight) => {
+        course!.raPercent = weight;
+      }
+    )
+  ) {
+    console.log("temp");
+  } else if (
+    category === "summative assessments" &&
+    !checkAndSetWeight(
+      "Summative Assessments",
+      course?.saPercent,
+      (weight) => {
+        course!.saPercent = weight;
+      }
+    )
+  ) {
+    console.log("temp");
+  }
+
 
   // Calculate totals for each category
   for (const grade of course.grades) {
@@ -341,9 +421,6 @@ export function neededScore(
   const cfuPercent = cfuMaxTotal > 0 ? (cfuTotal / cfuMaxTotal) * 100 : 0;
   const raPercent = raMaxTotal > 0 ? (raTotal / raMaxTotal) * 100 : 0;
   const saPercent = saMaxTotal > 0 ? (saTotal / saMaxTotal) * 100 : 0;
-  console.log(course.cfuPercent);
-  console.log(course.raPercent);
-  console.log(course.saPercent);
 
   //this part calculates the total weight we will be using
   let totalUsing = 0;
@@ -368,7 +445,6 @@ export function neededScore(
     }
     totalUsing += course.saPercent;
   }
-  console.log(totalUsing);
 
   //now we will cut out the other categories so that
   //we can find out the end weight we need the selected category to end up with
@@ -377,21 +453,18 @@ export function neededScore(
     category.toLowerCase() !== "checking for understanding" &&
     course.cfuPercent > 0
   ) {
-    console.log("cfu");
     neededWeight -= cfuPercent * course.cfuPercent;
   }
   if (
     category.toLowerCase() !== "relevant applications" &&
     course.raPercent > 0
   ) {
-    console.log("ra");
     neededWeight -= raPercent * course.raPercent;
   }
   if (
     category.toLowerCase() !== "summative assessments" &&
     course.saPercent > 0
   ) {
-    console.log("sa");
     neededWeight -= saPercent * course.saPercent;
   }
 
@@ -399,17 +472,13 @@ export function neededScore(
   if (category.toLowerCase() === "checking for understanding") {
     console.log("want cfu");
     let neededPercent = neededWeight / course.cfuPercent / 100;
-    console.log("needed percentage");
-    console.log(neededPercent);
     returning = neededPercent * (cfuMaxTotal + 100) - cfuTotal;
   }
   if (category.toLowerCase() === "relevant applications") {
-    console.log("want cfu");
     let neededPercent = neededWeight / course.raPercent / 100;
     returning = neededPercent * (raMaxTotal + 100) - raTotal;
   }
   if (category.toLowerCase() === "summative assessments") {
-    console.log("want cfu");
     let neededPercent = neededWeight / course.saPercent / 100;
     returning = neededPercent * (saMaxTotal + 100) - saTotal;
   }

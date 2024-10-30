@@ -505,7 +505,7 @@ const gradesCalculating = () => {
   const [addAssignmentName, setAddAssignmentName] = useState<string>("");
   const [addAssignmentGrade, setAddAssignmentGrade] = useState<string>("");
   const [customGrade, setCustomGrade] = useState<string>(""); // Add this line
-
+  const [myNeededScore, setMyNeededScore] = useState<number | null>(0);
   const getColorByType = (label: string, isSelected = true) => {
     const colors = {
       saColor: "#f4c60d",
@@ -879,6 +879,51 @@ const gradesCalculating = () => {
             {/* Tab Content */}
             {selectedTab === "addAssignment" ? (
               <>
+             {/* Assignment type buttons */}
+              <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      marginBottom: 5,
+                    }}
+                  >
+                    {assignmentTypes.map((type) => (
+                      <TouchableOpacity
+                        key={type.id}
+                        onPress={() => {
+                          setAddAssignmentType(type.label);
+                          setSelectedType(type);
+                        }}
+                        style={{
+                          flex: 1,
+                          marginHorizontal: 5,
+                          paddingVertical: 7,
+                          paddingHorizontal: 3,
+                          borderWidth: 2,
+                          borderColor:
+                            selectedType?.id === type.id
+                              ? "white"
+                              : "transparent", // White outline for selected
+                          borderRadius: 25,
+                          backgroundColor:
+                            selectedType?.id === type.id
+                              ? getColorByType(type.label)
+                              : getColorByType(type.label, false), // Function to get appropriate color
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: "white",
+                            textAlign: "center",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {type.label}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
                 <TextInput
                   style={[
                     styles.infoInput,
@@ -1160,7 +1205,15 @@ const gradesCalculating = () => {
                       return (
                         <TouchableOpacity
                           key={cat}
-                          onPress={() => setDesiredCategory(cat)}
+                          onPress={() => {
+                            setDesiredCategory(cat);  // Set the desired grade with the current category
+                            setMyNeededScore(neededScore(
+                              selectedCourse,
+                              parseFloat(desiredGrade),
+                              cat
+                            ));
+                            
+                          }}
                           style={{
                             borderWidth: 2,
                             borderColor:
@@ -1210,20 +1263,13 @@ const gradesCalculating = () => {
                         marginBottom: 8,
                       }}
                     >
-                      {neededScore(
-                        selectedCourse,
-                        parseFloat(desiredGrade),
-                        desiredCategory
-                      )?.toFixed(1) ??
+                      {myNeededScore
+                      ?.toFixed(1) ??
                         "You need at least one pre-existing grade in this category to make a calculation."}
                     </Text>
 
                     {/* Conditional Message */}
-                    {neededScore(
-                      selectedCourse,
-                      parseFloat(desiredGrade),
-                      desiredCategory
-                    ) != null && (
+                    {myNeededScore != null && (
                       <Text
                         style={{
                           color: "white",
@@ -1232,11 +1278,7 @@ const gradesCalculating = () => {
                           marginTop: 10,
                         }}
                       >
-                        {neededScore(
-                          selectedCourse,
-                          parseFloat(desiredGrade),
-                          desiredCategory
-                        )! > 100
+                        {myNeededScore! > 100
                           ? "Uh oh..."
                           : neededScore(
                               selectedCourse,
