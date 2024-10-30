@@ -17,7 +17,7 @@ console.log(screenHeight);
 
 const clubCategories = [
   {
-    name: "Calculator",
+    name: "Tools",
   },
   {
     name: "Grades",
@@ -99,7 +99,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     paddingBottom: 20, // Padding to give space for category buttons
-
   },
   titleText: {
     color: "white",
@@ -144,6 +143,7 @@ const styles = StyleSheet.create({
     justifyContent: "center", // Centering the text vertically
     paddingVertical: 16,
     borderRadius: 12,
+    width: 100,
   },
   categoryActiveBtn: {
     flex: 1,
@@ -155,6 +155,8 @@ const styles = StyleSheet.create({
     //transform: [{ scale: 1.10 }], // Slight scaling effect on active
     borderColor: "white",
     borderWidth: 2,
+    width: 100,
+
   },
 });
 

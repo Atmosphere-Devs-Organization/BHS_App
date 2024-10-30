@@ -155,7 +155,7 @@ const GradesContent = ({ category }: Props) => {
         </View>
       );
     }
-    case "Calculator": {
+    case "Tools": {
       return (
         <View>
           <StatusBar
@@ -391,16 +391,15 @@ const Transcript = ({
     <TouchableOpacity
       style={{
         alignContent: "center",
-        borderWidth: 5,
-        padding: 20,
-        borderRadius: 15,
+        borderWidth: 2,
+        padding: 35 ,
+        borderRadius: 25,
         backgroundColor: Colors.transcriptBubblesBG,
+        borderColor: Colors.tabActiveTint,
         marginBottom: 10,
         width: "95%",
         marginLeft: 10,
         marginRight: 10,
-        paddingTop: 50,
-        paddingBottom: 50,
       }}
       onPress={() => {
         setYearItem(item);
@@ -427,17 +426,15 @@ const Transcript = ({
   return transcriptData !== undefined ? (
     <View style={{ paddingTop: 30, marginTop: 15 }}>
       {!showingTranscriptDetails && (
-        <View>
+        <View style={{marginTop: 40}}>
           <View
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
               paddingHorizontal: 17,
               marginHorizontal: 13,
-              borderBottomWidth: 2,
-              borderColor: "#ffffff",
               paddingTop: 5,
-              paddingBottom: 30,
+              paddingBottom: 10,
             }}
           >
             <Text style={styles.topText}>
@@ -485,19 +482,18 @@ const Transcript = ({
         </View>
       )}
       {showingTranscriptDetails && (
-        <View style={{ height: "100%" }}>
+        <View style={{ height: "100%", marginTop: 30}}>
           <TouchableOpacity
             onPress={() => {
               setShowingDetails(false);
             }}
             style={styles.close_button}
           >
-            <Ionicons name="close-sharp" size={24} color="white" />
+            <Ionicons name="arrow-back-circle-outline" size={30} color="white" />
           </TouchableOpacity>
           <Text
             style={{
               color: "#ffffff",
-              paddingVertical: 20,
               paddingHorizontal: 10,
               alignSelf: "center",
               fontSize: 35,
@@ -534,7 +530,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     borderWidth: 4,
     borderRadius: 12,
-    borderColor: "#ffffff",
+    borderColor: Colors.tabActiveTint,
     padding: 10,
     backgroundColor: Colors.transcriptBubblesBG,
   },

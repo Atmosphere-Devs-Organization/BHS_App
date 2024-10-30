@@ -1,3 +1,4 @@
+import Colors from '@/constants/Colors';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8,
     textAlign: 'center',
-    color: "white",
+    color: Colors.tabActiveTint,
   },
   headerRow: {
     flexDirection: 'row',

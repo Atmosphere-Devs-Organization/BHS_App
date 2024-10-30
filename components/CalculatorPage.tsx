@@ -47,10 +47,11 @@ const CalculatorPage = ({
   };
 
   return (
-    <View style={{ marginBottom: 330 }}>
+    <View style={{ marginTop: 250 }}>
       <View>
-        <Text style={styles.comingSoonText}>Select a Class</Text>
+        <Text style={styles.comingSoonText}>Coming Soon!</Text>
       </View>
+      {/*}
       <FlatList
         data={courses}
         renderItem={renderCourseItem}
@@ -59,6 +60,7 @@ const CalculatorPage = ({
         //horizontal={true}
         contentContainerStyle={{ marginHorizontal: 10 }}
       />
+      */}
     </View>
   );
 };
@@ -66,7 +68,7 @@ const CalculatorPage = ({
 const styles = StyleSheet.create({
   comingSoonText: {
     color: "white",
-    fontSize: 24,
+    fontSize: 50,
     fontWeight: "bold",
     textAlign: "center",
     marginTop: 60,
