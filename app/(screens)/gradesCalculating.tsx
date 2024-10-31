@@ -1094,7 +1094,17 @@ const gradesCalculating = () => {
                       return (
                         <TouchableOpacity
                           key={grade}
-                          onPress={() => setDesiredGrade(grade)}
+                          onPress={() => {
+                            setDesiredGrade(grade);  // Set the desired grade with the current category
+                            setMyNeededScore(neededScore(
+                              selectedCourse,
+                              parseFloat(grade),
+                              desiredCategory
+                            ));
+                            console.log("cat" + desiredCategory);
+                            console.log("grade" + grade);
+                            
+                          }}
                           style={{
                             borderWidth: 2,
                             borderColor:
@@ -1157,7 +1167,13 @@ const gradesCalculating = () => {
                         onChangeText={(text) => {
                           setCustomGrade(text);
                           setDesiredGrade(text ? text : "");
+                          setMyNeededScore(neededScore(
+                            selectedCourse,
+                            parseFloat(text),
+                            desiredCategory
+                          ));
                         }}
+                        
                       />
                     </TouchableOpacity>
                   </View>
@@ -1265,7 +1281,7 @@ const gradesCalculating = () => {
                     >
                       {myNeededScore
                       ?.toFixed(1) ??
-                        "You need at least one pre-existing grade in this category to make a calculation."}
+                        "Sorry! We don't have this categoy's weight. Click category again if you were prompted to enter the weight!"}
                     </Text>
 
                     {/* Conditional Message */}
