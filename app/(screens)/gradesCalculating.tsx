@@ -886,6 +886,7 @@ const gradesCalculating = () => {
                       justifyContent: "space-between",
                       width: "100%",
                       marginBottom: 5,
+                      marginTop: 30,
                     }}
                   >
                     {assignmentTypes.map((type) => (
@@ -935,7 +936,7 @@ const gradesCalculating = () => {
                       marginBottom: 5,
                     },
                   ]} // Remove paddingBottom and add marginBottom
-                  placeholder="Assignment Name"
+                  placeholder="Assignment Name(optional)"
                   placeholderTextColor={"grey"}
                   value={addAssignmentName}
                   onChangeText={setAddAssignmentName}
@@ -959,56 +960,7 @@ const gradesCalculating = () => {
                   onChangeText={setAddAssignmentGrade}
                 />
 
-                <View
-                  style={{ justifyContent: "center", alignItems: "center" }}
-                >
-                  {/* Assignment type buttons */}
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      width: "100%",
-                      marginBottom: 5,
-                    }}
-                  >
-                    {assignmentTypes.map((type) => (
-                      <TouchableOpacity
-                        key={type.id}
-                        onPress={() => {
-                          setAddAssignmentType(type.label);
-                          setSelectedType(type);
-                        }}
-                        style={{
-                          flex: 1,
-                          marginHorizontal: 5,
-                          paddingVertical: 7,
-                          paddingHorizontal: 3,
-                          borderWidth: 2,
-                          borderColor:
-                            selectedType?.id === type.id
-                              ? "white"
-                              : "transparent", // White outline for selected
-                          borderRadius: 25,
-                          backgroundColor:
-                            selectedType?.id === type.id
-                              ? getColorByType(type.label)
-                              : getColorByType(type.label, false), // Function to get appropriate color
-                        }}
-                      >
-                        <Text
-                          style={{
-                            color: "white",
-                            textAlign: "center",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {type.label}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                </View>
-
+              
                 {addingError && addingError !== "" && (
                   <Text style={styles.error}>{addingError}</Text>
                 )}
@@ -1266,6 +1218,8 @@ const gradesCalculating = () => {
                         color: "white",
                         fontSize: 28,
                         fontWeight: "bold",
+                        textAlign: "center",
+
                       }}
                     >
                       Required Grade
