@@ -1303,7 +1303,6 @@ const gradesCalculating = () => {
               style={{
                 color: "white",
                 fontSize: 25,
-
                 marginTop: 20,
                 textAlign: "center",
                 alignSelf: "center",
@@ -1311,6 +1310,7 @@ const gradesCalculating = () => {
                 width: "90%",
                 fontWeight: "bold",
               }}
+              numberOfLines={1}
             >
               {addAssignmentName}
             </Text>
