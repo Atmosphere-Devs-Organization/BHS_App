@@ -1027,7 +1027,7 @@ const gradesCalculating = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    Desired Grade
+                    Desired Average
                   </Text>
 
                   {/* Grade Options */}
@@ -1619,6 +1619,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 15,
+    backgroundColor: "#121212",
     height: "93%",
   },
   header: {

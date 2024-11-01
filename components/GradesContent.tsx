@@ -545,7 +545,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     height: "93%",
-    backgroundColor: "#1c1c1c", // Dark background for better contrast
+    backgroundColor: "#121212", // Dark background for better contrast
   },
   header: {
     fontSize: 20,
