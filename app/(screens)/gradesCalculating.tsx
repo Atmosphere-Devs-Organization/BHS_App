@@ -820,7 +820,7 @@ const gradesCalculating = () => {
             style={{
               borderColor: Colors.tabActiveTint,
               borderWidth: 3,
-              height: 550,
+              height: 575,
               marginHorizontal: 10,
               backgroundColor: "#1c1c1c",
               borderRadius: 20,
@@ -925,40 +925,55 @@ const gradesCalculating = () => {
                       </TouchableOpacity>
                     ))}
                   </View>
-                <TextInput
-                  style={[
-                    styles.infoInput,
-                    {
-                      height: 10,
-                      paddingHorizontal: 10,
-                      textAlignVertical: "center",
-                      color: "white",
-                      marginBottom: 5,
-                    },
-                  ]} // Remove paddingBottom and add marginBottom
-                  placeholder="Assignment Name(optional)"
-                  placeholderTextColor={"grey"}
-                  value={addAssignmentName}
-                  onChangeText={setAddAssignmentName}
-                />
 
-                <TextInput
-                  style={[
-                    styles.gradeInfoInput,
-                    {
-                      height: 10,
-                      paddingHorizontal: 10,
-                      textAlignVertical: "top",
-                      color: "white",
-                      marginBottom: 5,
-                    },
-                  ]} // Move grade here and condense
-                  placeholder="Grade"
-                  placeholderTextColor={"grey"}
-                  keyboardType="decimal-pad"
-                  value={addAssignmentGrade}
-                  onChangeText={setAddAssignmentGrade}
-                />
+                <View style={{ flexDirection: 'row', width: '100%', padding: 10, marginTop: 25, }}>
+                  <TouchableOpacity
+                    style={{
+                      padding: 15,
+                      borderWidth: 2,
+                      borderRadius: 17,
+                      backgroundColor: '#494547',
+                      alignItems: 'center',
+                      width: '60%',
+                      height: 60,
+                      justifyContent: 'center',
+                      flex: 1,
+                    }}
+                  >
+                  <TextInput
+                    style={{ color: 'white', textAlign: 'center', width: '100%', padding: 0, fontSize: 17, fontWeight: "bold" }} // Remove paddingBottom and add marginBottom
+                    placeholder="Assignment Name (Optional)"
+                    placeholderTextColor={"grey"}
+                    value={addAssignmentName}
+                    onChangeText={setAddAssignmentName}
+                  />
+                  </TouchableOpacity>
+                </View>
+
+                <View style={{ flexDirection: 'row', width: '100%', padding: 10, marginTop: 15, marginBottom: 110, }}>
+                  <TouchableOpacity
+                    style={{
+                      padding: 15,
+                      borderWidth: 2,
+                      borderRadius: 17,
+                      backgroundColor: '#494547',
+                      alignItems: 'center',
+                      width: '60%',
+                      height: 60,
+                      justifyContent: 'center',
+                      flex: 1,
+                    }}
+                  >
+                  <TextInput
+                    style={{ color: 'white', textAlign: 'center', width: '100%', padding: 0, fontSize: 17, fontWeight: "bold" }} // Move grade here and condense
+                    placeholder="Grade"
+                    placeholderTextColor={"grey"}
+                    keyboardType="decimal-pad"
+                    value={addAssignmentGrade}
+                    onChangeText={setAddAssignmentGrade}
+                  />
+                  </TouchableOpacity>
+                </View>
 
               
                 {addingError && addingError !== "" && (
@@ -1235,7 +1250,7 @@ const gradesCalculating = () => {
                     >
                       {myNeededScore
                       ?.toFixed(1) ??
-                        "Sorry! We don't have this categoy's weight. Click category again if you were prompted to enter the weight!"}
+                        "Click category again if you were prompted to enter the weight! Otherwise, sorry, we can't compute at this time"}
                     </Text>
 
                     {/* Conditional Message */}
