@@ -28,8 +28,6 @@ import {
 } from "@/globalVars/gradesVariables";
 import Modal from "react-native-modal";
 import AutoCompleteTextInput from "@/components/AutoCompleteTextInput";
-import { ScrollView } from "react-native-reanimated/lib/typescript/Animated";
-import { LinearGradient } from "expo-linear-gradient"; // Import LinearGradient
 import Svg, { G, Circle, Line } from "react-native-svg";
 import { Alert } from "react-native";
 
@@ -45,6 +43,8 @@ const gradesCalculating = () => {
     Course | null | undefined
   >(null);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+
+  const [edited, setEdited] = useState<boolean>(false);
 
   const [addAssignmentModalVisible, setVisibleAddAssignment] =
     useState<boolean>(false);
@@ -85,6 +85,7 @@ const gradesCalculating = () => {
         if (courses[i].name == className) {
           setOriginalCourse(courses[i]);
           setSelectedCourse(courses[i].copy());
+          setEdited(false);
         }
       }
     }
@@ -218,7 +219,11 @@ const gradesCalculating = () => {
   const renderHeader = () => {
     let percentagesArray = calculateAssignmentTypePercentages(selectedCourse);
     let overallCourseAverage = Math.round(
-      CalculateOverallAverage(selectedCourse, percentagesArray)
+      edited
+        ? CalculateOverallAverage(selectedCourse, percentagesArray)
+        : originalCourse
+        ? originalCourse.overallGrade
+        : CalculateOverallAverage(selectedCourse, percentagesArray)
     );
 
     const getGradeColor = (grade: number) => {
@@ -482,7 +487,7 @@ const gradesCalculating = () => {
             <Text
               style={{ color: "#ffffff", fontSize: 14, fontWeight: "bold" }}
             >
-              Calculator
+              Tools
             </Text>
           </TouchableOpacity>
         </View>
@@ -637,6 +642,8 @@ const gradesCalculating = () => {
       )
     );
 
+    setEdited(true);
+
     return true;
   }
 
@@ -760,11 +767,16 @@ const gradesCalculating = () => {
       }
     }
 
+    if (changeName || changeGrade || changeType) {
+      setEdited(true);
+    }
+
     return true;
   }
 
   function ResetCalculator() {
     setSelectedCourse(originalCourse?.copy());
+    setEdited(false);
   }
   const getButtonColor = (type: string) => {
     switch (type) {
@@ -879,103 +891,131 @@ const gradesCalculating = () => {
             {/* Tab Content */}
             {selectedTab === "addAssignment" ? (
               <>
-             {/* Assignment type buttons */}
-              <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      width: "100%",
-                      marginBottom: 5,
-                      marginTop: 30,
-                    }}
-                  >
-                    {assignmentTypes.map((type) => (
-                      <TouchableOpacity
-                        key={type.id}
-                        onPress={() => {
-                          setAddAssignmentType(type.label);
-                          setSelectedType(type);
-                        }}
+                {/* Assignment type buttons */}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    width: "100%",
+                    marginBottom: 5,
+                    marginTop: 30,
+                  }}
+                >
+                  {assignmentTypes.map((type) => (
+                    <TouchableOpacity
+                      key={type.id}
+                      onPress={() => {
+                        setAddAssignmentType(type.label);
+                        setSelectedType(type);
+                      }}
+                      style={{
+                        flex: 1,
+                        marginHorizontal: 5,
+                        paddingVertical: 7,
+                        paddingHorizontal: 3,
+                        borderWidth: 2,
+                        borderColor:
+                          selectedType?.id === type.id
+                            ? "white"
+                            : "transparent", // White outline for selected
+                        borderRadius: 25,
+                        backgroundColor:
+                          selectedType?.id === type.id
+                            ? getColorByType(type.label)
+                            : getColorByType(type.label, false), // Function to get appropriate color
+                      }}
+                    >
+                      <Text
                         style={{
-                          flex: 1,
-                          marginHorizontal: 5,
-                          paddingVertical: 7,
-                          paddingHorizontal: 3,
-                          borderWidth: 2,
-                          borderColor:
-                            selectedType?.id === type.id
-                              ? "white"
-                              : "transparent", // White outline for selected
-                          borderRadius: 25,
-                          backgroundColor:
-                            selectedType?.id === type.id
-                              ? getColorByType(type.label)
-                              : getColorByType(type.label, false), // Function to get appropriate color
+                          color: "white",
+                          textAlign: "center",
+                          fontWeight: "bold",
                         }}
                       >
-                        <Text
-                          style={{
-                            color: "white",
-                            textAlign: "center",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {type.label}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
+                        {type.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
 
-                <View style={{ flexDirection: 'row', width: '100%', padding: 10, marginTop: 25, }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    width: "100%",
+                    padding: 10,
+                    marginTop: 25,
+                  }}
+                >
                   <TouchableOpacity
                     style={{
                       padding: 15,
                       borderWidth: 2,
                       borderRadius: 17,
-                      backgroundColor: '#494547',
-                      alignItems: 'center',
-                      width: '60%',
+                      backgroundColor: "#494547",
+                      alignItems: "center",
+                      width: "60%",
                       height: 60,
-                      justifyContent: 'center',
+                      justifyContent: "center",
                       flex: 1,
                     }}
                   >
-                  <TextInput
-                    style={{ color: 'white', textAlign: 'center', width: '100%', padding: 0, fontSize: 17, fontWeight: "bold" }} // Remove paddingBottom and add marginBottom
-                    placeholder="Assignment Name (Optional)"
-                    placeholderTextColor={"grey"}
-                    value={addAssignmentName}
-                    onChangeText={setAddAssignmentName}
-                  />
+                    <TextInput
+                      style={{
+                        color: "white",
+                        textAlign: "center",
+                        width: "100%",
+                        padding: 0,
+                        fontSize: 17,
+                        fontWeight: "bold",
+                      }} // Remove paddingBottom and add marginBottom
+                      placeholder="Assignment Name (Optional)"
+                      placeholderTextColor={"grey"}
+                      value={addAssignmentName}
+                      onChangeText={setAddAssignmentName}
+                    />
                   </TouchableOpacity>
                 </View>
 
-                <View style={{ flexDirection: 'row', width: '100%', padding: 10, marginTop: 15, marginBottom: 110, }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    width: "100%",
+                    padding: 10,
+                    marginTop: 15,
+                    marginBottom: 110,
+                  }}
+                >
                   <TouchableOpacity
                     style={{
                       padding: 15,
                       borderWidth: 2,
                       borderRadius: 17,
-                      backgroundColor: '#494547',
-                      alignItems: 'center',
-                      width: '60%',
+                      backgroundColor: "#494547",
+                      alignItems: "center",
+                      width: "60%",
                       height: 60,
-                      justifyContent: 'center',
+                      justifyContent: "center",
                       flex: 1,
                     }}
                   >
-                  <TextInput
-                    style={{ color: 'white', textAlign: 'center', width: '100%', padding: 0, fontSize: 17, fontWeight: "bold" }} // Move grade here and condense
-                    placeholder="Grade"
-                    placeholderTextColor={"grey"}
-                    keyboardType="decimal-pad"
-                    value={addAssignmentGrade}
-                    onChangeText={setAddAssignmentGrade}
-                  />
+                    <TextInput
+                      style={{
+                        color: "white",
+                        textAlign: "center",
+                        width: "100%",
+                        padding: 0,
+                        fontSize: 17,
+                        fontWeight: "bold",
+                      }} // Move grade here and condense
+                      placeholder="Grade"
+                      placeholderTextColor={"grey"}
+                      keyboardType="decimal-pad"
+                      value={addAssignmentGrade}
+                      onChangeText={setAddAssignmentGrade}
+                    />
                   </TouchableOpacity>
                 </View>
 
-              
                 {addingError && addingError !== "" && (
                   <Text style={styles.error}>{addingError}</Text>
                 )}
@@ -1062,15 +1102,16 @@ const gradesCalculating = () => {
                         <TouchableOpacity
                           key={grade}
                           onPress={() => {
-                            setDesiredGrade(grade);  // Set the desired grade with the current category
-                            setMyNeededScore(neededScore(
-                              selectedCourse,
-                              parseFloat(grade),
-                              desiredCategory
-                            ));
+                            setDesiredGrade(grade); // Set the desired grade with the current category
+                            setMyNeededScore(
+                              neededScore(
+                                selectedCourse,
+                                parseFloat(grade),
+                                desiredCategory
+                              )
+                            );
                             console.log("cat" + desiredCategory);
                             console.log("grade" + grade);
-                            
                           }}
                           style={{
                             borderWidth: 2,
@@ -1134,13 +1175,14 @@ const gradesCalculating = () => {
                         onChangeText={(text) => {
                           setCustomGrade(text);
                           setDesiredGrade(text ? text : "");
-                          setMyNeededScore(neededScore(
-                            selectedCourse,
-                            parseFloat(text),
-                            desiredCategory
-                          ));
+                          setMyNeededScore(
+                            neededScore(
+                              selectedCourse,
+                              parseFloat(text),
+                              desiredCategory
+                            )
+                          );
                         }}
-                        
                       />
                     </TouchableOpacity>
                   </View>
@@ -1189,13 +1231,14 @@ const gradesCalculating = () => {
                         <TouchableOpacity
                           key={cat}
                           onPress={() => {
-                            setDesiredCategory(cat);  // Set the desired grade with the current category
-                            setMyNeededScore(neededScore(
-                              selectedCourse,
-                              parseFloat(desiredGrade),
-                              cat
-                            ));
-                            
+                            setDesiredCategory(cat); // Set the desired grade with the current category
+                            setMyNeededScore(
+                              neededScore(
+                                selectedCourse,
+                                parseFloat(desiredGrade),
+                                cat
+                              )
+                            );
                           }}
                           style={{
                             borderWidth: 2,
@@ -1234,7 +1277,6 @@ const gradesCalculating = () => {
                         fontSize: 28,
                         fontWeight: "bold",
                         textAlign: "center",
-
                       }}
                     >
                       Required Grade
@@ -1248,8 +1290,7 @@ const gradesCalculating = () => {
                         marginBottom: 8,
                       }}
                     >
-                      {myNeededScore
-                      ?.toFixed(1) ??
+                      {myNeededScore?.toFixed(1) ??
                         "Click category again if you were prompted to enter the weight! Otherwise, sorry, we can't compute at this time"}
                     </Text>
 

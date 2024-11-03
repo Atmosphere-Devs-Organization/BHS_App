@@ -348,12 +348,12 @@ const Transcript = ({
     array.forEach((item) => {
       if (item[0] !== "Course") {
         // Assuming the first row contains column headers
-        const courseName = item[1];
+        const courseName: string = item[1].toUpperCase();
         const sem1Grade = item[2] || "-";
         const sem2Grade = item[3] || "-";
 
         // If the course already exists, update the grades
-        if (courseData[courseName]) {
+        if (courseData[courseName.toUpperCase()]) {
           courseData[courseName].sem1Grade =
             courseData[courseName].sem1Grade === "-"
               ? sem1Grade
@@ -392,7 +392,7 @@ const Transcript = ({
       style={{
         alignContent: "center",
         borderWidth: 2,
-        padding: 35 ,
+        padding: 35,
         borderRadius: 25,
         backgroundColor: Colors.transcriptBubblesBG,
         borderColor: Colors.tabActiveTint,
@@ -426,7 +426,7 @@ const Transcript = ({
   return transcriptData !== undefined ? (
     <View style={{ paddingTop: 30, marginTop: 15 }}>
       {!showingTranscriptDetails && (
-        <View style={{marginTop: 40}}>
+        <View style={{ marginTop: 40 }}>
           <View
             style={{
               flexDirection: "row",
@@ -455,7 +455,7 @@ const Transcript = ({
               data={schoolYears}
               ref={listRef}
               renderItem={renderRow}
-              style={{ marginTop: 30, marginBottom: 370 }}
+              style={{ marginTop: 30, marginBottom: 300 }}
               showsVerticalScrollIndicator={false}
             />
           ) : (
@@ -482,14 +482,18 @@ const Transcript = ({
         </View>
       )}
       {showingTranscriptDetails && (
-        <View style={{ height: "100%", marginTop: 30}}>
+        <View style={{ height: "100%", marginTop: 30 }}>
           <TouchableOpacity
             onPress={() => {
               setShowingDetails(false);
             }}
             style={styles.close_button}
           >
-            <Ionicons name="arrow-back-circle-outline" size={30} color="white" />
+            <Ionicons
+              name="arrow-back-circle-outline"
+              size={30}
+              color="white"
+            />
           </TouchableOpacity>
           <Text
             style={{

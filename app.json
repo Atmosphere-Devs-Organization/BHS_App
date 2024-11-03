@@ -2,7 +2,7 @@
   "expo": {
     "name": "Bear Den",
     "slug": "BHS_App",
-    "version": "3.0.0",
+    "version": "3.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/splash.png",
     "scheme": "myapp",
@@ -19,7 +19,7 @@
       },
       "bundleIdentifier": "com.pagecow.bridgelandapp",
       "googleServicesFile": "./GoogleService-Info.plist",
-      "buildNumber": "13"
+      "buildNumber": "14"
     },
     "android": {
       "adaptiveIcon": {
