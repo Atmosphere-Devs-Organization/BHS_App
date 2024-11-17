@@ -63,6 +63,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@types/react": "~18.2.45",
+    "firebase-tools": "^13.25.0",
     "jest": "^29.2.1",
     "jest-expo": "~51.0.4",
     "react-test-renderer": "18.2.0",
